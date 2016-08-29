@@ -73,6 +73,11 @@ static bool inventory_fromsql(uint32 char_id, struct s_storage* p)
 	StringBuf_AppendStr(&buf, "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`, `favorite`, `bound`, `unique_id`");
 	for( i = 0; i < MAX_SLOTS; ++i )
 		StringBuf_Printf(&buf, ", `card%d`", i);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		StringBuf_Printf(&buf, ", `option_id%d`", i);
+		StringBuf_Printf(&buf, ", `option_val%d`", i);
+		StringBuf_Printf(&buf, ", `option_parm%d`", i);
+	}
 	StringBuf_Printf(&buf, " FROM `%s` WHERE `char_id`=? LIMIT %d", schema_config.inventory_db, MAX_INVENTORY);
 
 	if( SQL_ERROR == SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf))
@@ -98,6 +103,11 @@ static bool inventory_fromsql(uint32 char_id, struct s_storage* p)
 	SqlStmt_BindColumn(stmt,10, SQLDT_ULONGLONG, &tmp_item.unique_id,   0, NULL, NULL);
 	for( i = 0; i < MAX_SLOTS; ++i )
 		SqlStmt_BindColumn(stmt, 11+i, SQLDT_USHORT, &tmp_item.card[i], 0, NULL, NULL);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 13+MAX_SLOTS+i*3, SQLDT_CHAR, &tmp_item.option[i].param, 0, NULL, NULL);
+	}
 
 	for( i = 0; i < MAX_INVENTORY && SQL_SUCCESS == SqlStmt_NextRow(stmt); ++i )
 		memcpy(&p->u.items_inventory[i], &tmp_item, sizeof(tmp_item));
@@ -119,7 +129,7 @@ static bool inventory_fromsql(uint32 char_id, struct s_storage* p)
  */
 static bool cart_fromsql(uint32 char_id, struct s_storage* p)
 {
-	int i,j;
+	int i;
 	StringBuf buf;
 	SqlStmt* stmt;
 	struct item tmp_item;
@@ -135,8 +145,13 @@ static bool cart_fromsql(uint32 char_id, struct s_storage* p)
 
 	StringBuf_Init(&buf);
 	StringBuf_AppendStr(&buf, "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`, `bound`, `unique_id`");
-	for( j = 0; j < MAX_SLOTS; ++j )
-		StringBuf_Printf(&buf, ", `card%d`", j);
+	for( i = 0; i < MAX_SLOTS; ++i )
+		StringBuf_Printf(&buf, ", `card%d`", i);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		StringBuf_Printf(&buf, ", `option_id%d`", i);
+		StringBuf_Printf(&buf, ", `option_val%d`", i);
+		StringBuf_Printf(&buf, ", `option_parm%d`", i);
+	}
 	StringBuf_Printf(&buf, " FROM `%s` WHERE `char_id`=? LIMIT %d", schema_config.cart_db, MAX_CART);
 
 	if( SQL_ERROR == SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf))
@@ -161,6 +176,11 @@ static bool cart_fromsql(uint32 char_id, struct s_storage* p)
 	SqlStmt_BindColumn(stmt, 9, SQLDT_ULONGLONG,   &tmp_item.unique_id,   0, NULL, NULL);
 	for( i = 0; i < MAX_SLOTS; ++i )
 		SqlStmt_BindColumn(stmt, 10+i, SQLDT_USHORT, &tmp_item.card[i], 0, NULL, NULL);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		SqlStmt_BindColumn(stmt, 10+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+i*3, SQLDT_CHAR, &tmp_item.option[i].param, 0, NULL, NULL);
+	}
 
 	for( i = 0; i < MAX_CART && SQL_SUCCESS == SqlStmt_NextRow(stmt); ++i )
 		memcpy(&p->u.items_cart[i], &tmp_item, sizeof(tmp_item));
@@ -182,7 +202,7 @@ static bool cart_fromsql(uint32 char_id, struct s_storage* p)
  */
 static bool storage_fromsql(uint32 account_id, struct s_storage* p)
 {
-	int i, j;
+	int i;
 	StringBuf buf;
 	SqlStmt* stmt;
 	struct item tmp_item;
@@ -198,8 +218,13 @@ static bool storage_fromsql(uint32 account_id, struct s_storage* p)
 
 	StringBuf_Init(&buf);
 	StringBuf_AppendStr(&buf, "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`, `bound`, `unique_id`");
-	for( j = 0; j < MAX_SLOTS; ++j )
-		StringBuf_Printf(&buf, ", `card%d`", j);
+	for( i = 0; i < MAX_SLOTS; ++i )
+		StringBuf_Printf(&buf, ", `card%d`", i);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		StringBuf_Printf(&buf, ", `option_id%d`", i);
+		StringBuf_Printf(&buf, ", `option_val%d`", i);
+		StringBuf_Printf(&buf, ", `option_parm%d`", i);
+	}
 	StringBuf_Printf(&buf, " FROM `%s` WHERE `account_id`=? ORDER BY `nameid` LIMIT %d", schema_config.storage_db, account_id, MAX_STORAGE);
 
 	if( SQL_ERROR == SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf))
@@ -224,6 +249,11 @@ static bool storage_fromsql(uint32 account_id, struct s_storage* p)
 	SqlStmt_BindColumn(stmt, 9, SQLDT_ULONGLONG,     &tmp_item.unique_id,   0, NULL, NULL);
 	for( i = 0; i < MAX_SLOTS; ++i )
 		SqlStmt_BindColumn(stmt, 10+i, SQLDT_USHORT, &tmp_item.card[i],     0, NULL, NULL);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		SqlStmt_BindColumn(stmt, 10+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+i*3, SQLDT_CHAR, &tmp_item.option[i].param, 0, NULL, NULL);
+	}
 
 	for( i = 0; i < MAX_STORAGE && SQL_SUCCESS == SqlStmt_NextRow(stmt); ++i )
 		memcpy(&p->u.items_storage[i], &tmp_item, sizeof(tmp_item));
@@ -257,7 +287,7 @@ bool guild_storage_tosql(int guild_id, struct s_storage* p)
  */
 bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 {
-	int i,j;
+	int i;
 	StringBuf buf;
 	SqlStmt* stmt;
 	struct item tmp_item;
@@ -271,11 +301,16 @@ bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 		return false;
 	}
 
-	// storage {`guild_id`/`id`/`nameid`/`amount`/`equip`/`identify`/`refine`/`attribute`/`card0`/`card1`/`card2`/`card3`}
+	// storage {`guild_id`/`id`/`nameid`/`amount`/`equip`/`identify`/`refine`/`attribute`/`card0`/`card1`/`card2`/`card3`/`option_id0`/`option_val0`/`option_parm0`/`option_id1`/`option_val1`/`option_parm1`/`option_id2`/`option_val2`/`option_parm2`/`option_id3`/`option_val3`/`option_parm3`/`option_id4`/`option_val4`/`option_parm4`}
 	StringBuf_Init(&buf);
 	StringBuf_AppendStr(&buf, "SELECT `id`,`nameid`,`amount`,`equip`,`identify`,`refine`,`attribute`,`bound`,`unique_id`");
-	for( j = 0; j < MAX_SLOTS; ++j )
-		StringBuf_Printf(&buf, ",`card%d`", j);
+	for( i = 0; i < MAX_SLOTS; ++i )
+		StringBuf_Printf(&buf, ",`card%d`", i);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		StringBuf_Printf(&buf, ", `option_id%d`", i);
+		StringBuf_Printf(&buf, ", `option_val%d`", i);
+		StringBuf_Printf(&buf, ", `option_parm%d`", i);
+	}
 	StringBuf_Printf(&buf, " FROM `%s` WHERE `guild_id`='%d' ORDER BY `nameid`", schema_config.guild_storage_db, guild_id);
 
 	if( SQL_ERROR == SqlStmt_PrepareStr(stmt, StringBuf_Value(&buf))
@@ -300,6 +335,12 @@ bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 	tmp_item.expire_time = 0;
 	for( i = 0; i < MAX_SLOTS; ++i )
 		SqlStmt_BindColumn(stmt, 9+i, SQLDT_USHORT, &tmp_item.card[i],   0, NULL, NULL);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_CHAR, &tmp_item.option[i].param, 0, NULL, NULL);
+	}
+
 
 	for( i = 0; i < MAX_GUILD_STORAGE && SQL_SUCCESS == SqlStmt_NextRow(stmt); ++i )
 		memcpy(&p->u.items_guild[i], &tmp_item, sizeof(tmp_item));
@@ -479,8 +520,13 @@ bool mapif_parse_itembound_retrieve(int fd)
 
 	// Get bound items from player's inventory
 	StringBuf_AppendStr(&buf, "SELECT `id`, `nameid`, `amount`, `equip`, `identify`, `refine`, `attribute`, `expire_time`, `bound`");
-	for( j = 0; j < MAX_SLOTS; ++j )
-		StringBuf_Printf(&buf, ", `card%d`", j);
+	for( i = 0; i < MAX_SLOTS; ++i )
+		StringBuf_Printf(&buf, ", `card%d`", i);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		StringBuf_Printf(&buf, ", `option_id%d`", i);
+		StringBuf_Printf(&buf, ", `option_val%d`", i);
+		StringBuf_Printf(&buf, ", `option_parm%d`", i);
+	}
 	StringBuf_Printf(&buf, " FROM `%s` WHERE `char_id`='%d' AND `bound` = %d", schema_config.inventory_db,char_id, BOUND_GUILD);
 
 	stmt = SqlStmt_Malloc(sql_handle);
@@ -503,9 +549,13 @@ bool mapif_parse_itembound_retrieve(int fd)
 	SqlStmt_BindColumn(stmt, 6, SQLDT_CHAR,      &item.attribute,   0, NULL, NULL);
 	SqlStmt_BindColumn(stmt, 7, SQLDT_UINT,      &item.expire_time, 0, NULL, NULL);
 	SqlStmt_BindColumn(stmt, 8, SQLDT_UINT,      &item.bound,       0, NULL, NULL);
-	for( j = 0; j < MAX_SLOTS; ++j )
-		SqlStmt_BindColumn(stmt, 9+j, SQLDT_USHORT, &item.card[j], 0, NULL, NULL);
-
+	for( i = 0; i < MAX_SLOTS; ++i )
+		SqlStmt_BindColumn(stmt, 9+i, SQLDT_USHORT, &item.card[i], 0, NULL, NULL);
+	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
+		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_SHORT, &item.option[i].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 10+MAX_SLOTS+i*3, SQLDT_SHORT, &item.option[i].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+i*3, SQLDT_CHAR, &item.option[i].param, 0, NULL, NULL);
+	}
 	memset(&items, 0, sizeof(items));
 	while( SQL_SUCCESS == SqlStmt_NextRow(stmt) )
 		memcpy(&items[count++], &item, sizeof(struct item));
