@@ -294,6 +294,8 @@ bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 
 	memset(p, 0, sizeof(struct s_storage)); //clean up memory
 	p->amount = 0;
+	p->id = guild_id;
+	p->type = TABLE_GUILD_STORAGE;
 
 	stmt = SqlStmt_Malloc(sql_handle);
 	if (stmt == NULL) {
@@ -301,9 +303,8 @@ bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 		return false;
 	}
 
-	// storage {`guild_id`/`id`/`nameid`/`amount`/`equip`/`identify`/`refine`/`attribute`/`card0`/`card1`/`card2`/`card3`/`option_id0`/`option_val0`/`option_parm0`/`option_id1`/`option_val1`/`option_parm1`/`option_id2`/`option_val2`/`option_parm2`/`option_id3`/`option_val3`/`option_parm3`/`option_id4`/`option_val4`/`option_parm4`}
 	StringBuf_Init(&buf);
-	StringBuf_AppendStr(&buf, "SELECT `id`,`nameid`,`amount`,`equip`,`identify`,`refine`,`attribute`,`bound`,`unique_id`");
+	StringBuf_AppendStr(&buf, "SELECT `id`,`nameid`,`amount`,`equip`,`identify`,`refine`,`attribute`,`expire_time`,`bound`,`unique_id`");
 	for( i = 0; i < MAX_SLOTS; ++i )
 		StringBuf_Printf(&buf, ",`card%d`", i);
 	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
@@ -330,15 +331,16 @@ bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 	SqlStmt_BindColumn(stmt, 4, SQLDT_CHAR,         &tmp_item.identify,  0, NULL, NULL);
 	SqlStmt_BindColumn(stmt, 5, SQLDT_CHAR,         &tmp_item.refine,    0, NULL, NULL);
 	SqlStmt_BindColumn(stmt, 6, SQLDT_CHAR,         &tmp_item.attribute, 0, NULL, NULL);
-	SqlStmt_BindColumn(stmt, 7, SQLDT_CHAR,         &tmp_item.bound,     0, NULL, NULL);
-	SqlStmt_BindColumn(stmt, 8, SQLDT_ULONGLONG,    &tmp_item.unique_id, 0, NULL, NULL);
+	SqlStmt_BindColumn(stmt, 7, SQLDT_UINT,         &tmp_item.expire_time, 0, NULL, NULL);
+	SqlStmt_BindColumn(stmt, 8, SQLDT_CHAR,         &tmp_item.bound,     0, NULL, NULL);
+	SqlStmt_BindColumn(stmt, 9, SQLDT_ULONGLONG,    &tmp_item.unique_id, 0, NULL, NULL);
 	tmp_item.expire_time = 0;
 	for( i = 0; i < MAX_SLOTS; ++i )
-		SqlStmt_BindColumn(stmt, 9+i, SQLDT_USHORT, &tmp_item.card[i],   0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 10+i, SQLDT_USHORT, &tmp_item.card[i],   0, NULL, NULL);
 	for( i = 0; i < MAX_ITEM_RDM_OPT; ++i ) {
-		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].id, 0, NULL, NULL);
-		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].value, 0, NULL, NULL);
-		SqlStmt_BindColumn(stmt, 9+MAX_SLOTS+i*3, SQLDT_CHAR, &tmp_item.option[i].param, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 10+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].id, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 11+MAX_SLOTS+i*3, SQLDT_SHORT, &tmp_item.option[i].value, 0, NULL, NULL);
+		SqlStmt_BindColumn(stmt, 12+MAX_SLOTS+i*3, SQLDT_CHAR, &tmp_item.option[i].param, 0, NULL, NULL);
 	}
 
 
@@ -453,6 +455,8 @@ bool mapif_parse_SaveGuildStorage(int fd)
 			mapif_save_guild_storage_ack(fd, RFIFOL(fd,4), guild_id, 0);
 			return false;
 		}
+		else 
+			ShowWarning("Couldn't save storage for guild id (%d). Guild is missing.\n",guild_id);
 		Sql_FreeResult(sql_handle);
 	}
 	mapif_save_guild_storage_ack(fd, RFIFOL(fd,4), guild_id, 1);
