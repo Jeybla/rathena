@@ -518,7 +518,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 int char_memitemdata_to_sql(const struct item items[], int max, int id, int tableswitch) {
 	StringBuf buf;
 	SqlStmt* stmt;
-	int i,j,column;
+	int i,j,k,l,m,column;
 	const char* tablename;
 	const char* selectoption;
 	const char* savetype;
@@ -622,7 +622,13 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, int tabl
 			&&  items[i].card[3] == item.card[3]
 			) {	//They are the same item.
 				ARR_FIND( 0, MAX_SLOTS, j, items[i].card[j] != item.card[j] );
+				ARR_FIND( 0, MAX_ITEM_RDM_OPT, k, items[i].option[k].id != item.option[k].id );
+				ARR_FIND( 0, MAX_ITEM_RDM_OPT, l, items[i].option[l].param != item.option[l].param );
+				ARR_FIND( 0, MAX_ITEM_RDM_OPT, m, items[i].option[m].value != item.option[m].value );
 				if( j == MAX_SLOTS &&
+				    k == MAX_ITEM_RDM_OPT &&
+				    l == MAX_ITEM_RDM_OPT &&
+				    m == MAX_ITEM_RDM_OPT &&
 				    items[i].amount == item.amount &&
 				    items[i].equip == item.equip &&
 				    items[i].identify == item.identify &&
