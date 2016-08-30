@@ -263,6 +263,8 @@ void vending_purchasereq(struct map_session_data* sd, int aid, int uid, const ui
 	}
 }
 
+bool intif_storage_request(struct map_session_data *sd, enum storage_type type); //forward declaration
+
 /**
  * Player setup a new shop
  * @param sd : player opening the shop
@@ -281,6 +283,8 @@ int8 vending_openvending(struct map_session_data* sd, const char* message, const
 	StringBuf buf;
 	
 	nullpo_retr(false,sd);
+	
+	intif_storage_request(sd, TABLE_CART); // Update cart item ID information
 
 	if ( pc_isdead(sd) || !sd->state.prevend || pc_istrading(sd)) {
 		return 1; // can't open vendings lying dead || didn't use via the skill (wpe/hack) || can't have 2 shops at once
