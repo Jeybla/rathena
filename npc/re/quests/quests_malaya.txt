@@ -8330,13 +8330,11 @@ ma_fild01,1,1,4	script	Pintados Manager#pin	894,{
 
 // Moved to individual NPCs for smoother processing.
 OnInit:
-	if ($malaya_pintados_00 > 0) {
-		// donpcevent "Pintados Manager#pin::OnEnableNPC";
-		initnpctimer;// unoffical fix
+	if ($malaya_pintados_00 > 0 ) {
+		donpcevent "Pintados Manager#pin::OnEnableNPC";
 	}
-	end;
-
-OnTimer1800000:
+	// passthrough: Check it after the reload.
+OnTimer1800000: // Every 30 Minutes, check if the event should keep running.
 	if ($malaya_pintados_00 > 0 && $malaya_pintados_00 < 344) {
 		set $malaya_pintados_00,$malaya_pintados_00+1;
 		initnpctimer;
