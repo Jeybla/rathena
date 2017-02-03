@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS `feedinglog` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `time` DATETIME DEFAULT NULL,
   `char_id` INT(11) NOT NULL,
   `target_id` INT(11) NOT NULL,
   `target_class` SMALLINT(11) NOT NULL,
