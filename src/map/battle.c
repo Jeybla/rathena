@@ -5464,19 +5464,8 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 	}
 
 #ifdef RENEWAL
-	// forced to neutral skills [helvetica]
-	// skills forced to neutral gain benefits from weapon element
-	// but final damage is considered "neutral" and resistances are applied again
+	// specially forced elemental skills
 	switch (skill_id) {
-		case MC_CARTREVOLUTION:
-		case MO_INVESTIGATE:
-		case CR_ACIDDEMONSTRATION:
-		case SR_GATEOFHELL:
-		case GN_FIRE_EXPANSION_ACID:
-		case KO_BAKURETSU:
-			// Forced to neutral element
-			wd.damage = battle_attr_fix(src, target, wd.damage, ELE_NEUTRAL, tstatus->def_ele, tstatus->ele_lv);
-			break;
 		case CR_SHIELDBOOMERANG:
 		case LK_SPIRALPIERCE:
 		case ML_SPIRALPIERCE:
