@@ -8,9 +8,9 @@
  */
 
 #ifndef _LOGINCLIF_H
-#define _LOGINCLIF_H
+#define	_LOGINCLIF_H
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 extern "C" {
 #endif
 
@@ -34,9 +34,9 @@ void do_init_loginclif(void);
  */
 void do_final_loginclif(void);
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 
-#endif  /* _LOGINCLIF_H */
+#endif	/* _LOGINCLIF_H */
 

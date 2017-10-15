@@ -8,9 +8,9 @@
  */
 
 #ifndef CONSOLEIF_H
-#define CONSOLEIF_H
+#define	CONSOLEIF_H
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 extern "C" {
 #endif
 
@@ -22,7 +22,7 @@ extern "C" {
  * @param buf: buffer to parse, (from console)
  * @return 1=success
  */
-int cnslif_parse(const char *buf);
+int cnslif_parse(const char* buf);
 
 /**
  * Read the option specified in command line
@@ -31,7 +31,7 @@ int cnslif_parse(const char *buf);
  * @param argv:
  * @return true or Exit on failure.
  */
-int logcnslif_get_options(int argc, char **argv);
+int logcnslif_get_options(int argc, char ** argv);
 
 /**
  * Login-server console help: starting option info.
@@ -45,15 +45,14 @@ void display_helpscreen(bool do_exit);
  * Launched at login-serv start, create db or other long scope variable here.
  */
 void do_init_logincnslif(void);
-
 /**
  * Handler to cleanup module, called when login-server stops.
  */
 void do_final_logincnslif(void);
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 
-#endif  /* CONSOLEIF_H */
+#endif	/* CONSOLEIF_H */
 

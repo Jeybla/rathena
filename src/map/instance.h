@@ -9,14 +9,14 @@ extern "C" {
 #endif
 
 #include "../common/mmo.h" // struct point
-#include "script.h"        // struct reg_db
+#include "script.h" // struct reg_db
 
 struct block_list;
 
-#define MAX_INSTANCE_DATA       300     // Essentially how many instances we can create, but instance creation is primarily decided by MAX_MAP_PER_SERVER
-#define MAX_MAP_PER_INSTANCE    255     // Max number of maps per instance (Enter map is counted as one) - Supports up to 255 maps
+#define MAX_INSTANCE_DATA		300	// Essentially how many instances we can create, but instance creation is primarily decided by MAX_MAP_PER_SERVER
+#define MAX_MAP_PER_INSTANCE	255	// Max number of maps per instance (Enter map is counted as one) - Supports up to 255 maps
 
-#define INSTANCE_NAME_LENGTH    (60 + 1)
+#define INSTANCE_NAME_LENGTH (60+1)
 
 typedef enum instance_state {
 	INSTANCE_FREE,
@@ -45,39 +45,38 @@ struct s_instance_map {
 };
 
 struct instance_data {
-	unsigned short        type;       ///< Instance DB ID
-	enum instance_state   state;      ///< State of instance
-	enum instance_mode    mode;       ///< Mode of instance
-	int                   owner_id;   ///< Owner ID of instance
-	unsigned int          keep_limit; ///< Life time of instance
-	int                   keep_timer; ///< Remaining life time of instance
-	unsigned int          idle_limit; ///< Idle time of instance
-	int                   idle_timer; ///< Remaining idle time of instance
-	struct reg_db         regs;       ///< Instance variables for scripts
-	struct s_instance_map **map;      ///< Dynamic array of maps in instance
-	uint8                 cnt_map;    ///< Number of maps in an instance
+	unsigned short type; ///< Instance DB ID
+	enum instance_state state; ///< State of instance
+	enum instance_mode mode; ///< Mode of instance
+	int owner_id; ///< Owner ID of instance
+	unsigned int keep_limit; ///< Life time of instance
+	int keep_timer; ///< Remaining life time of instance
+	unsigned int idle_limit; ///< Idle time of instance
+	int idle_timer; ///< Remaining idle time of instance
+	struct reg_db regs; ///< Instance variables for scripts
+	struct s_instance_map **map; ///< Dynamic array of maps in instance
+	uint8 cnt_map; ///< Number of maps in an instance
 };
 
 /// Instance DB entry struct
 struct instance_db {
-	unsigned short id;          ///< Instance ID
-	StringBuf      *name;       ///< Instance name
-	unsigned int   limit,       ///< Duration limit
-	               timeout;     ///< Timeout limit
+	unsigned short id; ///< Instance ID
+	StringBuf *name; ///< Instance name
+	unsigned int limit, ///< Duration limit
+		timeout; ///< Timeout limit
 	struct {
 		StringBuf *mapname; ///< Mapname, the limit should be MAP_NAME_LENGTH_EXT
-		short     x, y;     ///< Map coordinates
-	}
-	          enter;
-	StringBuf **maplist;     ///< Used maps in instance, the limit should be MAP_NAME_LENGTH_EXT
-	uint8     maplist_count; ///< Number of used maps
+		short x, y; ///< Map coordinates
+	} enter;
+	StringBuf **maplist; ///< Used maps in instance, the limit should be MAP_NAME_LENGTH_EXT
+	uint8 maplist_count; ///< Number of used maps
 };
 
-extern int                  instance_start;
+extern int instance_start;
 extern struct instance_data instance_data[MAX_INSTANCE_DATA];
 
-struct instance_db          *instance_searchtype_db(unsigned short instance_id);
-struct instance_db          *instance_searchname_db(const char *name);
+struct instance_db *instance_searchtype_db(unsigned short instance_id);
+struct instance_db *instance_searchname_db(const char* name);
 void instance_getsd(unsigned short instance_id, struct map_session_data **sd, enum send_target *target);
 
 int instance_create(int owner_id, const char *name, enum instance_mode mode);

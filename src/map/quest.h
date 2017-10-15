@@ -25,17 +25,17 @@ struct quest_objective {
 
 struct quest_db {
 	// TODO: find out if signed or unsigned in client
-	int                    id;
-	unsigned int           time;
-	bool                   time_type;
-	uint8                  objectives_count;
+	int id;
+	unsigned int time;
+	bool time_type;
+	uint8 objectives_count;
 	struct quest_objective *objectives;
-	uint8                  dropitem_count;
-	struct quest_dropitem  *dropitem;
-	StringBuf              name;
+	uint8 dropitem_count;
+	struct quest_dropitem *dropitem;
+	StringBuf name;
 };
 
-extern struct quest_db quest_dummy;     ///< Dummy entry for invalid quest lookups
+extern struct quest_db quest_dummy;	///< Dummy entry for invalid quest lookups
 
 // Questlog check types
 enum quest_check_type {
@@ -46,13 +46,13 @@ enum quest_check_type {
 
 int quest_pc_login(TBL_PC *sd);
 
-int quest_add(TBL_PC *sd, int quest_id);
-int quest_delete(TBL_PC *sd, int quest_id);
-int quest_change(TBL_PC *sd, int qid1, int qid2);
+int quest_add(TBL_PC * sd, int quest_id);
+int quest_delete(TBL_PC * sd, int quest_id);
+int quest_change(TBL_PC * sd, int qid1, int qid2);
 int quest_update_objective_sub(struct block_list *bl, va_list ap);
-void quest_update_objective(TBL_PC *sd, int mob_id);
-int quest_update_status(TBL_PC *sd, int quest_id, enum quest_state status);
-int quest_check(TBL_PC *sd, int quest_id, enum quest_check_type type);
+void quest_update_objective(TBL_PC * sd, int mob_id);
+int quest_update_status(TBL_PC * sd, int quest_id, enum quest_state status);
+int quest_check(TBL_PC * sd, int quest_id, enum quest_check_type type);
 
 struct quest_db *quest_search(int quest_id);
 

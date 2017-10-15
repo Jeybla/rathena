@@ -10,7 +10,7 @@
 #ifndef __LOGINLOG_H_INCLUDED__
 #define __LOGINLOG_H_INCLUDED__
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 extern "C" {
 #endif
 
@@ -29,7 +29,7 @@ unsigned long loginlog_failedattempts(uint32 ip, unsigned int minutes);
  * @param rcode:
  * @param message:
  */
-void login_log(uint32 ip, const char *username, int rcode, const char *message);
+void login_log(uint32 ip, const char* username, int rcode, const char* message);
 
 /**
  * Read configuration options.
@@ -37,7 +37,7 @@ void login_log(uint32 ip, const char *username, int rcode, const char *message);
  * @param value: config value for keyword
  * @return true if successful, false if config not complete or server already running
  */
-bool loginlog_config_read(const char *w1, const char *w2);
+bool loginlog_config_read(const char* w1, const char* w2);
 
 
 /**
@@ -54,7 +54,7 @@ bool loginlog_init(void);
  */
 bool loginlog_final(void);
 
-#ifdef  __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 

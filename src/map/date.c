@@ -9,12 +9,11 @@
  */
 int date_get_year(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
-	return lt->tm_year + 1900;
+	return lt->tm_year+1900;
 }
 
 /*
@@ -22,12 +21,11 @@ int date_get_year(void)
  */
 enum e_month date_get_month(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
-	return (enum e_month)(lt->tm_mon + 1);
+	return (enum e_month)(lt->tm_mon+1);
 }
 
 /*
@@ -35,10 +33,9 @@ enum e_month date_get_month(void)
  */
 int date_get_dayofmonth(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
 	return lt->tm_mday;
 }
@@ -48,10 +45,9 @@ int date_get_dayofmonth(void)
  */
 enum e_dayofweek date_get_dayofweek(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
 	return (enum e_dayofweek)lt->tm_wday;
 }
@@ -61,10 +57,9 @@ enum e_dayofweek date_get_dayofweek(void)
  */
 int date_get_dayofyear(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
 	return lt->tm_yday;
 }
@@ -74,10 +69,9 @@ int date_get_dayofyear(void)
  */
 int date_get_hour(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
 	return lt->tm_hour;
 }
@@ -87,10 +81,9 @@ int date_get_hour(void)
  */
 int date_get_min(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
 	return lt->tm_min;
 }
@@ -100,10 +93,9 @@ int date_get_min(void)
  */
 int date_get_sec(void)
 {
-	time_t    t;
-	struct tm *lt;
-
-	t  = time(NULL);
+	time_t t;
+	struct tm * lt;
+	t = time(NULL);
 	lt = localtime(&t);
 	return lt->tm_sec;
 }
@@ -111,36 +103,27 @@ int date_get_sec(void)
 /*
  * Get the value for the specific type
  */
-int date_get(enum e_date_type type)
+int date_get( enum e_date_type type )
 {
-	switch (type)
-	{
-	case DT_SECOND:
-		return date_get_sec();
-
-	case DT_MINUTE:
-		return date_get_min();
-
-	case DT_HOUR:
-		return date_get_hour();
-
-	case DT_DAYOFWEEK:
-		return date_get_dayofweek();
-
-	case DT_DAYOFMONTH:
-		return date_get_dayofmonth();
-
-	case DT_MONTH:
-		return date_get_month();
-
-	case DT_YEAR:
-		return date_get_year();
-
-	case DT_DAYOFYEAR:
-		return date_get_dayofyear();
-
-	default:
-		return -1;
+	switch( type ){
+		case DT_SECOND:
+			return date_get_sec();
+		case DT_MINUTE:
+			return date_get_min();
+		case DT_HOUR:
+			return date_get_hour();
+		case DT_DAYOFWEEK:
+			return date_get_dayofweek();
+		case DT_DAYOFMONTH:
+			return date_get_dayofmonth();
+		case DT_MONTH:
+			return date_get_month();
+		case DT_YEAR:
+			return date_get_year();
+		case DT_DAYOFYEAR:
+			return date_get_dayofyear();
+		default:
+			return -1;
 	}
 }
 
@@ -149,7 +132,7 @@ int date_get(enum e_date_type type)
  */
 bool is_day_of_sun(void)
 {
-	return date_get_dayofyear() % 2 == 0;
+	return date_get_dayofyear()%2 == 0;
 }
 
 /*
@@ -157,7 +140,7 @@ bool is_day_of_sun(void)
  */
 bool is_day_of_moon(void)
 {
-	return date_get_dayofyear() % 2 == 1;
+	return date_get_dayofyear()%2 == 1;
 }
 
 /*
@@ -165,5 +148,5 @@ bool is_day_of_moon(void)
  */
 bool is_day_of_star(void)
 {
-	return date_get_dayofyear() % 5 == 0;
+	return date_get_dayofyear()%5 == 0;
 }

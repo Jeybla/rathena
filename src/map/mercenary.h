@@ -9,10 +9,10 @@ extern "C" {
 #endif
 
 #include "status.h" // struct status_data, struct status_change
-#include "unit.h"   // struct unit_data
+#include "unit.h" // struct unit_data
 
 // number of cells that a mercenary can walk to from it's master before being warped
-#define MAX_MER_DISTANCE    15
+#define MAX_MER_DISTANCE 15
 
 enum {
 	ARCH_MERC_GUILD,
@@ -21,41 +21,40 @@ enum {
 };
 
 struct s_mercenary_db {
-	int                class_;
-	char               sprite[NAME_LENGTH], name[NAME_LENGTH];
-	unsigned short     lv;
-	short              range2, range3;
+	int class_;
+	char sprite[NAME_LENGTH], name[NAME_LENGTH];
+	unsigned short lv;
+	short range2, range3;
 	struct status_data status;
-	struct view_data   vd;
+	struct view_data vd;
 	struct {
 		unsigned short id, lv;
-	}
-	skill[MAX_MERCSKILL];
+	} skill[MAX_MERCSKILL];
 };
 
 extern struct s_mercenary_db mercenary_db[MAX_MERCENARY_CLASS];
 
 struct mercenary_data {
-	struct block_list       bl;
-	struct unit_data        ud;
-	struct view_data        *vd;
-	struct status_data      base_status, battle_status;
-	struct status_change    sc;
-	struct regen_data       regen;
+	struct block_list bl;
+	struct unit_data ud;
+	struct view_data *vd;
+	struct status_data base_status, battle_status;
+	struct status_change sc;
+	struct regen_data regen;
 
-	struct s_mercenary_db   *db;
-	struct s_mercenary      mercenary;
-	char                    blockskill[MAX_SKILL];
+	struct s_mercenary_db *db;
+	struct s_mercenary mercenary;
+	char blockskill[MAX_SKILL];
 
-	int                     masterteleport_timer;
+	int masterteleport_timer;
 	struct map_session_data *master;
-	int                     contract_timer;
+	int contract_timer;
 
-	unsigned                devotion_flag : 1;
+	unsigned devotion_flag : 1;
 };
 
 bool mercenary_class(int class_);
-struct view_data *mercenary_get_viewdata(int class_);
+struct view_data * mercenary_get_viewdata(int class_);
 
 bool mercenary_create(struct map_session_data *sd, int class_, unsigned int lifetime);
 bool mercenary_recv_data(struct s_mercenary *merc, bool flag);
