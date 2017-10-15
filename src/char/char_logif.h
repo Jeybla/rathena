@@ -6,18 +6,19 @@
  */
 
 #ifndef CHAR_LOGIF_H
-#define	CHAR_LOGIF_H
+#define CHAR_LOGIF_H
 
 #include "char.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 #if PACKETVER_SUPPORTS_PINCODE
-void chlogif_pincode_notifyLoginPinError( uint32 account_id );
-void chlogif_pincode_notifyLoginPinUpdate( uint32 account_id, char* pin );
-void chlogif_pincode_start(int fd, struct char_session_data* sd);
+void chlogif_pincode_notifyLoginPinError(uint32 account_id);
+void chlogif_pincode_notifyLoginPinUpdate(uint32 account_id, char *pin);
+void chlogif_pincode_start(int fd, struct char_session_data *sd);
+
 #endif
 int chlogif_send_acc_tologin(int tid, unsigned int tick, int id, intptr_t data);
 int chlogif_broadcast_user_count(int tid, unsigned int tick, int id, intptr_t data);
@@ -31,17 +32,17 @@ void chlogif_send_setacconline(int aid);
 void chlogif_send_setallaccoffline(int fd);
 void chlogif_send_setaccoffline(int fd, int aid);
 
-int chlogif_parse_ackconnect(int fd, struct char_session_data* sd);
-int chlogif_parse_ackaccreq(int fd, struct char_session_data* sd);
-int chlogif_parse_reqaccdata(int fd, struct char_session_data* sd);
-int chlogif_parse_keepalive(int fd, struct char_session_data* sd);
+int chlogif_parse_ackconnect(int fd, struct char_session_data *sd);
+int chlogif_parse_ackaccreq(int fd, struct char_session_data *sd);
+int chlogif_parse_reqaccdata(int fd, struct char_session_data *sd);
+int chlogif_parse_keepalive(int fd, struct char_session_data *sd);
 void chlogif_parse_change_sex_sub(int sex, int acc, int char_id, int class_, int guild_id);
-int chlogif_parse_ackchangesex(int fd, struct char_session_data* sd);
+int chlogif_parse_ackchangesex(int fd, struct char_session_data *sd);
 int chlogif_parse_ackchangecharsex(int char_id, int sex);
-int chlogif_parse_ack_global_accreg(int fd, struct char_session_data* sd);
-int chlogif_parse_accbannotification(int fd, struct char_session_data* sd);
-int chlogif_parse_askkick(int fd, struct char_session_data* sd);
-int chlogif_parse_updip(int fd, struct char_session_data* sd);
+int chlogif_parse_ack_global_accreg(int fd, struct char_session_data *sd);
+int chlogif_parse_accbannotification(int fd, struct char_session_data *sd);
+int chlogif_parse_askkick(int fd, struct char_session_data *sd);
+int chlogif_parse_updip(int fd, struct char_session_data *sd);
 
 int chlogif_parse_vipack(int fd);
 int chlogif_reqvipdata(uint32 aid, uint8 flag, int32 timediff, int mapfd);
@@ -59,11 +60,12 @@ void chlogif_on_ready(void);
 void do_final_chlogif(void);
 
 
-#define loginif_check(a) { if(!chlogif_isconnected()) return a; }
+#define loginif_check(a)    { if (!chlogif_isconnected()) \
+				      return a; }
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* CHAR_LOGIF_H */
+#endif  /* CHAR_LOGIF_H */
 

@@ -1,43 +1,43 @@
 /*****************************************************************************\
- *  Copyright (c) Athena Dev Teams - Licensed under GNU GPL                  *
- *  For more information, see LICENCE in the main folder                     *
- *                                                                           *
- *  This file is separated in two sections:                                  *
- *  (1) public typedefs, enums, unions, structures and defines               *
- *  (2) public functions                                                     *
- *                                                                           *
- *  <B>Notes on the release system:</B>                                      *
- *  Whenever an entry is removed from the database both the key and the      *
- *  data are requested to be released.                                       *
- *  At least one entry is removed when replacing an entry, removing an       *
- *  entry, clearing the database or destroying the database.                 *
- *  What is actually released is defined by the release function, the        *
- *  functions of the database only ask for the key and/or data to be         *
- *  released.                                                                *
- *                                                                           *
- *  TODO:                                                                    *
- *  - create a custom database allocator                                     *
- *  - see what functions need or should be added to the database interface   *
- *                                                                           *
- *  HISTORY:                                                                 *
- *    2013/08/25 - Added int64/uint64 support for keys                       *
- *    2012/03/09 - Added enum for data types (int, uint, void*)              *
- *    2007/11/09 - Added an iterator to the database.                        *
- *    2.1 (Athena build #???#) - Portability fix                             *
- *      - Fixed the portability of casting to union and added the functions  *
- *        {@link DBMap#ensure(DBMap,DBKey,DBCreateData,...)} and             *
- *        {@link DBMap#clear(DBMap,DBApply,...)}.                            *
- *    2.0 (Athena build 4859) - Transition version                           *
- *      - Almost everything recoded with a strategy similar to objects,      *
- *        database structure is maintained.                                  *
- *    1.0 (up to Athena build 4706)                                          *
- *      - Previous database system.                                          *
- *                                                                           *
- * @version 2.1 (Athena build #???#) - Portability fix                       *
- * @author (Athena build 4859) Flavio @ Amazon Project                       *
- * @author (up to Athena build 4706) Athena Dev Teams                        *
- * @encoding US-ASCII                                                        *
- * @see common#db.c                                                          *
+*  Copyright (c) Athena Dev Teams - Licensed under GNU GPL                  *
+*  For more information, see LICENCE in the main folder                     *
+*                                                                           *
+*  This file is separated in two sections:                                  *
+*  (1) public typedefs, enums, unions, structures and defines               *
+*  (2) public functions                                                     *
+*                                                                           *
+*  <B>Notes on the release system:</B>                                      *
+*  Whenever an entry is removed from the database both the key and the      *
+*  data are requested to be released.                                       *
+*  At least one entry is removed when replacing an entry, removing an       *
+*  entry, clearing the database or destroying the database.                 *
+*  What is actually released is defined by the release function, the        *
+*  functions of the database only ask for the key and/or data to be         *
+*  released.                                                                *
+*                                                                           *
+*  TODO:                                                                    *
+*  - create a custom database allocator                                     *
+*  - see what functions need or should be added to the database interface   *
+*                                                                           *
+*  HISTORY:                                                                 *
+*    2013/08/25 - Added int64/uint64 support for keys                       *
+*    2012/03/09 - Added enum for data types (int, uint, void*)              *
+*    2007/11/09 - Added an iterator to the database.                        *
+*    2.1 (Athena build #???#) - Portability fix                             *
+*      - Fixed the portability of casting to union and added the functions  *
+*        {@link DBMap#ensure(DBMap,DBKey,DBCreateData,...)} and             *
+*        {@link DBMap#clear(DBMap,DBApply,...)}.                            *
+*    2.0 (Athena build 4859) - Transition version                           *
+*      - Almost everything recoded with a strategy similar to objects,      *
+*        database structure is maintained.                                  *
+*    1.0 (up to Athena build 4706)                                          *
+*      - Previous database system.                                          *
+*                                                                           *
+* @version 2.1 (Athena build #???#) - Portability fix                       *
+* @author (Athena build 4859) Flavio @ Amazon Project                       *
+* @author (up to Athena build 4706) Athena Dev Teams                        *
+* @encoding US-ASCII                                                        *
+* @see common#db.c                                                          *
 \*****************************************************************************/
 #ifndef _DB_H_
 #define _DB_H_
@@ -51,20 +51,20 @@ extern "C" {
 #include <stdarg.h>
 
 /*****************************************************************************\
- *  (1) Section with public typedefs, enums, unions, structures and defines. *
- *  DBRelease    - Enumeration of release options.                           *
- *  DBType       - Enumeration of database types.                            *
- *  DBOptions    - Bitfield enumeration of database options.                 *
- *  DBKey        - Union of used key types.                                  *
- *  DBDataType   - Enumeration of data types.                                *
- *  DBData       - Struct for used data types.                               *
- *  DBApply      - Format of functions applied to the databases.             *
- *  DBMatcher    - Format of matchers used in DBMap::getall.                 *
- *  DBComparator - Format of the comparators used by the databases.          *
- *  DBHasher     - Format of the hashers used by the databases.              *
- *  DBReleaser   - Format of the releasers used by the databases.            *
- *  DBIterator   - Database iterator.                                        *
- *  DBMap        - Database interface.                                       *
+*  (1) Section with public typedefs, enums, unions, structures and defines. *
+*  DBRelease    - Enumeration of release options.                           *
+*  DBType       - Enumeration of database types.                            *
+*  DBOptions    - Bitfield enumeration of database options.                 *
+*  DBKey        - Union of used key types.                                  *
+*  DBDataType   - Enumeration of data types.                                *
+*  DBData       - Struct for used data types.                               *
+*  DBApply      - Format of functions applied to the databases.             *
+*  DBMatcher    - Format of matchers used in DBMap::getall.                 *
+*  DBComparator - Format of the comparators used by the databases.          *
+*  DBHasher     - Format of the hashers used by the databases.              *
+*  DBReleaser   - Format of the releasers used by the databases.            *
+*  DBIterator   - Database iterator.                                        *
+*  DBMap        - Database interface.                                       *
 \*****************************************************************************/
 
 /**
@@ -78,7 +78,7 @@ typedef enum DBRelease {
 	DB_RELEASE_NOTHING = 0x0,
 	DB_RELEASE_KEY     = 0x1,
 	DB_RELEASE_DATA    = 0x2,
-	DB_RELEASE_BOTH    = DB_RELEASE_KEY|DB_RELEASE_DATA,
+	DB_RELEASE_BOTH    = DB_RELEASE_KEY | DB_RELEASE_DATA,
 } DBRelease;
 
 /**
@@ -135,7 +135,7 @@ typedef enum DBOptions {
 	DB_OPT_DUP_KEY         = 0x01,
 	DB_OPT_RELEASE_KEY     = 0x02,
 	DB_OPT_RELEASE_DATA    = 0x04,
-	DB_OPT_RELEASE_BOTH    = DB_OPT_RELEASE_KEY|DB_OPT_RELEASE_DATA,
+	DB_OPT_RELEASE_BOTH    = DB_OPT_RELEASE_KEY | DB_OPT_RELEASE_DATA,
 	DB_OPT_ALLOW_NULL_KEY  = 0x08,
 	DB_OPT_ALLOW_NULL_DATA = 0x10,
 } DBOptions;
@@ -152,11 +152,11 @@ typedef enum DBOptions {
  * @see DBMap#remove
  */
 typedef union DBKey {
-	int i;
+	int          i;
 	unsigned int ui;
-	const char *str;
-	int64 i64;
-	uint64 ui64;
+	const char   *str;
+	int64        i64;
+	uint64       ui64;
 } DBKey;
 
 /**
@@ -185,9 +185,9 @@ typedef enum DBDataType {
 typedef struct DBData {
 	DBDataType type;
 	union {
-		int i;
+		int          i;
 		unsigned int ui;
-		void *ptr;
+		void         *ptr;
 	} u;
 } DBData;
 
@@ -274,10 +274,8 @@ typedef uint64 (*DBHasher)(DBKey key, unsigned short maxlen);
 typedef void (*DBReleaser)(DBKey key, DBData data, DBRelease which);
 
 
-
-typedef struct DBIterator DBIterator;
-typedef struct DBMap DBMap;
-
+typedef struct DBIterator   DBIterator;
+typedef struct DBMap        DBMap;
 
 
 /**
@@ -289,9 +287,7 @@ typedef struct DBMap DBMap;
  * @public
  * @see #DBMap
  */
-struct DBIterator
-{
-
+struct DBIterator {
 	/**
 	 * Fetches the first entry in the database.
 	 * Returns the data of the entry.
@@ -301,7 +297,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*first)(DBIterator* self, DBKey* out_key);
+	DBData * (*first)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Fetches the last entry in the database.
@@ -312,7 +308,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*last)(DBIterator* self, DBKey* out_key);
+	DBData * (*last)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Fetches the next entry in the database.
@@ -323,7 +319,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*next)(DBIterator* self, DBKey* out_key);
+	DBData * (*next)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Fetches the previous entry in the database.
@@ -334,7 +330,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*prev)(DBIterator* self, DBKey* out_key);
+	DBData * (*prev)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Returns true if the fetched entry exists.
@@ -344,7 +340,7 @@ struct DBIterator
 	 * @return true is the entry exists
 	 * @protected
 	 */
-	bool (*exists)(DBIterator* self);
+	bool (*exists)(DBIterator *self);
 
 	/**
 	 * Removes the current entry from the database.
@@ -357,15 +353,14 @@ struct DBIterator
 	 * @protected
 	 * @see DBMap#remove
 	 */
-	int (*remove)(DBIterator* self, DBData *out_data);
+	int (*remove)(DBIterator *self, DBData *out_data);
 
 	/**
 	 * Destroys this iterator and unlocks the database.
 	 * @param self Iterator
 	 * @protected
 	 */
-	void (*destroy)(DBIterator* self);
-
+	void (*destroy)(DBIterator *self);
 };
 
 /**
@@ -375,7 +370,6 @@ struct DBIterator
  * @see #db_alloc(const char*,int,DBType,DBOptions,unsigned short)
  */
 struct DBMap {
-
 	/**
 	 * Returns a new iterator for this database.
 	 * The iterator keeps the database locked until it is destroyed.
@@ -385,7 +379,7 @@ struct DBMap {
 	 * @return New iterator
 	 * @protected
 	 */
-	DBIterator* (*iterator)(DBMap* self);
+	DBIterator * (*iterator)(DBMap * self);
 
 	/**
 	 * Returns true if the entry exists.
@@ -394,7 +388,7 @@ struct DBMap {
 	 * @return true is the entry exists
 	 * @protected
 	 */
-	bool (*exists)(DBMap* self, DBKey key);
+	bool (*exists)(DBMap *self, DBKey key);
 
 	/**
 	 * Get the data of the entry identified by the key.
@@ -403,7 +397,7 @@ struct DBMap {
 	 * @return Data of the entry or NULL if not found
 	 * @protected
 	 */
-	DBData* (*get)(DBMap* self, DBKey key);
+	DBData * (*get)(DBMap * self, DBKey key);
 
 	/**
 	 * Just calls {@link DBMap#vgetall}.
@@ -422,7 +416,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vgetall(DBMap*,void **,unsigned int,DBMatcher,va_list)
 	 */
-	unsigned int (*getall)(DBMap* self, DBData** buf, unsigned int max, DBMatcher match, ...);
+	unsigned int (*getall)(DBMap *self, DBData **buf, unsigned int max, DBMatcher match, ...);
 
 	/**
 	 * Get the data of the entries matched by <code>match</code>.
@@ -440,7 +434,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#getall(DBMap*,void **,unsigned int,DBMatcher,...)
 	 */
-	unsigned int (*vgetall)(DBMap* self, DBData** buf, unsigned int max, DBMatcher match, va_list args);
+	unsigned int (*vgetall)(DBMap *self, DBData **buf, unsigned int max, DBMatcher match, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vensure}.
@@ -455,7 +449,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vensure(DBMap*,DBKey,DBCreateData,va_list)
 	 */
-	DBData* (*ensure)(DBMap* self, DBKey key, DBCreateData create, ...);
+	DBData * (*ensure)(DBMap * self, DBKey key, DBCreateData create, ...);
 
 	/**
 	 * Get the data of the entry identified by the key.
@@ -469,7 +463,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#ensure(DBMap*,DBKey,DBCreateData,...)
 	 */
-	DBData* (*vensure)(DBMap* self, DBKey key, DBCreateData create, va_list args);
+	DBData * (*vensure)(DBMap * self, DBKey key, DBCreateData create, va_list args);
 
 	/**
 	 * Put the data identified by the key in the database.
@@ -482,7 +476,7 @@ struct DBMap {
 	 * @return 1 if if the entry already exists, 0 otherwise
 	 * @protected
 	 */
-	int (*put)(DBMap* self, DBKey key, DBData data, DBData *out_data);
+	int (*put)(DBMap *self, DBKey key, DBData data, DBData *out_data);
 
 	/**
 	 * Remove an entry from the database.
@@ -494,7 +488,7 @@ struct DBMap {
 	 * @return 1 if if the entry already exists, 0 otherwise
 	 * @protected
 	 */
-	int (*remove)(DBMap* self, DBKey key, DBData *out_data);
+	int (*remove)(DBMap *self, DBKey key, DBData *out_data);
 
 	/**
 	 * Just calls {@link DBMap#vforeach}.
@@ -507,7 +501,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vforeach(DBMap*,DBApply,va_list)
 	 */
-	int (*foreach)(DBMap* self, DBApply func, ...);
+	int (*foreach)(DBMap *self, DBApply func, ...);
 
 	/**
 	 * Apply <code>func</code> to every entry in the database.
@@ -519,7 +513,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#foreach(DBMap*,DBApply,...)
 	 */
-	int (*vforeach)(DBMap* self, DBApply func, va_list args);
+	int (*vforeach)(DBMap *self, DBApply func, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vclear}.
@@ -534,7 +528,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vclear(DBMap*,DBApply,va_list)
 	 */
-	int (*clear)(DBMap* self, DBApply func, ...);
+	int (*clear)(DBMap *self, DBApply func, ...);
 
 	/**
 	 * Removes all entries from the database.
@@ -548,7 +542,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#clear(DBMap*,DBApply,...)
 	 */
-	int (*vclear)(DBMap* self, DBApply func, va_list args);
+	int (*vclear)(DBMap *self, DBApply func, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vdestroy}.
@@ -565,7 +559,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vdestroy(DBMap*,DBApply,va_list)
 	 */
-	int (*destroy)(DBMap* self, DBApply func, ...);
+	int (*destroy)(DBMap *self, DBApply func, ...);
 
 	/**
 	 * Finalize the database, feeing all the memory it uses.
@@ -580,7 +574,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#destroy(DBMap*,DBApply,...)
 	 */
-	int (*vdestroy)(DBMap* self, DBApply func, va_list args);
+	int (*vdestroy)(DBMap *self, DBApply func, va_list args);
 
 	/**
 	 * Return the size of the database (number of items in the database).
@@ -588,7 +582,7 @@ struct DBMap {
 	 * @return Size of the database
 	 * @protected
 	 */
-	unsigned int (*size)(DBMap* self);
+	unsigned int (*size)(DBMap *self);
 
 	/**
 	 * Return the type of the database.
@@ -596,7 +590,7 @@ struct DBMap {
 	 * @return Type of the database
 	 * @protected
 	 */
-	DBType (*type)(DBMap* self);
+	DBType (*type)(DBMap *self);
 
 	/**
 	 * Return the options of the database.
@@ -604,127 +598,126 @@ struct DBMap {
 	 * @return Options of the database
 	 * @protected
 	 */
-	DBOptions (*options)(DBMap* self);
-
+	DBOptions (*options)(DBMap *self);
 };
 
 // For easy access to the common functions.
 
-#define db_exists(db,k)     ( (db)->exists((db),(k)) )
-#define idb_exists(db,k)    ( (db)->exists((db),db_i2key(k)) )
-#define uidb_exists(db,k)   ( (db)->exists((db),db_ui2key(k)) )
-#define strdb_exists(db,k)  ( (db)->exists((db),db_str2key(k)) )
-#define i64db_exists(db,k)  ( (db)->exists((db),db_i642key(k)) )
-#define ui64db_exists(db,k) ( (db)->exists((db),db_ui642key(k)) )
+#define db_exists(db, k)        ((db)->exists((db), (k)))
+#define idb_exists(db, k)       ((db)->exists((db), db_i2key(k)))
+#define uidb_exists(db, k)      ((db)->exists((db), db_ui2key(k)))
+#define strdb_exists(db, k)     ((db)->exists((db), db_str2key(k)))
+#define i64db_exists(db, k)     ((db)->exists((db), db_i642key(k)))
+#define ui64db_exists(db, k)    ((db)->exists((db), db_ui642key(k)))
 
 // Get pointer-type data from DBMaps of various key types
-#define db_get(db,k)     ( db_data2ptr((db)->get((db),(k))) )
-#define idb_get(db,k)    ( db_data2ptr((db)->get((db),db_i2key(k))) )
-#define uidb_get(db,k)   ( db_data2ptr((db)->get((db),db_ui2key(k))) )
-#define strdb_get(db,k)  ( db_data2ptr((db)->get((db),db_str2key(k))) )
-#define i64db_get(db,k)  ( db_data2ptr((db)->get((db),db_i642key(k))) )
-#define ui64db_get(db,k) ( db_data2ptr((db)->get((db),db_ui642key(k))) )
+#define db_get(db, k)           (db_data2ptr((db)->get((db), (k))))
+#define idb_get(db, k)          (db_data2ptr((db)->get((db), db_i2key(k))))
+#define uidb_get(db, k)         (db_data2ptr((db)->get((db), db_ui2key(k))))
+#define strdb_get(db, k)        (db_data2ptr((db)->get((db), db_str2key(k))))
+#define i64db_get(db, k)        (db_data2ptr((db)->get((db), db_i642key(k))))
+#define ui64db_get(db, k)       (db_data2ptr((db)->get((db), db_ui642key(k))))
 
 
 // Get int-type data from DBMaps of various key types
-#define db_iget(db,k)     ( db_data2i((db)->get((db),(k))) )
-#define idb_iget(db,k)    ( db_data2i((db)->get((db),db_i2key(k))) )
-#define uidb_iget(db,k)   ( db_data2i((db)->get((db),db_ui2key(k))) )
-#define strdb_iget(db,k)  ( db_data2i((db)->get((db),db_str2key(k))) )
-#define i64db_iget(db,k)  ( db_data2i((db)->get((db),db_i642key(k))) )
-#define ui64db_iget(db,k) ( db_data2i((db)->get((db),db_ui642key(k))) )
+#define db_iget(db, k)            (db_data2i((db)->get((db), (k))))
+#define idb_iget(db, k)           (db_data2i((db)->get((db), db_i2key(k))))
+#define uidb_iget(db, k)          (db_data2i((db)->get((db), db_ui2key(k))))
+#define strdb_iget(db, k)         (db_data2i((db)->get((db), db_str2key(k))))
+#define i64db_iget(db, k)         (db_data2i((db)->get((db), db_i642key(k))))
+#define ui64db_iget(db, k)        (db_data2i((db)->get((db), db_ui642key(k))))
 
 // Get uint-type data from DBMaps of various key types
-#define db_uiget(db,k)     ( db_data2ui((db)->get((db),(k))) )
-#define idb_uiget(db,k)    ( db_data2ui((db)->get((db),db_i2key(k))) )
-#define uidb_uiget(db,k)   ( db_data2ui((db)->get((db),db_ui2key(k))) )
-#define strdb_uiget(db,k)  ( db_data2ui((db)->get((db),db_str2key(k))) )
-#define i64db_uiget(db,k)  ( db_data2ui((db)->get((db),db_i642key(k))) )
-#define ui64db_uiget(db,k) ( db_data2ui((db)->get((db),db_ui642key(k))) )
+#define db_uiget(db, k)           (db_data2ui((db)->get((db), (k))))
+#define idb_uiget(db, k)          (db_data2ui((db)->get((db), db_i2key(k))))
+#define uidb_uiget(db, k)         (db_data2ui((db)->get((db), db_ui2key(k))))
+#define strdb_uiget(db, k)        (db_data2ui((db)->get((db), db_str2key(k))))
+#define i64db_uiget(db, k)        (db_data2ui((db)->get((db), db_i642key(k))))
+#define ui64db_uiget(db, k)       (db_data2ui((db)->get((db), db_ui642key(k))))
 
 // Put pointer-type data into DBMaps of various key types
-#define db_put(db,k,d)     ( (db)->put((db),(k),db_ptr2data(d),NULL) )
-#define idb_put(db,k,d)    ( (db)->put((db),db_i2key(k),db_ptr2data(d),NULL) )
-#define uidb_put(db,k,d)   ( (db)->put((db),db_ui2key(k),db_ptr2data(d),NULL) )
-#define strdb_put(db,k,d)  ( (db)->put((db),db_str2key(k),db_ptr2data(d),NULL) )
-#define i64db_put(db,k,d)  ( (db)->put((db),db_i642key(k),db_ptr2data(d),NULL) )
-#define ui64db_put(db,k,d) ( (db)->put((db),db_ui642key(k),db_ptr2data(d),NULL) )
+#define db_put(db, k, d)          ((db)->put((db), (k), db_ptr2data(d), NULL))
+#define idb_put(db, k, d)         ((db)->put((db), db_i2key(k), db_ptr2data(d), NULL))
+#define uidb_put(db, k, d)        ((db)->put((db), db_ui2key(k), db_ptr2data(d), NULL))
+#define strdb_put(db, k, d)       ((db)->put((db), db_str2key(k), db_ptr2data(d), NULL))
+#define i64db_put(db, k, d)       ((db)->put((db), db_i642key(k), db_ptr2data(d), NULL))
+#define ui64db_put(db, k, d)      ((db)->put((db), db_ui642key(k), db_ptr2data(d), NULL))
 
 // Put int-type data into DBMaps of various key types
-#define db_iput(db,k,d)     ( (db)->put((db),(k),db_i2data(d),NULL) )
-#define idb_iput(db,k,d)    ( (db)->put((db),db_i2key(k),db_i2data(d),NULL) )
-#define uidb_iput(db,k,d)   ( (db)->put((db),db_ui2key(k),db_i2data(d),NULL) )
-#define strdb_iput(db,k,d)  ( (db)->put((db),db_str2key(k),db_i2data(d),NULL) )
-#define i64db_iput(db,k,d)  ( (db)->put((db),db_i642key(k),db_i2data(d),NULL) )
-#define ui64db_iput(db,k,d) ( (db)->put((db),db_ui642key(k),db_i2data(d),NULL) )
+#define db_iput(db, k, d)         ((db)->put((db), (k), db_i2data(d), NULL))
+#define idb_iput(db, k, d)        ((db)->put((db), db_i2key(k), db_i2data(d), NULL))
+#define uidb_iput(db, k, d)       ((db)->put((db), db_ui2key(k), db_i2data(d), NULL))
+#define strdb_iput(db, k, d)      ((db)->put((db), db_str2key(k), db_i2data(d), NULL))
+#define i64db_iput(db, k, d)      ((db)->put((db), db_i642key(k), db_i2data(d), NULL))
+#define ui64db_iput(db, k, d)     ((db)->put((db), db_ui642key(k), db_i2data(d), NULL))
 
 // Put uint-type data into DBMaps of various key types
-#define db_uiput(db,k,d)     ( (db)->put((db),(k),db_ui2data(d),NULL) )
-#define idb_uiput(db,k,d)    ( (db)->put((db),db_i2key(k),db_ui2data(d),NULL) )
-#define uidb_uiput(db,k,d)   ( (db)->put((db),db_ui2key(k),db_ui2data(d),NULL) )
-#define strdb_uiput(db,k,d)  ( (db)->put((db),db_str2key(k),db_ui2data(d),NULL) )
-#define i64db_uiput(db,k,d)  ( (db)->put((db),db_i642key(k),db_ui2data(d),NULL) )
-#define ui64db_uiput(db,k,d) ( (db)->put((db),db_ui642key(k),db_ui2data(d),NULL) )
+#define db_uiput(db, k, d)        ((db)->put((db), (k), db_ui2data(d), NULL))
+#define idb_uiput(db, k, d)       ((db)->put((db), db_i2key(k), db_ui2data(d), NULL))
+#define uidb_uiput(db, k, d)      ((db)->put((db), db_ui2key(k), db_ui2data(d), NULL))
+#define strdb_uiput(db, k, d)     ((db)->put((db), db_str2key(k), db_ui2data(d), NULL))
+#define i64db_uiput(db, k, d)     ((db)->put((db), db_i642key(k), db_ui2data(d), NULL))
+#define ui64db_uiput(db, k, d)    ((db)->put((db), db_ui642key(k), db_ui2data(d), NULL))
 
 // Remove entry from DBMaps of various key types
-#define db_remove(db,k)     ( (db)->remove((db),(k),NULL) )
-#define idb_remove(db,k)    ( (db)->remove((db),db_i2key(k),NULL) )
-#define uidb_remove(db,k)   ( (db)->remove((db),db_ui2key(k),NULL) )
-#define strdb_remove(db,k)  ( (db)->remove((db),db_str2key(k),NULL) )
-#define i64db_remove(db,k)  ( (db)->remove((db),db_i642key(k),NULL) )
-#define ui64db_remove(db,k) ( (db)->remove((db),db_ui642key(k),NULL) )
+#define db_remove(db, k)          ((db)->remove((db), (k), NULL))
+#define idb_remove(db, k)         ((db)->remove((db), db_i2key(k), NULL))
+#define uidb_remove(db, k)        ((db)->remove((db), db_ui2key(k), NULL))
+#define strdb_remove(db, k)       ((db)->remove((db), db_str2key(k), NULL))
+#define i64db_remove(db, k)       ((db)->remove((db), db_i642key(k), NULL))
+#define ui64db_remove(db, k)      ((db)->remove((db), db_ui642key(k), NULL))
 
 //These are discarding the possible vargs you could send to the function, so those
 //that require vargs must not use these defines.
-#define db_ensure(db,k,f)     ( db_data2ptr((db)->ensure((db),(k),(f))) )
-#define idb_ensure(db,k,f)    ( db_data2ptr((db)->ensure((db),db_i2key(k),(f))) )
-#define uidb_ensure(db,k,f)   ( db_data2ptr((db)->ensure((db),db_ui2key(k),(f))) )
-#define strdb_ensure(db,k,f)  ( db_data2ptr((db)->ensure((db),db_str2key(k),(f))) )
-#define i64db_ensure(db,k,f)  ( db_data2ptr((db)->ensure((db),db_i642key(k),(f))) )
-#define ui64db_ensure(db,k,f) ( db_data2ptr((db)->ensure((db),db_ui642key(k),(f))) )
+#define db_ensure(db, k, f)          (db_data2ptr((db)->ensure((db), (k), (f))))
+#define idb_ensure(db, k, f)         (db_data2ptr((db)->ensure((db), db_i2key(k), (f))))
+#define uidb_ensure(db, k, f)        (db_data2ptr((db)->ensure((db), db_ui2key(k), (f))))
+#define strdb_ensure(db, k, f)       (db_data2ptr((db)->ensure((db), db_str2key(k), (f))))
+#define i64db_ensure(db, k, f)       (db_data2ptr((db)->ensure((db), db_i642key(k), (f))))
+#define ui64db_ensure(db, k, f)      (db_data2ptr((db)->ensure((db), db_ui642key(k), (f))))
 
 // Database creation and destruction macros
-#define idb_alloc(opt)            db_alloc(__FILE__,__func__,__LINE__,DB_INT,(opt),sizeof(int))
-#define uidb_alloc(opt)           db_alloc(__FILE__,__func__,__LINE__,DB_UINT,(opt),sizeof(unsigned int))
-#define strdb_alloc(opt,maxlen)   db_alloc(__FILE__,__func__,__LINE__,DB_STRING,(opt),(maxlen))
-#define stridb_alloc(opt,maxlen)  db_alloc(__FILE__,__func__,__LINE__,DB_ISTRING,(opt),(maxlen))
-#define i64db_alloc(opt)          db_alloc(__FILE__,__func__,__LINE__,DB_INT64,(opt),sizeof(int64))
-#define ui64db_alloc(opt)         db_alloc(__FILE__,__func__,__LINE__,DB_UINT64,(opt),sizeof(uint64))
-#define db_destroy(db)            ( (db)->destroy((db),NULL) )
+#define idb_alloc(opt)               db_alloc(__FILE__, __func__, __LINE__, DB_INT, (opt), sizeof(int))
+#define uidb_alloc(opt)              db_alloc(__FILE__, __func__, __LINE__, DB_UINT, (opt), sizeof(unsigned int))
+#define strdb_alloc(opt, maxlen)     db_alloc(__FILE__, __func__, __LINE__, DB_STRING, (opt), (maxlen))
+#define stridb_alloc(opt, maxlen)    db_alloc(__FILE__, __func__, __LINE__, DB_ISTRING, (opt), (maxlen))
+#define i64db_alloc(opt)             db_alloc(__FILE__, __func__, __LINE__, DB_INT64, (opt), sizeof(int64))
+#define ui64db_alloc(opt)            db_alloc(__FILE__, __func__, __LINE__, DB_UINT64, (opt), sizeof(uint64))
+#define db_destroy(db)               ((db)->destroy((db), NULL))
 // Other macros
-#define db_clear(db)        ( (db)->clear((db),NULL) )
-#define db_size(db)         ( (db)->size(db) )
-#define db_iterator(db)     ( (db)->iterator(db) )
-#define dbi_first(dbi)      ( db_data2ptr((dbi)->first((dbi),NULL)) )
-#define dbi_last(dbi)       ( db_data2ptr((dbi)->last((dbi),NULL)) )
-#define dbi_next(dbi)       ( db_data2ptr((dbi)->next((dbi),NULL)) )
-#define dbi_prev(dbi)       ( db_data2ptr((dbi)->prev((dbi),NULL)) )
-#define dbi_remove(dbi)     ( (dbi)->remove((dbi),NULL) )
-#define dbi_exists(dbi)     ( (dbi)->exists(dbi) )
-#define dbi_destroy(dbi)    ( (dbi)->destroy(dbi) )
+#define db_clear(db)                 ((db)->clear((db), NULL))
+#define db_size(db)                  ((db)->size(db))
+#define db_iterator(db)              ((db)->iterator(db))
+#define dbi_first(dbi)               (db_data2ptr((dbi)->first((dbi), NULL)))
+#define dbi_last(dbi)                (db_data2ptr((dbi)->last((dbi), NULL)))
+#define dbi_next(dbi)                (db_data2ptr((dbi)->next((dbi), NULL)))
+#define dbi_prev(dbi)                (db_data2ptr((dbi)->prev((dbi), NULL)))
+#define dbi_remove(dbi)              ((dbi)->remove((dbi), NULL))
+#define dbi_exists(dbi)              ((dbi)->exists(dbi))
+#define dbi_destroy(dbi)             ((dbi)->destroy(dbi))
 
 /*****************************************************************************\
- *  (2) Section with public functions.                                       *
- *  db_fix_options     - Fix the options for a type of database.             *
- *  db_default_cmp     - Get the default comparator for a type of database.  *
- *  db_default_hash    - Get the default hasher for a type of database.      *
- *  db_default_release - Get the default releaser for a type of database     *
- *           with the fixed options.                                         *
- *  db_custom_release  - Get the releaser that behaves as specified.         *
- *  db_alloc           - Allocate a new database.                            *
- *  db_i2key           - Manual cast from 'int' to 'DBKey'.                  *
- *  db_ui2key          - Manual cast from 'unsigned int' to 'DBKey'.         *
- *  db_str2key         - Manual cast from 'unsigned char *' to 'DBKey'.      *
- *  db_i642key         - Manual cast from 'int64' to 'DBKey'.                *
- *  db_ui642key        - Manual cast from 'uint64' to 'DBKey'.               *
- *  db_i2data          - Manual cast from 'int' to 'DBData'.                 *
- *  db_ui2data         - Manual cast from 'unsigned int' to 'DBData'.        *
- *  db_ptr2data        - Manual cast from 'void*' to 'DBData'.               *
- *  db_data2i          - Gets 'int' value from 'DBData'.                     *
- *  db_data2ui         - Gets 'unsigned int' value from 'DBData'.            *
- *  db_data2ptr        - Gets 'void*' value from 'DBData'.                   *
- *  db_init            - Initializes the database system.                    *
- *  db_final           - Finalizes the database system.                      *
+*  (2) Section with public functions.                                       *
+*  db_fix_options     - Fix the options for a type of database.             *
+*  db_default_cmp     - Get the default comparator for a type of database.  *
+*  db_default_hash    - Get the default hasher for a type of database.      *
+*  db_default_release - Get the default releaser for a type of database     *
+*           with the fixed options.                                         *
+*  db_custom_release  - Get the releaser that behaves as specified.         *
+*  db_alloc           - Allocate a new database.                            *
+*  db_i2key           - Manual cast from 'int' to 'DBKey'.                  *
+*  db_ui2key          - Manual cast from 'unsigned int' to 'DBKey'.         *
+*  db_str2key         - Manual cast from 'unsigned char *' to 'DBKey'.      *
+*  db_i642key         - Manual cast from 'int64' to 'DBKey'.                *
+*  db_ui642key        - Manual cast from 'uint64' to 'DBKey'.               *
+*  db_i2data          - Manual cast from 'int' to 'DBData'.                 *
+*  db_ui2data         - Manual cast from 'unsigned int' to 'DBData'.        *
+*  db_ptr2data        - Manual cast from 'void*' to 'DBData'.               *
+*  db_data2i          - Gets 'int' value from 'DBData'.                     *
+*  db_data2ui         - Gets 'unsigned int' value from 'DBData'.            *
+*  db_data2ptr        - Gets 'void*' value from 'DBData'.                   *
+*  db_init            - Initializes the database system.                    *
+*  db_final           - Finalizes the database system.                      *
 \*****************************************************************************/
 
 /**
@@ -810,7 +803,7 @@ DBReleaser db_custom_release(DBRelease which);
  * @see #db_default_release(DBType,DBOptions)
  * @see #db_fix_options(DBType,DBOptions)
  */
-DBMap* db_alloc(const char *file, const char *func, int line, DBType type, DBOptions options, unsigned short maxlen);
+DBMap *db_alloc(const char *file, const char *func, int line, DBType type, DBOptions options, unsigned short maxlen);
 
 /**
  * Manual cast from 'int' to the union DBKey.
@@ -901,7 +894,7 @@ unsigned int db_data2ui(DBData *data);
  * @return Void* value of the data.
  * @public
  */
-void* db_data2ptr(DBData *data);
+void *db_data2ptr(DBData *data);
 
 /**
  * Initialize the database system.
@@ -926,16 +919,15 @@ struct linkdb_node {
 	void               *data;
 };
 
-typedef void (*LinkDBFunc)(void* key, void* data, va_list args);
+typedef void (*LinkDBFunc)(void *key, void *data, va_list args);
 
-void  linkdb_insert  (struct linkdb_node** head, void *key, void* data); // Doesn't take into account duplicate keys
-void  linkdb_replace (struct linkdb_node** head, void *key, void* data); // Takes into account duplicate keys
-void* linkdb_search  (struct linkdb_node** head, void *key);
-void* linkdb_erase   (struct linkdb_node** head, void *key);
-void  linkdb_final   (struct linkdb_node** head);
-void  linkdb_vforeach(struct linkdb_node** head, LinkDBFunc func, va_list ap);
-void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
-
+void  linkdb_insert(struct linkdb_node **head, void *key, void *data);   // Doesn't take into account duplicate keys
+void  linkdb_replace(struct linkdb_node **head, void *key, void *data);  // Takes into account duplicate keys
+void *linkdb_search(struct linkdb_node **head, void *key);
+void *linkdb_erase(struct linkdb_node **head, void *key);
+void  linkdb_final(struct linkdb_node **head);
+void  linkdb_vforeach(struct linkdb_node **head, LinkDBFunc func, va_list ap);
+void  linkdb_foreach(struct linkdb_node **head, LinkDBFunc func, ...);
 
 
 /// Finds an entry in an array.
@@ -945,13 +937,13 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __end     End index (ex: size of the array)
 /// @param __var     Index variable
 /// @param __cmp     Expression that returns true when the target entry is found
-#define ARR_FIND(__start, __end, __var, __cmp) \
-	do{ \
-		for( (__var) = (__start); (__var) < (__end); ++(__var) ) \
-			if( __cmp ) \
-				break; \
-	}while(0)
-
+#define ARR_FIND(__start, __end, __var, __cmp)                          \
+        do {                                                            \
+		for ((__var) = (__start); (__var) < (__end); ++(__var)) \
+			if (__cmp)                                      \
+				break;                                  \
+	}                                                               \
+        while (0)
 
 
 /// Moves an entry of the array.
@@ -963,20 +955,20 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __to     Target index of the entry
 /// @param __arr    Array
 /// @param __type   Type of entry
-#define ARR_MOVE(__from, __to, __arr, __type) \
-	do{ \
-		if( (__from) != (__to) ) \
-		{ \
-			__type __backup__; \
-			memmove(&__backup__, (__arr)+(__from), sizeof(__type)); \
-			if( (__from) < (__to) ) \
-				memmove((__arr)+(__from), (__arr)+(__from)+1, ((__to)-(__from))*sizeof(__type)); \
-			else if( (__from) > (__to) ) \
-				memmove((__arr)+(__to)+1, (__arr)+(__to), ((__from)-(__to))*sizeof(__type)); \
-			memmove((__arr)+(__to), &__backup__, sizeof(__type)); \
-		} \
-	}while(0)
-
+#define ARR_MOVE(__from, __to, __arr, __type)                                                                               \
+        do {                                                                                                                \
+		if ((__from) != (__to))                                                                                     \
+		{                                                                                                           \
+			__type __backup__;                                                                                  \
+			memmove(&__backup__, (__arr) + (__from), sizeof(__type));                                           \
+			if ((__from) < (__to))                                                                              \
+				memmove((__arr) + (__from), (__arr) + (__from) + 1, ((__to) - (__from)) * sizeof(__type));  \
+			else if ((__from) > (__to))                                                                         \
+				memmove((__arr) + (__to) + 1, (__arr) + (__to), ((__from) - (__to)) * sizeof(__type));      \
+			memmove((__arr) + (__to), &__backup__, sizeof(__type));                                             \
+		}                                                                                                           \
+	}                                                                                                                   \
+        while (0)
 
 
 /// Moves an entry of the array to the right.
@@ -986,14 +978,14 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __to     Target index of the entry
 /// @param __arr    Array
 /// @param __type   Type of entry
-#define ARR_MOVERIGHT(__from, __to, __arr, __type) \
-	do{ \
-		__type __backup__; \
-		memmove(&__backup__, (__arr)+(__from), sizeof(__type)); \
-		memmove((__arr)+(__from), (__arr)+(__from)+1, ((__to)-(__from))*sizeof(__type)); \
-		memmove((__arr)+(__to), &__backup__, sizeof(__type)); \
-	}while(0)
-
+#define ARR_MOVERIGHT(__from, __to, __arr, __type)                                                         \
+        do {                                                                                               \
+		__type __backup__;                                                                         \
+		memmove(&__backup__, (__arr) + (__from), sizeof(__type));                                  \
+		memmove((__arr) + (__from), (__arr) + (__from) + 1, ((__to) - (__from)) * sizeof(__type)); \
+		memmove((__arr) + (__to), &__backup__, sizeof(__type));                                    \
+	}                                                                                                  \
+        while (0)
 
 
 /// Moves an entry of the array to the left.
@@ -1003,14 +995,14 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __end    Target index of the entry
 /// @param __arr    Array
 /// @param __type   Type of entry
-#define ARR_MOVELEFT(__from, __to, __arr, __type) \
-	do{ \
-		__type __backup__; \
-		memmove(&__backup__, (__arr)+(__from), sizeof(__type)); \
-		memmove((__arr)+(__to)+1, (__arr)+(__to), ((__from)-(__to))*sizeof(__type)); \
-		memmove((__arr)+(__to), &__backup__, sizeof(__type)); \
-	}while(0)
-
+#define ARR_MOVELEFT(__from, __to, __arr, __type)                                                      \
+        do {                                                                                           \
+		__type __backup__;                                                                     \
+		memmove(&__backup__, (__arr) + (__from), sizeof(__type));                              \
+		memmove((__arr) + (__to) + 1, (__arr) + (__to), ((__from) - (__to)) * sizeof(__type)); \
+		memmove((__arr) + (__to), &__backup__, sizeof(__type));                                \
+	}                                                                                              \
+        while (0)
 
 
 /////////////////////////////////////////////////////////////////////
@@ -1018,56 +1010,50 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 // uses aMalloc, aRealloc, aFree
 
 
-
 /// Declares an anonymous vector struct.
 ///
 /// @param __type Type of data
-#define VECTOR_DECL(__type) \
-	struct { \
-		size_t _max_; \
-		size_t _len_; \
-		__type* _data_; \
+#define VECTOR_DECL(__type)     \
+        struct {                \
+		size_t _max_;   \
+		size_t _len_;   \
+		__type *_data_; \
 	}
-
 
 
 /// Declares a named vector struct.
 ///
 /// @param __name Structure name
 /// @param __type Type of data
-#define VECTOR_STRUCT_DECL(__name,__type) \
-	struct __name { \
-		size_t _max_; \
-		size_t _len_; \
-		__type* _data_; \
+#define VECTOR_STRUCT_DECL(__name, __type) \
+        struct __name {                    \
+		size_t _max_;              \
+		size_t _len_;              \
+		__type *_data_;            \
 	}
-
 
 
 /// Declares and initializes an anonymous vector variable.
 ///
 /// @param __type Type of data
 /// @param __var Variable name
-#define VECTOR_VAR(__type,__var) \
-	VECTOR_DECL(__type) __var = {0,0,NULL}
-
+#define VECTOR_VAR(__type, __var) \
+                      VECTOR_DECL(__type) __var = { 0, 0, NULL }
 
 
 /// Declares and initializes a named vector variable.
 ///
 /// @param __name Structure name
 /// @param __var Variable name
-#define VECTOR_STRUCT_VAR(__name,__var) \
-	struct __name __var = {0,0,NULL}
-
+#define VECTOR_STRUCT_VAR(__name, __var) \
+        struct __name __var = { 0, 0, NULL }
 
 
 /// Initializes a vector.
 ///
 /// @param __vec Vector
 #define VECTOR_INIT(__vec) \
-	memset(&(__vec), 0, sizeof(__vec))
-
+        memset(&(__vec), 0, sizeof(__vec))
 
 
 /// Returns the internal array of values.
@@ -1075,8 +1061,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @return Array of values
 #define VECTOR_DATA(__vec) \
-	( (__vec)._data_ )
-
+        ((__vec)._data_)
 
 
 /// Returns the length of the vector.
@@ -1084,8 +1069,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @return Length
 #define VECTOR_LENGTH(__vec) \
-	( (__vec)._len_ )
-
+        ((__vec)._len_)
 
 
 /// Returns the capacity of the vector.
@@ -1093,8 +1077,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @return Capacity
 #define VECTOR_CAPACITY(__vec) \
-	( (__vec)._max_ )
-
+        ((__vec)._max_)
 
 
 /// Returns the value at the target index.
@@ -1103,9 +1086,8 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __idx Index
 /// @return Value
-#define VECTOR_INDEX(__vec,__idx) \
-	( VECTOR_DATA(__vec)[__idx] )
-
+#define VECTOR_INDEX(__vec, __idx) \
+        (VECTOR_DATA(__vec)[__idx])
 
 
 /// Returns the first value of the vector.
@@ -1114,8 +1096,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @return First value
 #define VECTOR_FIRST(__vec) \
-	( VECTOR_INDEX(__vec,0) )
-
+        (VECTOR_INDEX(__vec, 0))
 
 
 /// Returns the last value of the vector.
@@ -1124,8 +1105,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @return Last value
 #define VECTOR_LAST(__vec) \
-	( VECTOR_INDEX(__vec,VECTOR_LENGTH(__vec)-1) )
-
+        (VECTOR_INDEX(__vec, VECTOR_LENGTH(__vec) - 1))
 
 
 /// Resizes the vector.
@@ -1133,29 +1113,29 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __vec Vector
 /// @param __n Size
-#define VECTOR_RESIZE(__vec,__n) \
-	do{ \
-		if( (__n) > VECTOR_CAPACITY(__vec) ) \
-		{ /* increase size */ \
-			if( VECTOR_CAPACITY(__vec) == 0 ) VECTOR_DATA(__vec) = aMalloc((__n)*sizeof(VECTOR_FIRST(__vec))); /* allocate new */ \
-			else VECTOR_DATA(__vec) = aRealloc(VECTOR_DATA(__vec),(__n)*sizeof(VECTOR_FIRST(__vec))); /* reallocate */ \
-			memset(VECTOR_DATA(__vec)+VECTOR_LENGTH(__vec), 0, (VECTOR_CAPACITY(__vec)-VECTOR_LENGTH(__vec))*sizeof(VECTOR_FIRST(__vec))); /* clear new data */ \
-			VECTOR_CAPACITY(__vec) = (__n); /* update capacity */ \
-		} \
-		else if( (__n) == 0 && VECTOR_CAPACITY(__vec) ) \
-		{ /* clear vector */ \
-			aFree(VECTOR_DATA(__vec)); VECTOR_DATA(__vec) = NULL; /* free data */ \
-			VECTOR_CAPACITY(__vec) = 0; /* clear capacity */ \
-			VECTOR_LENGTH(__vec) = 0; /* clear length */ \
-		} \
-		else if( (__n) < VECTOR_CAPACITY(__vec) ) \
-		{ /* reduce size */ \
-			VECTOR_DATA(__vec) = aRealloc(VECTOR_DATA(__vec),(__n)*sizeof(VECTOR_FIRST(__vec))); /* reallocate */ \
-			VECTOR_CAPACITY(__vec) = (__n); /* update capacity */ \
-			if( VECTOR_LENGTH(__vec) > (__n) ) VECTOR_LENGTH(__vec) = (__n); /* update length */ \
-		} \
-	}while(0)
-
+#define VECTOR_RESIZE(__vec, __n)                                                                                                                                                  \
+        do {                                                                                                                                                                       \
+		if ((__n) > VECTOR_CAPACITY(__vec))                                                                                                                                \
+		{                                                                                                                                            /* increase size */   \
+			if (VECTOR_CAPACITY(__vec) == 0) VECTOR_DATA(__vec) = aMalloc((__n) * sizeof(VECTOR_FIRST(__vec)));                                  /* allocate new */    \
+			else VECTOR_DATA(__vec) = aRealloc(VECTOR_DATA(__vec), (__n) * sizeof(VECTOR_FIRST(__vec)));                                         /* reallocate */      \
+			memset(VECTOR_DATA(__vec) + VECTOR_LENGTH(__vec), 0, (VECTOR_CAPACITY(__vec) - VECTOR_LENGTH(__vec)) * sizeof(VECTOR_FIRST(__vec))); /* clear new data */  \
+			VECTOR_CAPACITY(__vec) = (__n);                                                                                                      /* update capacity */ \
+		}                                                                                                                                                                  \
+		else if ((__n) == 0 && VECTOR_CAPACITY(__vec))                                                                                                                     \
+		{                                                             /* clear vector */                                                                                   \
+			aFree(VECTOR_DATA(__vec)); VECTOR_DATA(__vec) = NULL; /* free data */                                                                                      \
+			VECTOR_CAPACITY(__vec)                        = 0;    /* clear capacity */                                                                                 \
+			VECTOR_LENGTH(__vec)                          = 0;    /* clear length */                                                                                   \
+		}                                                                                                                                                                  \
+		else if ((__n) < VECTOR_CAPACITY(__vec))                                                                                                                           \
+		{                                                                                                   /* reduce size */                                              \
+			VECTOR_DATA(__vec)     = aRealloc(VECTOR_DATA(__vec), (__n) * sizeof(VECTOR_FIRST(__vec))); /* reallocate */                                               \
+			VECTOR_CAPACITY(__vec) = (__n);                                                             /* update capacity */                                          \
+			if (VECTOR_LENGTH(__vec) > (__n)) VECTOR_LENGTH(__vec) = (__n);                             /* update length */                                            \
+		}                                                                                                                                                                  \
+	}                                                                                                                                                                          \
+        while (0)
 
 
 /// Ensures that the array has the target number of empty positions.
@@ -1164,15 +1144,15 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __n Empty positions
 /// @param __step Increase
-#define VECTOR_ENSURE(__vec,__n,__step) \
-	do{ \
-		size_t _empty_ = VECTOR_CAPACITY(__vec)-VECTOR_LENGTH(__vec); \
-		if( (__n) > _empty_ ) { \
-			while( (__n) > _empty_ ) _empty_ += (__step); \
-			VECTOR_RESIZE(__vec,_empty_+VECTOR_LENGTH(__vec)); \
-		} \
-	}while(0)
-
+#define VECTOR_ENSURE(__vec, __n, __step)                                       \
+        do {                                                                    \
+		size_t _empty_ = VECTOR_CAPACITY(__vec) - VECTOR_LENGTH(__vec); \
+		if ((__n) > _empty_) {                                          \
+			while ((__n) > _empty_) _empty_ += (__step);            \
+			VECTOR_RESIZE(__vec, _empty_ + VECTOR_LENGTH(__vec));   \
+		}                                                               \
+	}                                                                       \
+        while (0)
 
 
 /// Inserts a zeroed value in the target index.
@@ -1180,14 +1160,14 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __vec Vector
 /// @param __idx Index
-#define VECTOR_INSERTZEROED(__vec,__idx) \
-	do{ \
-		if( (__idx) < VECTOR_LENGTH(__vec) ) /* move data */ \
-			memmove(&VECTOR_INDEX(__vec,(__idx)+1),&VECTOR_INDEX(__vec,__idx),(VECTOR_LENGTH(__vec)-(__idx))*sizeof(VECTOR_FIRST(__vec))); \
-		memset(&VECTOR_INDEX(__vec,__idx), 0, sizeof(VECTOR_INDEX(__vec,__idx))); /* set zeroed value */ \
-		++VECTOR_LENGTH(__vec); /* increase length */ \
-	}while(0)
-
+#define VECTOR_INSERTZEROED(__vec, __idx)                                                                                                                         \
+        do {                                                                                                                                                      \
+		if ((__idx) < VECTOR_LENGTH(__vec))                                         /* move data */                                                       \
+			memmove(&VECTOR_INDEX(__vec, (__idx) + 1), &VECTOR_INDEX(__vec, __idx), (VECTOR_LENGTH(__vec) - (__idx)) * sizeof(VECTOR_FIRST(__vec)));  \
+		memset(&VECTOR_INDEX(__vec, __idx), 0, sizeof(VECTOR_INDEX(__vec, __idx))); /* set zeroed value */                                                \
+		++VECTOR_LENGTH(__vec);                                                     /* increase length */                                                 \
+	}                                                                                                                                                         \
+        while (0)
 
 
 /// Inserts a value in the target index. (using the '=' operator)
@@ -1196,14 +1176,14 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __idx Index
 /// @param __val Value
-#define VECTOR_INSERT(__vec,__idx,__val) \
-	do{ \
-		if( (__idx) < VECTOR_LENGTH(__vec) ) /* move data */ \
-			memmove(&VECTOR_INDEX(__vec,(__idx)+1),&VECTOR_INDEX(__vec,__idx),(VECTOR_LENGTH(__vec)-(__idx))*sizeof(VECTOR_FIRST(__vec))); \
-		VECTOR_INDEX(__vec,__idx) = (__val); /* set value */ \
-		++VECTOR_LENGTH(__vec); /* increase length */ \
-	}while(0)
-
+#define VECTOR_INSERT(__vec, __idx, __val)                                                                                                                        \
+        do {                                                                                                                                                      \
+		if ((__idx) < VECTOR_LENGTH(__vec))   /* move data */                                                                                             \
+			memmove(&VECTOR_INDEX(__vec, (__idx) + 1), &VECTOR_INDEX(__vec, __idx), (VECTOR_LENGTH(__vec) - (__idx)) * sizeof(VECTOR_FIRST(__vec)));  \
+		VECTOR_INDEX(__vec, __idx) = (__val); /* set value */                                                                                             \
+		++VECTOR_LENGTH(__vec);               /* increase length */                                                                                       \
+	}                                                                                                                                                         \
+        while (0)
 
 
 /// Inserts a value in the target index. (using memcpy)
@@ -1212,9 +1192,8 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __idx Index
 /// @param __val Value
-#define VECTOR_INSERTCOPY(__vec,__idx,__val) \
-	VECTOR_INSERTARRAY(__vec,__idx,&(__val),1)
-
+#define VECTOR_INSERTCOPY(__vec, __idx, __val) \
+        VECTOR_INSERTARRAY(__vec, __idx, &(__val), 1)
 
 
 /// Inserts the values of the array in the target index. (using memcpy)
@@ -1224,25 +1203,26 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __idx Index
 /// @param __pval Array of values
 /// @param __n Number of values
-#define VECTOR_INSERTARRAY(__vec,__idx,__pval,__n) \
-	do{ \
-		if( (__idx) < VECTOR_LENGTH(__vec) ) /* move data */ \
-			memmove(&VECTOR_INDEX(__vec,(__idx)+(__n)),&VECTOR_INDEX(__vec,__idx),(VECTOR_LENGTH(__vec)-(__idx))*sizeof(VECTOR_FIRST(__vec))); \
-		memcpy(&VECTOR_INDEX(__vec,__idx), (__pval), (__n)*sizeof(VECTOR_FIRST(__vec))); /* set values */ \
-		VECTOR_LENGTH(__vec) += (__n); /* increase length */ \
-	}while(0)
-
+#define VECTOR_INSERTARRAY(__vec, __idx, __pval, __n)                                                                                                                 \
+        do {                                                                                                                                                          \
+		if ((__idx) < VECTOR_LENGTH(__vec))                                                 /* move data */                                                   \
+			memmove(&VECTOR_INDEX(__vec, (__idx) + (__n)), &VECTOR_INDEX(__vec, __idx), (VECTOR_LENGTH(__vec) - (__idx)) * sizeof(VECTOR_FIRST(__vec)));  \
+		memcpy(&VECTOR_INDEX(__vec, __idx), (__pval), (__n) * sizeof(VECTOR_FIRST(__vec))); /* set values */                                                  \
+		VECTOR_LENGTH(__vec) += (__n);                                                      /* increase length */                                             \
+	}                                                                                                                                                             \
+        while (0)
 
 
 /// Inserts a zeroed value in the end of the vector.
 /// Assumes there is enough capacity.
 ///
 /// @param __vec Vector
-#define VECTOR_PUSHZEROED(__vec) \
-	do{ \
-		memset(&VECTOR_INDEX(__vec,VECTOR_LENGTH(__vec)), 0, sizeof(VECTOR_INDEX(__vec,VECTOR_LENGTH(__vec)))); /* set zeroed value */ \
-		++VECTOR_LENGTH(__vec); /* increase length */ \
-	}while(0)
+#define VECTOR_PUSHZEROED(__vec)                                                                                                                 \
+        do {                                                                                                                                     \
+		memset(&VECTOR_INDEX(__vec, VECTOR_LENGTH(__vec)), 0, sizeof(VECTOR_INDEX(__vec, VECTOR_LENGTH(__vec)))); /* set zeroed value */ \
+		++VECTOR_LENGTH(__vec);                                                                                   /* increase length */  \
+	}                                                                                                                                        \
+        while (0)
 
 
 /// Inserts a value in the end of the vector. (using the '=' operator)
@@ -1250,12 +1230,12 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __vec Vector
 /// @param __val Value
-#define VECTOR_PUSH(__vec,__val) \
-	do{ \
-		VECTOR_INDEX(__vec,VECTOR_LENGTH(__vec)) = (__val); /* set value */ \
-		++VECTOR_LENGTH(__vec); /* increase length */ \
-	}while(0)
-
+#define VECTOR_PUSH(__vec, __val)                                                          \
+        do {                                                                               \
+		VECTOR_INDEX(__vec, VECTOR_LENGTH(__vec)) = (__val); /* set value */       \
+		++VECTOR_LENGTH(__vec);                              /* increase length */ \
+	}                                                                                  \
+        while (0)
 
 
 /// Inserts a value in the end of the vector. (using memcpy)
@@ -1263,9 +1243,8 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __vec Vector
 /// @param __val Value
-#define VECTOR_PUSHCOPY(__vec,__val) \
-	VECTOR_PUSHARRAY(__vec,&(__val),1)
-
+#define VECTOR_PUSHCOPY(__vec, __val) \
+        VECTOR_PUSHARRAY(__vec, &(__val), 1)
 
 
 /// Inserts the values of the array in the end of the vector. (using memcpy)
@@ -1274,12 +1253,12 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __pval Array of values
 /// @param __n Number of values
-#define VECTOR_PUSHARRAY(__vec,__pval,__n) \
-	do{ \
-		memcpy(&VECTOR_INDEX(__vec,VECTOR_LENGTH(__vec)), (__pval), (__n)*sizeof(VECTOR_FIRST(__vec))); /* set values */ \
-		VECTOR_LENGTH(__vec) += (__n); /* increase length */ \
-	}while(0)
-
+#define VECTOR_PUSHARRAY(__vec, __pval, __n)                                                                                             \
+        do {                                                                                                                             \
+		memcpy(&VECTOR_INDEX(__vec, VECTOR_LENGTH(__vec)), (__pval), (__n) * sizeof(VECTOR_FIRST(__vec))); /* set values */      \
+		VECTOR_LENGTH(__vec) += (__n);                                                                     /* increase length */ \
+	}                                                                                                                                \
+        while (0)
 
 
 /// Removes and returns the last value of the vector.
@@ -1288,8 +1267,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @return Removed value
 #define VECTOR_POP(__vec) \
-	( VECTOR_INDEX(__vec,--VECTOR_LENGTH(__vec)) )
-
+        (VECTOR_INDEX(__vec, --VECTOR_LENGTH(__vec)))
 
 
 /// Removes the last N values of the vector and returns the value of the last pop.
@@ -1298,9 +1276,8 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __n Number of pops
 /// @return Last removed value
-#define VECTOR_POPN(__vec,__n) \
-	( VECTOR_INDEX(__vec,(VECTOR_LENGTH(__vec)-=(__n))) )
-
+#define VECTOR_POPN(__vec, __n) \
+        (VECTOR_INDEX(__vec, (VECTOR_LENGTH(__vec) -= (__n))))
 
 
 /// Removes the target index from the vector.
@@ -1308,9 +1285,8 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __vec Vector
 /// @param __idx Index
-#define VECTOR_ERASE(__vec,__idx) \
-	VECTOR_ERASEN(__vec,__idx,1)
-
+#define VECTOR_ERASE(__vec, __idx) \
+        VECTOR_ERASEN(__vec, __idx, 1)
 
 
 /// Removes N values from the target index of the vector.
@@ -1319,37 +1295,38 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __idx Index
 /// @param __n Number of values
-#define VECTOR_ERASEN(__vec,__idx,__n) \
-	do{ \
-		if( (__idx) < VECTOR_LENGTH(__vec)-(__n) ) /* move data */ \
-			memmove(&VECTOR_INDEX(__vec,__idx),&VECTOR_INDEX(__vec,(__idx)+(__n)),(VECTOR_LENGTH(__vec)-((__idx)+(__n)))*sizeof(VECTOR_FIRST(__vec))); \
-		VECTOR_LENGTH(__vec) -= (__n); /* decrease length */ \
-	}while(0)
-
+#define VECTOR_ERASEN(__vec, __idx, __n)                                                                                                                                        \
+        do {                                                                                                                                                                    \
+		if ((__idx) < VECTOR_LENGTH(__vec) - (__n)) /* move data */                                                                                                     \
+			memmove(&VECTOR_INDEX(__vec, __idx), &VECTOR_INDEX(__vec, (__idx) + (__n)), (VECTOR_LENGTH(__vec) - ((__idx) + (__n))) * sizeof(VECTOR_FIRST(__vec)));  \
+		VECTOR_LENGTH(__vec) -= (__n);              /* decrease length */                                                                                               \
+	}                                                                                                                                                                       \
+        while (0)
 
 
 /// Clears the vector, freeing allocated data.
 ///
 /// @param __vec Vector
-#define VECTOR_CLEAR(__vec) \
-	do{ \
-		if( VECTOR_CAPACITY(__vec) ) \
-		{ \
+#define VECTOR_CLEAR(__vec)                                                                               \
+        do {                                                                                              \
+		if (VECTOR_CAPACITY(__vec))                                                               \
+		{                                                                                         \
 			aFree(VECTOR_DATA(__vec)); VECTOR_DATA(__vec) = NULL; /* clear allocated array */ \
-			VECTOR_CAPACITY(__vec) = 0; /* clear capacity */ \
-			VECTOR_LENGTH(__vec) = 0; /* clear length */ \
-		} \
-	}while(0)
+			VECTOR_CAPACITY(__vec)                        = 0;    /* clear capacity */        \
+			VECTOR_LENGTH(__vec)                          = 0;    /* clear length */          \
+		}                                                                                         \
+	}                                                                                                 \
+        while (0)
 
 
 /// Resets the length and clears content, so the vector is empty
-/// 
+///
 /// @param __vec Vector
-#define VECTOR_RESET(__vec) \
-	if( VECTOR_LENGTH(__vec) > 0 ) { \
-		memset(VECTOR_DATA(__vec), 0, (VECTOR_LENGTH(__vec)*sizeof(VECTOR_FIRST(__vec)))); /* clear data */ \
-	} \
-	VECTOR_LENGTH(__vec) = 0; /* clear current length */
+#define VECTOR_RESET(__vec)                                                                                           \
+        if (VECTOR_LENGTH(__vec) > 0) {                                                                               \
+		memset(VECTOR_DATA(__vec), 0, (VECTOR_LENGTH(__vec) * sizeof(VECTOR_FIRST(__vec)))); /* clear data */ \
+	}                                                                                                             \
+        VECTOR_LENGTH(__vec) = 0;                                                                    /* clear current length */
 
 
 /////////////////////////////////////////////////////////////////////
@@ -1358,67 +1335,58 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 // WARNING: BHEAP implementation details affect behaviour of A* pathfinding
 
 
-
 /// Declares an anonymous binary heap struct.
 ///
 /// @param __type Type of data
-#define BHEAP_DECL(__type) VECTOR_DECL(__type)
-
+#define BHEAP_DECL(__type)    VECTOR_DECL(__type)
 
 
 /// Declares a named binary heap struct.
 ///
 /// @param __name Structure name
 /// @param __type Type of data
-#define BHEAP_STRUCT_DECL(__name,__type) VECTOR_STRUCT_DECL(__name,__type)
-
+#define BHEAP_STRUCT_DECL(__name, __type)    VECTOR_STRUCT_DECL(__name, __type)
 
 
 /// Declares and initializes an anonymous binary heap variable.
 ///
 /// @param __type Type of data
 /// @param __var Variable name
-#define BHEAP_VAR(__type,__var) VECTOR_VAR(__type,__var)
-
+#define BHEAP_VAR(__type, __var)    VECTOR_VAR(__type, __var)
 
 
 /// Declares and initializes a named binary heap variable.
 ///
 /// @param __name Structure name
 /// @param __var Variable name
-#define BHEAP_STRUCT_VAR(__name,__var) VECTOR_STRUCT_VAR(__name,__var)
-
+#define BHEAP_STRUCT_VAR(__name, __var)    VECTOR_STRUCT_VAR(__name, __var)
 
 
 /// Initializes a heap.
 ///
 /// @param __heap Binary heap
-#define BHEAP_INIT(__heap) VECTOR_INIT(__heap)
-
+#define BHEAP_INIT(__heap)    VECTOR_INIT(__heap)
 
 
 /// Returns the internal array of values.
 ///
 /// @param __heap Binary heap
 /// @return Array of values
-#define BHEAP_DATA(__heap) VECTOR_DATA(__heap)
-
+#define BHEAP_DATA(__heap)    VECTOR_DATA(__heap)
 
 
 /// Returns the length of the heap.
 ///
 /// @param __heap Binary heap
 /// @return Length
-#define BHEAP_LENGTH(__heap) VECTOR_LENGTH(__heap)
-
+#define BHEAP_LENGTH(__heap)    VECTOR_LENGTH(__heap)
 
 
 /// Returns the capacity of the heap.
 ///
 /// @param __heap Binary heap
 /// @return Capacity
-#define BHEAP_CAPACITY(__heap) VECTOR_CAPACITY(__heap)
-
+#define BHEAP_CAPACITY(__heap)    VECTOR_CAPACITY(__heap)
 
 
 /// Ensures that the heap has the target number of empty positions.
@@ -1427,8 +1395,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __heap Binary heap
 /// @param __n Empty positions
 /// @param __step Increase
-#define BHEAP_ENSURE(__heap,__n,__step) VECTOR_ENSURE(__heap,__n,__step)
-
+#define BHEAP_ENSURE(__heap, __n, __step)    VECTOR_ENSURE(__heap, __n, __step)
 
 
 /// Returns the top value of the heap.
@@ -1436,8 +1403,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __heap Binary heap
 /// @return Value at the top
-#define BHEAP_PEEK(__heap) VECTOR_INDEX(__heap,0)
-
+#define BHEAP_PEEK(__heap)    VECTOR_INDEX(__heap, 0)
 
 
 /// Inserts a value in the heap. (using the '=' operator)
@@ -1452,20 +1418,20 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __val Value
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_PUSH(__heap,__val,__topcmp,__swp) \
-	do{ \
-		size_t _i_ = VECTOR_LENGTH(__heap); \
-		VECTOR_PUSH(__heap,__val); /* insert at end */ \
-		while( _i_ ) \
-		{ /* restore heap property in parents */ \
-			size_t _parent_ = (_i_-1)/2; \
-			if( __topcmp(VECTOR_INDEX(__heap,_parent_),VECTOR_INDEX(__heap,_i_)) < 0 ) \
-				break; /* done */ \
-			__swp(VECTOR_INDEX(__heap,_parent_),VECTOR_INDEX(__heap,_i_)); \
-			_i_ = _parent_; \
-		} \
-	}while(0)
-
+#define BHEAP_PUSH(__heap, __val, __topcmp, __swp)                                                   \
+        do {                                                                                         \
+		size_t _i_ = VECTOR_LENGTH(__heap);                                                  \
+		VECTOR_PUSH(__heap, __val); /* insert at end */                                      \
+		while (_i_)                                                                          \
+		{                           /* restore heap property in parents */                   \
+			size_t _parent_ = (_i_ - 1) / 2;                                             \
+			if (__topcmp(VECTOR_INDEX(__heap, _parent_), VECTOR_INDEX(__heap, _i_)) < 0) \
+				break;  /* done */                                                   \
+			__swp(VECTOR_INDEX(__heap, _parent_), VECTOR_INDEX(__heap, _i_));            \
+			_i_ = _parent_;                                                              \
+		}                                                                                    \
+	}                                                                                            \
+        while (0)
 
 
 /// See BHEAP_PUSH. Version used by A* implementation, matching client bheap.
@@ -1474,13 +1440,13 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __val Value
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_PUSH2(__heap,__val,__topcmp,__swp) \
-	do{ \
-		size_t _i_ = VECTOR_LENGTH(__heap); \
-		VECTOR_PUSH(__heap,__val); /* insert at end */ \
-		BHEAP_SIFTDOWN(__heap,0,_i_,__topcmp,__swp); \
-	}while(0)
-
+#define BHEAP_PUSH2(__heap, __val, __topcmp, __swp)              \
+        do {                                                     \
+		size_t _i_ = VECTOR_LENGTH(__heap);              \
+		VECTOR_PUSH(__heap, __val); /* insert at end */  \
+		BHEAP_SIFTDOWN(__heap, 0, _i_, __topcmp, __swp); \
+	}                                                        \
+        while (0)
 
 
 /// Removes the top value of the heap. (using the '=' operator)
@@ -1494,8 +1460,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __heap Binary heap
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_POP(__heap,__topcmp,__swp) BHEAP_POPINDEX(__heap,0,__topcmp,__swp)
-
+#define BHEAP_POP(__heap, __topcmp, __swp)    BHEAP_POPINDEX(__heap, 0, __topcmp, __swp)
 
 
 /// See BHEAP_POP. Version used by A* implementation, matching client bheap.
@@ -1503,14 +1468,14 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __heap Binary heap
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_POP2(__heap,__topcmp,__swp) \
-	do{ \
-		VECTOR_INDEX(__heap,0) = VECTOR_POP(__heap); /* put last at index */ \
-		if( !VECTOR_LENGTH(__heap) ) /* removed last, nothing to do */ \
-			break; \
-		BHEAP_SIFTUP(__heap,0,__topcmp,__swp); \
-	}while(0)
-
+#define BHEAP_POP2(__heap, __topcmp, __swp)                                                     \
+        do {                                                                                    \
+		VECTOR_INDEX(__heap, 0) = VECTOR_POP(__heap); /* put last at index */           \
+		if (!VECTOR_LENGTH(__heap))                   /* removed last, nothing to do */ \
+			break;                                                                  \
+		BHEAP_SIFTUP(__heap, 0, __topcmp, __swp);                                       \
+	}                                                                                       \
+        while (0)
 
 
 /// Removes the target value of the heap. (using the '=' operator)
@@ -1525,40 +1490,40 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __idx Index
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_POPINDEX(__heap,__idx,__topcmp,__swp) \
-	do{ \
-		size_t _i_ = __idx; \
-		VECTOR_INDEX(__heap,__idx) = VECTOR_POP(__heap); /* put last at index */ \
-		if( _i_ >= VECTOR_LENGTH(__heap)) /* removed last, nothing to do */ \
-			break; \
-		while( _i_ ) \
-		{ /* restore heap property in parents */ \
-			size_t _parent_ = (_i_-1)/2; \
-			if( __topcmp(VECTOR_INDEX(__heap,_parent_),VECTOR_INDEX(__heap,_i_)) < 0 ) \
-				break; /* done */ \
-			__swp(VECTOR_INDEX(__heap,_parent_),VECTOR_INDEX(__heap,_i_)); \
-			_i_ = _parent_; \
-		} \
-		while( _i_ < VECTOR_LENGTH(__heap) ) \
-		{ /* restore heap property in childs */ \
-			size_t _lchild_ = _i_*2 + 1; \
-			size_t _rchild_ = _i_*2 + 2; \
-			if( (_lchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap,_i_),VECTOR_INDEX(__heap,_lchild_)) <= 0) && \
-				(_rchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap,_i_),VECTOR_INDEX(__heap,_rchild_)) <= 0) ) \
-				break; /* done */ \
-			else if( _rchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap,_lchild_),VECTOR_INDEX(__heap,_rchild_)) <= 0 ) \
-			{ /* left child */ \
-				__swp(VECTOR_INDEX(__heap,_i_),VECTOR_INDEX(__heap,_lchild_)); \
-				_i_ = _lchild_; \
-			} \
-			else \
-			{ /* right child */ \
-				__swp(VECTOR_INDEX(__heap,_i_),VECTOR_INDEX(__heap,_rchild_)); \
-				_i_ = _rchild_; \
-			} \
-		} \
-	}while(0)
-
+#define BHEAP_POPINDEX(__heap, __idx, __topcmp, __swp)                                                                                               \
+        do {                                                                                                                                         \
+		size_t _i_ = __idx;                                                                                                                  \
+		VECTOR_INDEX(__heap, __idx) = VECTOR_POP(__heap); /* put last at index */                                                            \
+		if (_i_ >= VECTOR_LENGTH(__heap))                 /* removed last, nothing to do */                                                  \
+			break;                                                                                                                       \
+		while (_i_)                                                                                                                          \
+		{       /* restore heap property in parents */                                                                                       \
+			size_t _parent_ = (_i_ - 1) / 2;                                                                                             \
+			if (__topcmp(VECTOR_INDEX(__heap, _parent_), VECTOR_INDEX(__heap, _i_)) < 0)                                                 \
+				break;  /* done */                                                                                                   \
+			__swp(VECTOR_INDEX(__heap, _parent_), VECTOR_INDEX(__heap, _i_));                                                            \
+			_i_ = _parent_;                                                                                                              \
+		}                                                                                                                                    \
+		while (_i_ < VECTOR_LENGTH(__heap))                                                                                                  \
+		{       /* restore heap property in childs */                                                                                        \
+			size_t _lchild_ = _i_ * 2 + 1;                                                                                               \
+			size_t _rchild_ = _i_ * 2 + 2;                                                                                               \
+			if ((_lchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap, _i_), VECTOR_INDEX(__heap, _lchild_)) <= 0)          \
+			    && (_rchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap, _i_), VECTOR_INDEX(__heap, _rchild_)) <= 0))      \
+				break;  /* done */                                                                                                   \
+			else if (_rchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap, _lchild_), VECTOR_INDEX(__heap, _rchild_)) <= 0) \
+			{               /* left child */                                                                                             \
+				__swp(VECTOR_INDEX(__heap, _i_), VECTOR_INDEX(__heap, _lchild_));                                                    \
+				_i_ = _lchild_;                                                                                                      \
+			}                                                                                                                            \
+			else                                                                                                                         \
+			{       /* right child */                                                                                                    \
+				__swp(VECTOR_INDEX(__heap, _i_), VECTOR_INDEX(__heap, _rchild_));                                                    \
+				_i_ = _rchild_;                                                                                                      \
+			}                                                                                                                            \
+		}                                                                                                                                    \
+	}                                                                                                                                            \
+        while (0)
 
 
 /// Follow path up towards (but not all the way to) the root, swapping nodes until finding
@@ -1570,19 +1535,19 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __idx Index of an inserted element
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_SIFTDOWN(__heap,__startidx,__idx,__topcmp,__swp) \
-	do{ \
-		size_t _i2_ = __idx; \
-		while( _i2_ > __startidx ) \
-		{ /* restore heap property in parents */ \
-			size_t _parent_ = (_i2_-1)/2; \
-			if( __topcmp(VECTOR_INDEX(__heap,_parent_),VECTOR_INDEX(__heap,_i2_)) <= 0 ) \
-				break; /* done */ \
-			__swp(VECTOR_INDEX(__heap,_parent_),VECTOR_INDEX(__heap,_i2_)); \
-			_i2_ = _parent_; \
-		} \
-	}while(0)
-
+#define BHEAP_SIFTDOWN(__heap, __startidx, __idx, __topcmp, __swp)                                     \
+        do {                                                                                           \
+		size_t _i2_ = __idx;                                                                   \
+		while (_i2_ > __startidx)                                                              \
+		{       /* restore heap property in parents */                                         \
+			size_t _parent_ = (_i2_ - 1) / 2;                                              \
+			if (__topcmp(VECTOR_INDEX(__heap, _parent_), VECTOR_INDEX(__heap, _i2_)) <= 0) \
+				break;  /* done */                                                     \
+			__swp(VECTOR_INDEX(__heap, _parent_), VECTOR_INDEX(__heap, _i2_));             \
+			_i2_ = _parent_;                                                               \
+		}                                                                                      \
+	}                                                                                              \
+        while (0)
 
 
 /// Repeatedly swap the smaller child with parent, after placing a new item at __idx.
@@ -1591,28 +1556,28 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __idx Index of an inserted element
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_SIFTUP(__heap,__idx,__topcmp,__swp) \
-	do{ \
-		size_t _i_ = __idx; \
-		size_t _lchild_ = _i_*2 + 1; \
-		while( _lchild_ < VECTOR_LENGTH(__heap) ) \
-		{ /* restore heap property in childs */ \
-			size_t _rchild_ = _i_*2 + 2; \
-			if( _rchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap,_lchild_),VECTOR_INDEX(__heap,_rchild_)) < 0 ) \
-			{ /* left child */ \
-				__swp(VECTOR_INDEX(__heap,_i_),VECTOR_INDEX(__heap,_lchild_)); \
-				_i_ = _lchild_; \
-			} \
-			else \
-			{ /* right child */ \
-				__swp(VECTOR_INDEX(__heap,_i_),VECTOR_INDEX(__heap,_rchild_)); \
-				_i_ = _rchild_; \
-			} \
-			_lchild_ = _i_*2 + 1; \
-		} \
-		BHEAP_SIFTDOWN(__heap,__idx,_i_,__topcmp,__swp); \
-	}while(0)
-
+#define BHEAP_SIFTUP(__heap, __idx, __topcmp, __swp)                                                                                           \
+        do {                                                                                                                                   \
+		size_t _i_      = __idx;                                                                                                       \
+		size_t _lchild_ = _i_ * 2 + 1;                                                                                                 \
+		while (_lchild_ < VECTOR_LENGTH(__heap))                                                                                       \
+		{       /* restore heap property in childs */                                                                                  \
+			size_t _rchild_ = _i_ * 2 + 2;                                                                                         \
+			if (_rchild_ >= VECTOR_LENGTH(__heap) || __topcmp(VECTOR_INDEX(__heap, _lchild_), VECTOR_INDEX(__heap, _rchild_)) < 0) \
+			{       /* left child */                                                                                               \
+				__swp(VECTOR_INDEX(__heap, _i_), VECTOR_INDEX(__heap, _lchild_));                                              \
+				_i_ = _lchild_;                                                                                                \
+			}                                                                                                                      \
+			else                                                                                                                   \
+			{       /* right child */                                                                                              \
+				__swp(VECTOR_INDEX(__heap, _i_), VECTOR_INDEX(__heap, _rchild_));                                              \
+				_i_ = _rchild_;                                                                                                \
+			}                                                                                                                      \
+			_lchild_ = _i_ * 2 + 1;                                                                                                \
+		}                                                                                                                              \
+		BHEAP_SIFTDOWN(__heap, __idx, _i_, __topcmp, __swp);                                                                           \
+	}                                                                                                                                      \
+        while (0)
 
 
 /// Call this after modifying the item at __idx__ to restore the heap
@@ -1621,24 +1586,24 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param __idx Index
 /// @param __topcmp Comparator
 /// @param __swp Swapper
-#define BHEAP_UPDATE(__heap,__idx,__topcmp,__swp) \
-	do{ \
-		BHEAP_SIFTDOWN(__heap,0,__idx,__topcmp,__swp); \
-		BHEAP_SIFTUP(__heap,__idx,__topcmp,__swp); \
-	}while(0)
-
+#define BHEAP_UPDATE(__heap, __idx, __topcmp, __swp)               \
+        do {                                                       \
+		BHEAP_SIFTDOWN(__heap, 0, __idx, __topcmp, __swp); \
+		BHEAP_SIFTUP(__heap, __idx, __topcmp, __swp);      \
+	}                                                          \
+        while (0)
 
 
 /// Clears the binary heap, freeing allocated data.
 ///
 /// @param __heap Binary heap
-#define BHEAP_CLEAR(__heap) VECTOR_CLEAR(__heap)
+#define BHEAP_CLEAR(__heap)    VECTOR_CLEAR(__heap)
 
 
 /// Resets the binary heap and clears content so it can be treated as empty
 ///
 /// @parm __heap Binary heap
-#define BHEAP_RESET(__heap) VECTOR_RESET(__heap)
+#define BHEAP_RESET(__heap)    VECTOR_RESET(__heap)
 
 
 /// Generic comparator for a min-heap. (minimum value at top)
@@ -1647,8 +1612,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param v1 First value
 /// @param v2 Second value
 /// @return negative if v1 is top, positive if v2 is top, 0 if equal
-#define BHEAP_MINTOPCMP(v1,v2) ( v1 == v2 ? 0 : v1 < v2 ? -1 : 1 )
-
+#define BHEAP_MINTOPCMP(v1, v2)    (v1 == v2 ? 0 : v1 < v2 ? -1 : 1)
 
 
 /// Generic comparator for a max-heap. (maximum value at top)
@@ -1657,7 +1621,7 @@ void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
 /// @param v1 First value
 /// @param v2 Second value
 /// @return negative if v1 is top, positive if v2 is top, 0 if equal
-#define BHEAP_MAXTOPCMP(v1,v2) ( v1 == v2 ? 0 : v1 > v2 ? -1 : 1 )
+#define BHEAP_MAXTOPCMP(v1, v2)    (v1 == v2 ? 0 : v1 > v2 ? -1 : 1)
 
 #ifdef __cplusplus
 }

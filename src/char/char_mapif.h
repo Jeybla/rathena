@@ -8,9 +8,9 @@
  */
 
 #ifndef CHAR_MAPIF_H
-#define	CHAR_MAPIF_H
+#define CHAR_MAPIF_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -66,9 +66,9 @@ void chmapif_on_disconnect(int id);
 void do_final_chmapif(void);
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* CHAR_MAPIF_H */
+#endif  /* CHAR_MAPIF_H */
 

@@ -6,11 +6,11 @@
 
 #include "../common/cbasetypes.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-enum e_month{
+enum e_month {
 	JANUARY = 1,
 	FEBRUARY,
 	MARCH,
@@ -25,7 +25,7 @@ enum e_month{
 	DECEMBER
 };
 
-enum e_dayofweek{
+enum e_dayofweek {
 	SUNDAY = 0,
 	MONDAY,
 	TUESDAY,
@@ -35,7 +35,7 @@ enum e_dayofweek{
 	SATURDAY
 };
 
-enum e_date_type{
+enum e_date_type {
 	DT_MIN = 0,
 	DT_SECOND,
 	DT_MINUTE,
@@ -49,7 +49,7 @@ enum e_date_type{
 };
 
 int date_get_year(void);
-enum e_month date_get_month(void);
+enum e_month     date_get_month(void);
 int date_get_dayofmonth(void);
 enum e_dayofweek date_get_dayofweek(void);
 int date_get_dayofyear(void);
@@ -58,13 +58,13 @@ int date_get_hour(void);
 int date_get_min(void);
 int date_get_sec(void);
 
-int date_get( enum e_date_type type );
+int date_get(enum e_date_type type);
 
 bool is_day_of_sun(void);
 bool is_day_of_moon(void);
 bool is_day_of_star(void);
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 #endif /* _DATE_H_ */
