@@ -1,8 +1,9 @@
 #!/bin/bash
 git fetch origin
-git checkout master
 git reset --hard origin/master
-find ../src/ -name "*.[ch]" -or -name "*.cpp" | xargs uncrustify -c uncrustify.cfg --no-backup
-git commit -am "Apply uncrustify rules"
-git checkout style_ra
-git merge master
+git reset --soft jeyra/style_ra
+git reset tools/
+git checkout tools/
+find src/ -name "*.[ch]" -or -name "*.cpp" | xargs uncrustify -c tools/uncrustify.cfg --no-backup
+git commit -am "Automatic rathena Update"
+git push jeyra style_ra
