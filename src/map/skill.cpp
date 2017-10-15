@@ -13549,6 +13549,35 @@ int skill_castend_pos2(struct block_list *src, int x, int y, uint16 skill_id, ui
 	}
 	break;
 
+		for (w = 0; w <= wave; w++)
+		{
+			switch (dir)
+			{
+			case DIR_NORTH:
+			case DIR_NORTHWEST:
+			case DIR_NORTHEAST:
+				sy = y + w;
+				break;
+
+			case DIR_WEST:
+				sx = x - w;
+				break;
+
+			case DIR_SOUTHWEST:
+			case DIR_SOUTH:
+			case DIR_SOUTHEAST:
+				sy = y - w;
+				break;
+
+			case DIR_EAST:
+				sx = x + w;
+				break;
+			}
+			skill_addtimerskill(src, gettick() + (80 * w), 0, sx, sy, skill_id, skill_lv, dir, flag);
+		}
+	}
+	break;
+
 	case NC_MAGMA_ERUPTION:
 		// 1st, AoE 'slam' damage
 		i = skill_get_splash(skill_id, skill_lv);
@@ -16726,7 +16755,6 @@ bool skill_check_condition_castbegin(struct map_session_data *sd, uint16 skill_i
 		if (skill_check_pc_partner(sd, skill_id, &skill_lv, 1, 0) <= 0 && require.itemid[0]
 		    && sd->special_state.no_gemstone == 0
 		    && ((i = pc_search_inventory(sd, require.itemid[0])) < 0 || sd->inventory.u.items_inventory[i].amount < require.amount[0])) {
-			//clif_skill_fail(sd,skill_id,USESKILL_FAIL_NEED_ITEM,require.amount[0],require.itemid[0]);
 			clif_skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
 			return false;
 		}
@@ -17143,30 +17171,41 @@ bool skill_check_condition_castbegin(struct map_session_data *sd, uint16 skill_i
 		}
 	}
 
-	//check if equipped item
+	// Check for equipped item(s)
 	if (require.eqItem_count) {
+		uint8 count = require.eqItem_count;
+
 		for (i = 0; i < require.eqItem_count; i++)
 		{
 			uint16 reqeqit = require.eqItem[i];
 
 			if (!reqeqit)
-				break;  //no required item; get out of here
-			if (!pc_checkequip2(sd, reqeqit, EQI_ACC_L, EQI_MAX)) {
-				if (i == require.eqItem_count) {
-					switch (skill_id)
-					{
-					case RL_P_ALTER:
-						clif_msg(sd, SKILL_NEED_HOLY_BULLET);
-						break;
+				break;    // Skill has no required item(s); get out of here
+			switch (skill_id) // Specific skills require multiple items while default will handle singular cases
+			{
+			case NC_PILEBUNKER:
+			case RL_P_ALTER:
+				if (!pc_checkequip2(sd, reqeqit, EQI_ACC_L, EQI_MAX)) {
+					count--;
+					if (!count) {
+						if (skill_id == RL_P_ALTER) {
+							clif_msg(sd, SKILL_NEED_HOLY_BULLET);
+						}else{
+							clif_skill_fail(sd, skill_id, USESKILL_FAIL_THIS_WEAPON, 0);
+						}
+						return false;
+					} else
+						continue;
+				}
+				break;
 
-					default:
-						clif_skill_fail(sd, skill_id, USESKILL_FAIL_THIS_WEAPON, 0);
-						break;
-					}
+			default:
+				if (!pc_checkequip2(sd, reqeqit, EQI_ACC_L, EQI_MAX)) {
+					clif_skill_fail(sd, skill_id, USESKILL_FAIL_NEED_EQUIPMENT, reqeqit << 16);
 					return false;
 				}
-			} else
-				break;  // Wearing an applicable item.
+				break;
+			}
 		}
 	}
 
@@ -17419,13 +17458,9 @@ bool skill_check_condition_castend(struct map_session_data *sd, uint16 skill_id,
 				if (i < MAX_SKILL_ITEM_REQUIRE - 1)                            // Check all Slug types
 					continue;
 				else
-					clif_skill_fail(sd, RL_SLUGSHOT, USESKILL_FAIL_NEED_MORE_BULLET, 0);  // Bullet is required.
+					clif_skill_fail(sd, RL_SLUGSHOT, USESKILL_FAIL_NEED_MORE_BULLET, 0);                           // Bullet is required.
 			} else {
-				char output[CHAT_SIZE_MAX];
-				//Official is using msgstringtable.txt for each requirement failure
-				//clif_skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
-				sprintf(output, msg_txt(sd, 720), itemdb_jname(require.itemid[i])); // %s is required.
-				clif_messagecolor(&sd->bl, color_table[COLOR_RED], output, false, SELF);
+				clif_skill_fail(sd, skill_id, USESKILL_FAIL_NEED_ITEM, (require.itemid[i] << 16) | require.amount[i]); // [%s] required '%d' amount.
 			}
 			return false;
 		} else if (skill_id == RL_SLUGSHOT) // Slug found - simulate priority and cancel the loop
