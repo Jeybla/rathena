@@ -13549,35 +13549,6 @@ int skill_castend_pos2(struct block_list *src, int x, int y, uint16 skill_id, ui
 	}
 	break;
 
-		for (w = 0; w <= wave; w++)
-		{
-			switch (dir)
-			{
-			case DIR_NORTH:
-			case DIR_NORTHWEST:
-			case DIR_NORTHEAST:
-				sy = y + w;
-				break;
-
-			case DIR_WEST:
-				sx = x - w;
-				break;
-
-			case DIR_SOUTHWEST:
-			case DIR_SOUTH:
-			case DIR_SOUTHEAST:
-				sy = y - w;
-				break;
-
-			case DIR_EAST:
-				sx = x + w;
-				break;
-			}
-			skill_addtimerskill(src, gettick() + (80 * w), 0, sx, sy, skill_id, skill_lv, dir, flag);
-		}
-	}
-	break;
-
 	case NC_MAGMA_ERUPTION:
 		// 1st, AoE 'slam' damage
 		i = skill_get_splash(skill_id, skill_lv);
