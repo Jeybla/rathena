@@ -279,7 +279,7 @@ struct script_reg_num {
 
 struct script_reg_str {
 	struct script_reg_state flag;
-	char                    *value;
+	char*                   value;
 };
 
 //For saving status changes across sessions. [Skotlex]
@@ -575,15 +575,15 @@ struct party {
 
 struct map_session_data;
 struct guild_member {
-	uint32                  account_id, char_id;
-	short                   hair, hair_color, gender, class_, lv;
-	uint64                  exp;
-	int                     exp_payper;
-	short                   online, position;
-	char                    name[NAME_LENGTH];
-	struct map_session_data *sd;
-	unsigned char           modified;
-	uint32                  last_login;
+	uint32                   account_id, char_id;
+	short                    hair, hair_color, gender, class_, lv;
+	uint64                   exp;
+	int                      exp_payper;
+	short                    online, position;
+	char                     name[NAME_LENGTH];
+	struct map_session_data* sd;
+	unsigned char            modified;
+	uint32                   last_login;
 };
 
 struct guild_position {
@@ -625,7 +625,7 @@ struct guild {
 	struct guild_alliance  alliance[MAX_GUILDALLIANCE];
 	struct guild_expulsion expulsion[MAX_GUILDEXPULSION];
 	struct guild_skill     skill[MAX_GUILDSKILL];
-	struct Channel         *channel;
+	struct Channel*        channel;
 	unsigned short         instance_id;
 	time_t                 last_leader_change;
 
@@ -651,9 +651,9 @@ struct guild_castle {
 		unsigned visible : 1;
 		int      id; // object id
 	}
-	    guardian[MAX_GUARDIANS];
-	int *temp_guardians; // ids of temporary guardians (mobs)
-	int temp_guardians_max;
+	     guardian[MAX_GUARDIANS];
+	int* temp_guardians; // ids of temporary guardians (mobs)
+	int  temp_guardians_max;
 };
 
 struct fame_list {
@@ -925,14 +925,14 @@ struct clan_alliance {
 };
 
 struct clan {
-	int                     id;
-	char                    name[NAME_LENGTH];
-	char                    master[NAME_LENGTH];
-	char                    map[MAP_NAME_LENGTH_EXT];
-	short                   max_member, connect_member;
-	struct map_session_data *members[MAX_CLAN];
-	struct clan_alliance    alliance[MAX_CLANALLIANCE];
-	unsigned short          instance_id;
+	int                      id;
+	char                     name[NAME_LENGTH];
+	char                     master[NAME_LENGTH];
+	char                     map[MAP_NAME_LENGTH_EXT];
+	short                    max_member, connect_member;
+	struct map_session_data* members[MAX_CLAN];
+	struct clan_alliance     alliance[MAX_CLANALLIANCE];
+	unsigned short           instance_id;
 };
 
 // Sanity checks...

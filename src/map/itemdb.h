@@ -731,11 +731,11 @@ enum e_random_item_group {
 
 ///Item combo struct
 struct item_combo {
-	struct script_code *script;
-	unsigned short     *nameid; /* nameid array */
-	unsigned char      count;
-	unsigned short     id;      /* id of this combo */
-	bool               isRef;   /* whether this struct is a reference or the master */
+	struct script_code* script;
+	unsigned short*     nameid; /* nameid array */
+	unsigned char       count;
+	unsigned short      id;     /* id of this combo */
+	bool                isRef;  /* whether this struct is a reference or the master */
 };
 
 
@@ -752,24 +752,24 @@ struct s_item_group_entry {
 
 /// Struct of random group
 struct s_item_group_random {
-	struct s_item_group_entry *data;    /// Random group entry
-	unsigned short            data_qty; /// Number of item in random group
+	struct s_item_group_entry* data;     /// Random group entry
+	unsigned short             data_qty; /// Number of item in random group
 };
 
 /// Struct of item group that will be used for db
 struct s_item_group_db {
 	unsigned short             id,                              /// Item Group ID
 	                           must_qty;                        /// Number of must item at this group
-	struct s_item_group_entry  *must;                           /// Must item entry
+	struct s_item_group_entry* must;                            /// Must item entry
 	struct s_item_group_random random[MAX_ITEMGROUP_RANDGROUP]; //! TODO: Move this fixed array to dynamic size if needed.
 };
 
 /// Struct of Roulette db
 extern struct s_roulette_db {
-	unsigned short *nameid[MAX_ROULETTE_LEVEL], /// Item ID
-	*qty[MAX_ROULETTE_LEVEL];                   /// Amount of Item ID
-	int            *flag[MAX_ROULETTE_LEVEL];   /// Whether the item is for loss or win
-	int            items[MAX_ROULETTE_LEVEL];   /// Number of items in the list for each
+	unsigned short* nameid[MAX_ROULETTE_LEVEL], /// Item ID
+	* qty[MAX_ROULETTE_LEVEL];                  /// Amount of Item ID
+	int*            flag[MAX_ROULETTE_LEVEL];   /// Whether the item is for loss or win
+	int             items[MAX_ROULETTE_LEVEL];  /// Number of items in the list for each
 }
 rd;
 
@@ -808,10 +808,10 @@ struct item_data {
 		int chance;
 		int id;
 	}
-	                   mob[MAX_SEARCH]; //Holds the mobs that have the highest drop rate for this item. [Skotlex]
-	struct script_code *script;         //Default script for everything.
-	struct script_code *equip_script;   //Script executed once when equipping.
-	struct script_code *unequip_script; //Script executed once when unequipping.
+	                    mob[MAX_SEARCH]; //Holds the mobs that have the highest drop rate for this item. [Skotlex]
+	struct script_code* script;          //Default script for everything.
+	struct script_code* equip_script;    //Script executed once when equipping.
+	struct script_code* unequip_script;  //Script executed once when unequipping.
 	struct {
 		unsigned available         : 1;
 		uint32   no_equip;
@@ -839,18 +839,18 @@ struct item_data {
 		unsigned int   flag;
 		unsigned short override;
 	}
-	                  item_usage;
-	short             gm_lv_trade_override; //GM-level to override trade_restriction
+	                    item_usage;
+	short               gm_lv_trade_override; //GM-level to override trade_restriction
 	/* bugreport:309 */
-	struct item_combo **combos;
-	unsigned char     combos_count;
-	short             delay_sc; ///< Use delay group if any instead using player's item_delay data [Cydh]
+	struct item_combo** combos;
+	unsigned char       combos_count;
+	short               delay_sc; ///< Use delay group if any instead using player's item_delay data [Cydh]
 };
 
 // Struct for item random option [Secret]
 struct s_random_opt_data {
-	unsigned short     id;
-	struct script_code *script;
+	unsigned short      id;
+	struct script_code* script;
 };
 
 /// Enum for Random Option Groups
@@ -866,15 +866,15 @@ struct s_random_opt_group_entry {
 
 /// Struct for Random Option Group
 struct s_random_opt_group {
-	uint8                           id;
-	struct s_random_opt_group_entry *entries;
-	uint16                          total;
+	uint8                            id;
+	struct s_random_opt_group_entry* entries;
+	uint16                           total;
 };
 
-struct item_data *itemdb_searchname(const char *name);
-int itemdb_searchname_array(struct item_data **data, int size, const char *str);
-struct item_data *itemdb_search(unsigned short nameid);
-struct item_data *itemdb_exists(unsigned short nameid);
+struct item_data* itemdb_searchname(const char* name);
+int itemdb_searchname_array(struct item_data** data, int size, const char* str);
+struct item_data* itemdb_search(unsigned short nameid);
+struct item_data* itemdb_exists(unsigned short nameid);
 
 #define itemdb_name(n)           itemdb_search(n)->name
 #define itemdb_jname(n)          itemdb_search(n)->jname
@@ -893,27 +893,27 @@ struct item_data *itemdb_exists(unsigned short nameid);
 #define itemdb_traderight(n)     (itemdb_search(n)->flag.trade_restriction)
 #define itemdb_viewid(n)         (itemdb_search(n)->view_id)
 #define itemdb_autoequip(n)      (itemdb_search(n)->flag.autoequip)
-const char *itemdb_typename(enum item_types type);
-const char *itemdb_typename_ammo(enum e_item_ammo ammo);
+const char* itemdb_typename(enum item_types type);
+const char* itemdb_typename_ammo(enum e_item_ammo ammo);
 bool itemdb_is_spellbook2(unsigned short nameid);
 
-struct s_item_group_entry *itemdb_get_randgroupitem(uint16 group_id, uint8 sub_group);
+struct s_item_group_entry* itemdb_get_randgroupitem(uint16 group_id, uint8 sub_group);
 unsigned short itemdb_searchrandomid(uint16 group_id, uint8 sub_group);
 
 #define itemdb_value_buy(n)     itemdb_search(n)->value_buy
 #define itemdb_value_sell(n)    itemdb_search(n)->value_sell
 #define itemdb_canrefine(n)     (!itemdb_search(n)->flag.no_refine)
 //Item trade restrictions [Skotlex]
-bool itemdb_isdropable_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_cantrade_sub(struct item_data *itd, int gmlv, int gmlv2);
-bool itemdb_canpartnertrade_sub(struct item_data *itd, int gmlv, int gmlv2);
-bool itemdb_cansell_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_cancartstore_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_canstore_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_canguildstore_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_canmail_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_canauction_sub(struct item_data *itd, int gmlv, int unused);
-bool itemdb_isrestricted(struct item *item, int gmlv, int gmlv2, bool (*func)(struct item_data *, int, int));
+bool itemdb_isdropable_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_cantrade_sub(struct item_data* itd, int gmlv, int gmlv2);
+bool itemdb_canpartnertrade_sub(struct item_data* itd, int gmlv, int gmlv2);
+bool itemdb_cansell_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_cancartstore_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_canstore_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_canguildstore_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_canmail_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_canauction_sub(struct item_data* itd, int gmlv, int unused);
+bool itemdb_isrestricted(struct item* item, int gmlv, int gmlv2, bool (* func)(struct item_data*, int, int));
 
 #define itemdb_isdropable(item, gmlv)                itemdb_isrestricted(item, gmlv, 0, itemdb_isdropable_sub)
 #define itemdb_cantrade(item, gmlv, gmlv2)           itemdb_isrestricted(item, gmlv, gmlv2, itemdb_cantrade_sub)
@@ -925,25 +925,25 @@ bool itemdb_isrestricted(struct item *item, int gmlv, int gmlv2, bool (*func)(st
 #define itemdb_canmail(item, gmlv)                   itemdb_isrestricted(item, gmlv, 0, itemdb_canmail_sub)
 #define itemdb_canauction(item, gmlv)                itemdb_isrestricted(item, gmlv, 0, itemdb_canauction_sub)
 
-bool itemdb_isequip2(struct item_data *id);
+bool itemdb_isequip2(struct item_data* id);
 
 #define itemdb_isequip(nameid)    itemdb_isequip2(itemdb_search(nameid))
 char itemdb_isidentified(unsigned short nameid);
-bool itemdb_isstackable2(struct item_data *id);
+bool itemdb_isstackable2(struct item_data* id);
 
 #define itemdb_isstackable(nameid)    itemdb_isstackable2(itemdb_search(nameid))
-bool itemdb_isNoEquip(struct item_data *id, uint16 m);
+bool itemdb_isNoEquip(struct item_data* id, uint16 m);
 
-struct item_combo      *itemdb_combo_exists(unsigned short combo_id);
+struct item_combo*      itemdb_combo_exists(unsigned short combo_id);
 
-struct s_item_group_db *itemdb_group_exists(unsigned short group_id);
+struct s_item_group_db* itemdb_group_exists(unsigned short group_id);
 bool itemdb_group_item_exists(unsigned short group_id, unsigned short nameid);
-char itemdb_pc_get_itemgroup(uint16 group_id, struct map_session_data *sd);
+char itemdb_pc_get_itemgroup(uint16 group_id, struct map_session_data* sd);
 
 bool itemdb_parse_roulette_db(void);
 
-struct s_random_opt_data  *itemdb_randomopt_exists(short id);
-struct s_random_opt_group *itemdb_randomopt_group_exists(int id);
+struct s_random_opt_data*  itemdb_randomopt_exists(short id);
+struct s_random_opt_group* itemdb_randomopt_group_exists(int id);
 
 void itemdb_reload_itemmob_data(void);
 void itemdb_reload(void);

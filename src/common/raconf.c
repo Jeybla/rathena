@@ -25,7 +25,7 @@
 #define VARNAME_LEN    64
 
 struct raconf {
-	DBMap *db;
+	DBMap* db;
 };
 
 
@@ -38,9 +38,9 @@ struct conf_value {
 };
 
 
-static struct conf_value *makeValue(const char *key, char *val, size_t val_len)
+static struct conf_value* makeValue(const char* key, char* val, size_t val_len)
 {
-	struct conf_value *v;
+	struct conf_value* v;
 
 /*	size_t sz;
  *
@@ -48,7 +48,7 @@ static struct conf_value *makeValue(const char *key, char *val, size_t val_len)
  *      if(val_len >=  sizeof(v->strval))
  *              sz += (val_len - sizeof(v->strval) +  1);*/
 
-	v = (struct conf_value *)aCalloc(1, sizeof(struct conf_value));
+	v = (struct conf_value*)aCalloc(1, sizeof(struct conf_value));
 	if (v == NULL) {
 		ShowFatalError("raconf: makeValue => Out of Memory while allocating new node.\n");
 		return NULL;
@@ -103,8 +103,8 @@ static struct conf_value *makeValue(const char *key, char *val, size_t val_len)
 		val[val_len] = 'b';
 	} else if (*val >= '0' && *val <= '9') { // begins with normal digit, so assume its dec.
 		// is it float?
-		bool is_float = false;
-		char *p;
+		bool  is_float = false;
+		char* p;
 
 		for (p = val; *p != '\0'; p++)
 		{
@@ -132,12 +132,12 @@ static struct conf_value *makeValue(const char *key, char *val, size_t val_len)
 } //end: makeValue()
 
 
-static bool configParse(raconf inst, const char *fileName)
+static bool configParse(raconf inst, const char* fileName)
 {
-	FILE   *fp;
+	FILE*  fp;
 	char   line[4096];
 	char   currentSection[SECTION_LEN];
-	char   *p;
+	char*  p;
 	char   c;
 	int    linecnt;
 	size_t linelen;
@@ -199,7 +199,7 @@ _line_end_skip_whities_and_breaks:
 		if (c == '[') { // got section!
 			// Got Section!
 			// Search for ]
-			char *start = (p + 1);
+			char* start = (p + 1);
 
 			while (1)
 			{
@@ -235,8 +235,8 @@ _line_end_skip_whities_and_breaks:
 		} else if ((c >= '0' && c <= '9') || (c == '-') || (c == '_') || (c == '.') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
 			// Got variable!
 			// Search for '=' or ':' wich termiantes the name
-			char   *start      = p;
-			char   *valuestart = NULL;
+			char*  start      = p;
+			char*  valuestart = NULL;
 			size_t start_len;
 
 			while (1)
@@ -332,9 +332,9 @@ _strip_value_end_whities:
 				}
 			} else {
 				// put it to db.
-				struct conf_value *v, *o;
-				char              key[(SECTION_LEN + VARNAME_LEN + 1 + 1)]; //+1 for delimiter, +1 for termination.
-				size_t            section_len;
+				struct conf_value* v, * o;
+				char               key[(SECTION_LEN + VARNAME_LEN + 1 + 1)]; //+1 for delimiter, +1 for termination.
+				size_t             section_len;
 
 				if (*currentSection == '\0') { // empty / none
 					strncpy(key, "<unnamed>", 9);
@@ -393,9 +393,9 @@ _strip_value_end_whities:
 }
 
 
-raconf  raconf_parse(const char *file_name)
+raconf  raconf_parse(const char* file_name)
 {
-	struct raconf *rc;
+	struct raconf* rc;
 
 	rc = aCalloc(1, sizeof(struct raconf));
 	if (rc == NULL) {
@@ -416,12 +416,12 @@ raconf  raconf_parse(const char *file_name)
 
 void raconf_destroy(raconf rc)
 {
-	DBIterator        *iter;
-	struct conf_value *v;
+	DBIterator*        iter;
+	struct conf_value* v;
 
 	// Clear all entrys in db.
 	iter = db_iterator(rc->db);
-	for (v = (struct conf_value *)dbi_first(iter); dbi_exists(iter); v = (struct conf_value *)dbi_next(iter))
+	for (v = (struct conf_value*)dbi_first(iter); dbi_exists(iter); v = (struct conf_value*)dbi_next(iter))
 	{
 		aFree(v);
 	}
@@ -432,10 +432,10 @@ void raconf_destroy(raconf rc)
 	aFree(rc);
 } //end: raconf_destroy()
 
-bool raconf_getbool(raconf rc, const char *section, const char *key, bool _default)
+bool raconf_getbool(raconf rc, const char* section, const char* key, bool _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 
@@ -447,10 +447,10 @@ bool raconf_getbool(raconf rc, const char *section, const char *key, bool _defau
 } //end: raconf_getbool()
 
 
-float raconf_getfloat(raconf rc, const char *section, const char *key, float _default)
+float raconf_getfloat(raconf rc, const char* section, const char* key, float _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 
@@ -462,10 +462,10 @@ float raconf_getfloat(raconf rc, const char *section, const char *key, float _de
 } //end: raconf_getfloat()
 
 
-int64 raconf_getint(raconf rc, const char *section, const char *key, int64 _default)
+int64 raconf_getint(raconf rc, const char* section, const char* key, int64 _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 
@@ -477,10 +477,10 @@ int64 raconf_getint(raconf rc, const char *section, const char *key, int64 _defa
 } //end: raconf_getint()
 
 
-const char *raconf_getstr(raconf rc, const char *section, const char *key, const char *_default)
+const char* raconf_getstr(raconf rc, const char* section, const char* key, const char* _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 
@@ -492,10 +492,10 @@ const char *raconf_getstr(raconf rc, const char *section, const char *key, const
 } //end: raconf_getstr()
 
 
-bool raconf_getboolEx(raconf rc, const char *section, const char *fallback_section, const char *key, bool _default)
+bool raconf_getboolEx(raconf rc, const char* section, const char* fallback_section, const char* key, bool _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 	v = strdb_get(rc->db, keystr);
@@ -513,10 +513,10 @@ bool raconf_getboolEx(raconf rc, const char *section, const char *fallback_secti
 } //end: raconf_getboolEx()
 
 
-float raconf_getfloatEx(raconf rc, const char *section, const char *fallback_section, const char *key, float _default)
+float raconf_getfloatEx(raconf rc, const char* section, const char* fallback_section, const char* key, float _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 	v = strdb_get(rc->db, keystr);
@@ -534,10 +534,10 @@ float raconf_getfloatEx(raconf rc, const char *section, const char *fallback_sec
 } //end: raconf_getfloatEx()
 
 
-int64 raconf_getintEx(raconf rc, const char *section, const char *fallback_section, const char *key, int64 _default)
+int64 raconf_getintEx(raconf rc, const char* section, const char* fallback_section, const char* key, int64 _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 	v = strdb_get(rc->db, keystr);
@@ -555,10 +555,10 @@ int64 raconf_getintEx(raconf rc, const char *section, const char *fallback_secti
 } //end: raconf_getintEx()
 
 
-const char *raconf_getstrEx(raconf rc, const char *section, const char *fallback_section, const char *key, const char *_default)
+const char* raconf_getstrEx(raconf rc, const char* section, const char* fallback_section, const char* key, const char* _default)
 {
-	char              keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
-	struct conf_value *v;
+	char               keystr[SECTION_LEN + VARNAME_LEN + 1 + 1];
+	struct conf_value* v;
 
 	MAKEKEY(keystr, section, key);
 	v = strdb_get(rc->db, keystr);

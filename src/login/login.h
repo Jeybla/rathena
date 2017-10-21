@@ -67,43 +67,43 @@ struct mmo_char_server {
 extern struct mmo_char_server ch_server[MAX_SERVERS];
 
 struct client_hash_node {
-	unsigned int            group_id; //inferior or egal group to apply restriction
-	uint8                   hash[16]; ///hash required for that groupid or below
-	struct client_hash_node *next;    ///next entry
+	unsigned int             group_id; //inferior or egal group to apply restriction
+	uint8                    hash[16]; ///hash required for that groupid or below
+	struct client_hash_node* next;     ///next entry
 };
 
 struct Login_Config {
-	uint32                  login_ip;                               /// the address to bind to
-	uint16                  login_port;                             /// the port to bind to
-	unsigned int            ipban_cleanup_interval;                 /// interval (in seconds) to clean up expired IP bans
-	unsigned int            ip_sync_interval;                       /// interval (in minutes) to execute a DNS/IP update (for dynamic IPs)
-	bool                    log_login;                              /// whether to log login server actions or not
-	char                    date_format[32];                        /// date format used in messages
-	bool                    console;                                /// console input system enabled?
-	bool                    new_account_flag, new_acc_length_limit; /// autoregistration via _M/_F ? / if yes minimum length is 4?
-	int                     start_limited_time;                     /// new account expiration time (-1: unlimited)
-	bool                    use_md5_passwds;                        /// work with password hashes instead of plaintext passwords?
-	int                     group_id_to_connect;                    /// required group id to connect
-	int                     min_group_id_to_connect;                /// minimum group id to connect
+	uint32                   login_ip;                               /// the address to bind to
+	uint16                   login_port;                             /// the port to bind to
+	unsigned int             ipban_cleanup_interval;                 /// interval (in seconds) to clean up expired IP bans
+	unsigned int             ip_sync_interval;                       /// interval (in minutes) to execute a DNS/IP update (for dynamic IPs)
+	bool                     log_login;                              /// whether to log login server actions or not
+	char                     date_format[32];                        /// date format used in messages
+	bool                     console;                                /// console input system enabled?
+	bool                     new_account_flag, new_acc_length_limit; /// autoregistration via _M/_F ? / if yes minimum length is 4?
+	int                      start_limited_time;                     /// new account expiration time (-1: unlimited)
+	bool                     use_md5_passwds;                        /// work with password hashes instead of plaintext passwords?
+	int                      group_id_to_connect;                    /// required group id to connect
+	int                      min_group_id_to_connect;                /// minimum group id to connect
 
-	bool                    ipban;                                  /// perform IP blocking (via contents of `ipbanlist`) ?
-	bool                    dynamic_pass_failure_ban;               /// automatic IP blocking due to failed login attempts ?
-	unsigned int            dynamic_pass_failure_ban_interval;      /// how far to scan the loginlog for password failures in minutes
-	unsigned int            dynamic_pass_failure_ban_limit;         /// number of failures needed to trigger the ipban
-	unsigned int            dynamic_pass_failure_ban_duration;      /// duration of the ipban in minutes
-	bool                    use_dnsbl;                              /// dns blacklist blocking ?
-	char                    dnsbl_servs[1024];                      /// comma-separated list of dnsbl servers
+	bool                     ipban;                                  /// perform IP blocking (via contents of `ipbanlist`) ?
+	bool                     dynamic_pass_failure_ban;               /// automatic IP blocking due to failed login attempts ?
+	unsigned int             dynamic_pass_failure_ban_interval;      /// how far to scan the loginlog for password failures in minutes
+	unsigned int             dynamic_pass_failure_ban_limit;         /// number of failures needed to trigger the ipban
+	unsigned int             dynamic_pass_failure_ban_duration;      /// duration of the ipban in minutes
+	bool                     use_dnsbl;                              /// dns blacklist blocking ?
+	char                     dnsbl_servs[1024];                      /// comma-separated list of dnsbl servers
 
-	int                     allowed_regs;                           /// max number of registration
-	int                     time_allowed;                           /// registration interval in seconds
+	int                      allowed_regs;                           /// max number of registration
+	int                      time_allowed;                           /// registration interval in seconds
 
-	int                     client_hash_check;                      /// flags for checking client md5
-	struct client_hash_node *client_hash_nodes;                     /// linked list containing md5 hash for each gm group
-	char                    loginconf_name[256];                    /// name of main config file
-	char                    msgconf_name[256];                      /// name of msg_conf config file
-	char                    lanconf_name[256];                      /// name of lan config file
+	int                      client_hash_check;                      /// flags for checking client md5
+	struct client_hash_node* client_hash_nodes;                      /// linked list containing md5 hash for each gm group
+	char                     loginconf_name[256];                    /// name of main config file
+	char                     msgconf_name[256];                      /// name of msg_conf config file
+	char                     lanconf_name[256];                      /// name of lan config file
 
-	int                     char_per_account;                       /// number of characters an account can have
+	int                      char_per_account;                       /// number of characters an account can have
 #ifdef VIP_ENABLE
 	struct {
 		unsigned int group;                                             /// VIP group ID
@@ -120,10 +120,10 @@ extern struct Login_Config login_config;
 #define msg_config_read(cfgName)    login_msg_config_read(cfgName)
 #define msg_txt(msg_number)         login_msg_txt(msg_number)
 #define do_final_msg()              login_do_final_msg()
-int login_msg_config_read(char *cfgName);
-const char *login_msg_txt(int msg_number);
+int login_msg_config_read(char* cfgName);
+const char* login_msg_txt(int msg_number);
 void login_do_final_msg(void);
-bool login_config_read(const char *cfgName, bool normal);
+bool login_config_read(const char* cfgName, bool normal);
 
 /// Online User Database [Wizputer]
 struct online_login_data {
@@ -131,7 +131,7 @@ struct online_login_data {
 	int    waiting_disconnect;
 	int    char_server;
 };
-extern DBMap *online_db; // uint32 account_id -> struct online_login_data*
+extern DBMap* online_db; // uint32 account_id -> struct online_login_data*
 
 /// Auth database
 #define AUTH_TIMEOUT    30000
@@ -143,10 +143,10 @@ struct auth_node {
 	char   sex;
 	uint8  clienttype;
 };
-extern DBMap *auth_db; // uint32 account_id -> struct auth_node*
+extern DBMap* auth_db; // uint32 account_id -> struct auth_node*
 
 ///Accessors
-AccountDB *login_get_accounts_db(void);
+AccountDB* login_get_accounts_db(void);
 
 /**
  * Sub function to create an online_login_data and save it to db.
@@ -165,7 +165,7 @@ DBData login_create_online_user(DBKey key, va_list args);
  * @param account_id: the account identifier
  * @return the new|registered online data
  */
-struct online_login_data *login_add_online_user(int char_server, uint32 account_id);
+struct online_login_data* login_add_online_user(int char_server, uint32 account_id);
 
 /**
  * Function to remove a user from online_db.
@@ -195,7 +195,7 @@ int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t 
  * @return : Value to be added up by the function that is applying this
  * @see DBApply
  */
-int login_online_db_setoffline(DBKey key, DBData *data, va_list ap);
+int login_online_db_setoffline(DBKey key, DBData* data, va_list ap);
 
 /**
  * Test to determine if an IP come from LAN or WAN.
@@ -217,7 +217,7 @@ int lan_subnetcheck(uint32 ip);
  *	1: incorrect pass or userid (userid|pass too short or already exist);
  *	3: registration limit exceeded;
  */
-int login_mmo_auth_new(const char *userid, const char *pass, const char sex, const char *last_ip);
+int login_mmo_auth_new(const char* userid, const char* pass, const char sex, const char* last_ip);
 
 /**
  * Check/authentication of a connection.
@@ -233,7 +233,7 @@ int login_mmo_auth_new(const char *userid, const char *pass, const char sex, con
  *	6: banned
  *	x: acc state (TODO document me deeper)
  */
-int login_mmo_auth(struct login_session_data *sd, bool isServer);
+int login_mmo_auth(struct login_session_data* sd, bool isServer);
 
 #ifdef __cplusplus
 }

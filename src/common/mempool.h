@@ -7,10 +7,10 @@ extern "C" {
 
 #include "cbasetypes.h"
 
-typedef struct mempool   *pMempool;
+typedef struct mempool   * pMempool;
 
-typedef void (*memPoolOnNodeAllocationProc)(void *ptr);
-typedef void (*memPoolOnNodeDeallocationProc)(void *ptr);
+typedef void (*memPoolOnNodeAllocationProc)(void* ptr);
+typedef void (*memPoolOnNodeDeallocationProc)(void* ptr);
 
 typedef struct mempool_stats {
 	int64 num_nodes_total;
@@ -49,7 +49,7 @@ void mempool_final();
  *
  * @return not NULL
  */
-pMempool mempool_create(const char *name, uint64 elem_size, uint64 initial_count, uint64 realloc_count, memPoolOnNodeAllocationProc onNodeAlloc, memPoolOnNodeDeallocationProc onNodeDealloc);
+pMempool mempool_create(const char* name, uint64 elem_size, uint64 initial_count, uint64 realloc_count, memPoolOnNodeAllocationProc onNodeAlloc, memPoolOnNodeDeallocationProc onNodeDealloc);
 
 
 /**
@@ -71,7 +71,7 @@ void mempool_destroy(pMempool pool);
  *
  * @return Address of empty Node
  */
-void *mempool_node_get(pMempool pool);
+void* mempool_node_get(pMempool pool);
 
 
 /**
@@ -80,7 +80,7 @@ void *mempool_node_get(pMempool pool);
  * @param pool - the pool to put the node, to
  * @param node - the node to return
  */
-void mempool_node_put(pMempool pool, void *node);
+void mempool_node_put(pMempool pool, void* node);
 
 
 /**

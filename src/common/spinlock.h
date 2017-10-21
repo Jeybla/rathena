@@ -29,7 +29,7 @@ typedef struct __declspec (align(64)) SPIN_LOCK {
 	volatile LONG lock;
 	volatile LONG nest;
 	volatile LONG sync_lock;
-} SPIN_LOCK, *PSPIN_LOCK;
+} SPIN_LOCK, * PSPIN_LOCK;
 #else
 typedef struct   SPIN_LOCK {
 	volatile int32 lock;

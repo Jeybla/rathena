@@ -31,16 +31,16 @@ extern "C" {
 #define RFIFOP(fd, pos)        (session[fd]->rdata + session[fd]->rdata_pos + (pos))
 #define WFIFOP(fd, pos)        (session[fd]->wdata + session[fd]->wdata_size + (pos))
 
-#define RFIFOCP(fd, pos)       ((char *)RFIFOP(fd, pos))
-#define WFIFOCP(fd, pos)       ((char *)WFIFOP(fd, pos))
-#define RFIFOB(fd, pos)        (*(uint8 *)RFIFOP(fd, pos))
-#define WFIFOB(fd, pos)        (*(uint8 *)WFIFOP(fd, pos))
-#define RFIFOW(fd, pos)        (*(uint16 *)RFIFOP(fd, pos))
-#define WFIFOW(fd, pos)        (*(uint16 *)WFIFOP(fd, pos))
-#define RFIFOL(fd, pos)        (*(uint32 *)RFIFOP(fd, pos))
-#define WFIFOL(fd, pos)        (*(uint32 *)WFIFOP(fd, pos))
-#define RFIFOQ(fd, pos)        (*(uint64 *)RFIFOP(fd, pos))
-#define WFIFOQ(fd, pos)        (*(uint64 *)WFIFOP(fd, pos))
+#define RFIFOCP(fd, pos)       ((char*)RFIFOP(fd, pos))
+#define WFIFOCP(fd, pos)       ((char*)WFIFOP(fd, pos))
+#define RFIFOB(fd, pos)        (*(uint8*)RFIFOP(fd, pos))
+#define WFIFOB(fd, pos)        (*(uint8*)WFIFOP(fd, pos))
+#define RFIFOW(fd, pos)        (*(uint16*)RFIFOP(fd, pos))
+#define WFIFOW(fd, pos)        (*(uint16*)WFIFOP(fd, pos))
+#define RFIFOL(fd, pos)        (*(uint32*)RFIFOP(fd, pos))
+#define WFIFOL(fd, pos)        (*(uint32*)WFIFOP(fd, pos))
+#define RFIFOQ(fd, pos)        (*(uint64*)RFIFOP(fd, pos))
+#define WFIFOQ(fd, pos)        (*(uint64*)WFIFOP(fd, pos))
 #define RFIFOSPACE(fd)         (session[fd]->max_rdata - session[fd]->rdata_size)
 #define WFIFOSPACE(fd)         (session[fd]->max_wdata - session[fd]->wdata_size)
 
@@ -59,19 +59,19 @@ extern "C" {
         while (0)
 
 // buffer I/O macros
-#define RBUFP(p, pos)     (((uint8 *)(p)) + (pos))
-#define RBUFCP(p, pos)    ((char *)RBUFP((p), (pos)))
-#define RBUFB(p, pos)     (*(uint8 *)RBUFP((p), (pos)))
-#define RBUFW(p, pos)     (*(uint16 *)RBUFP((p), (pos)))
-#define RBUFL(p, pos)     (*(uint32 *)RBUFP((p), (pos)))
-#define RBUFQ(p, pos)     (*(uint64 *)RBUFP((p), (pos)))
+#define RBUFP(p, pos)     (((uint8*)(p)) + (pos))
+#define RBUFCP(p, pos)    ((char*)RBUFP((p), (pos)))
+#define RBUFB(p, pos)     (*(uint8*)RBUFP((p), (pos)))
+#define RBUFW(p, pos)     (*(uint16*)RBUFP((p), (pos)))
+#define RBUFL(p, pos)     (*(uint32*)RBUFP((p), (pos)))
+#define RBUFQ(p, pos)     (*(uint64*)RBUFP((p), (pos)))
 
-#define WBUFP(p, pos)     (((uint8 *)(p)) + (pos))
-#define WBUFCP(p, pos)    ((char *)WBUFP((p), (pos)))
-#define WBUFB(p, pos)     (*(uint8 *)WBUFP((p), (pos)))
-#define WBUFW(p, pos)     (*(uint16 *)WBUFP((p), (pos)))
-#define WBUFL(p, pos)     (*(uint32 *)WBUFP((p), (pos)))
-#define WBUFQ(p, pos)     (*(uint64 *)WBUFP((p), (pos)))
+#define WBUFP(p, pos)     (((uint8*)(p)) + (pos))
+#define WBUFCP(p, pos)    ((char*)WBUFP((p), (pos)))
+#define WBUFB(p, pos)     (*(uint8*)WBUFP((p), (pos)))
+#define WBUFW(p, pos)     (*(uint16*)WBUFP((p), (pos)))
+#define WBUFL(p, pos)     (*(uint32*)WBUFP((p), (pos)))
+#define WBUFQ(p, pos)     (*(uint64*)WBUFP((p), (pos)))
 
 #define TOB(n)            ((uint8)((n) & UINT8_MAX))
 #define TOW(n)            ((uint16)((n) & UINT16_MAX))
@@ -93,7 +93,7 @@ struct socket_data {
 
 	uint32    client_addr; // remote client address
 
-	uint8     *rdata, *wdata;
+	uint8*    rdata, * wdata;
 	size_t    max_rdata, max_wdata;
 	size_t    rdata_size, wdata_size;
 	size_t    rdata_pos;
@@ -103,18 +103,18 @@ struct socket_data {
 	SendFunc  func_send;
 	ParseFunc func_parse;
 
-	void      *session_data; // stores application-specific data related to the session
+	void*     session_data;  // stores application-specific data related to the session
 };
 
 
 // Data prototype declaration
 
-extern struct socket_data *session[FD_SETSIZE];
+extern struct socket_data* session[FD_SETSIZE];
 
-extern int                fd_max;
+extern int                 fd_max;
 
-extern time_t             last_tick;
-extern time_t             stall_time;
+extern time_t              last_tick;
+extern time_t              stall_time;
 
 //////////////////////////////////
 // some checking on sockets
@@ -162,16 +162,16 @@ enum chrif_req_op {
 
 
 // hostname/ip conversion functions
-uint32 host2ip(const char *hostname);
+uint32 host2ip(const char* hostname);
 
-const char *ip2str(uint32 ip, char ip_str[16]);
-uint32 str2ip(const char *ip_str);
+const char* ip2str(uint32 ip, char ip_str[16]);
+uint32 str2ip(const char* ip_str);
 
 #define CONVIP(ip)            ((ip) >> 24) & 0xFF, ((ip) >> 16) & 0xFF, ((ip) >> 8) & 0xFF, ((ip) >> 0) & 0xFF
 #define MAKEIP(a, b, c, d)    (uint32)((((a) & 0xFF) << 24) | (((b) & 0xFF) << 16) | (((c) & 0xFF) << 8) | (((d) & 0xFF) << 0))
 uint16 ntows(uint16 netshort);
 
-int socket_getips(uint32 *ips, int max);
+int socket_getips(uint32* ips, int max);
 
 extern uint32 addr_[16]; // ip addresses of local host (host byte order)
 extern int    naddr_;    // # of ip addresses

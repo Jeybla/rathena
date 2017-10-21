@@ -23,7 +23,7 @@
 
 
 /// Dumps given buffer into file pointed to by a handle.
-void WriteDump(FILE *fp, const void *buffer, size_t length)
+void WriteDump(FILE* fp, const void* buffer, size_t length)
 {
 	size_t i;
 	char   hex[48 + 1], ascii[16 + 1];
@@ -51,7 +51,7 @@ void WriteDump(FILE *fp, const void *buffer, size_t length)
 
 
 /// Dumps given buffer on the console.
-void ShowDump(const void *buffer, size_t length)
+void ShowDump(const void* buffer, size_t length)
 {
 	size_t i;
 	char   hex[48 + 1], ascii[16 + 1];
@@ -80,9 +80,9 @@ void ShowDump(const void *buffer, size_t length)
 
 #ifdef WIN32
 
-static char *checkpath(char *path, const char *srcpath) // just make sure the char*path is not const
+static char* checkpath(char* path, const char* srcpath) // just make sure the char*path is not const
 {
-	char *p = path;
+	char* p = path;
 
 	if (NULL != path && NULL != srcpath)
 		while (*srcpath)
@@ -94,18 +94,19 @@ static char *checkpath(char *path, const char *srcpath) // just make sure the ch
 				*p++ = *srcpath++;
 		}
 
+
 	*p = *srcpath; //EOS
 	return path;
 }
 
-void findfile(const char *p, const char *pat, void(func) (const char *))
+void findfile(const char* p, const char* pat, void(func) (const char*))
 {
 	WIN32_FIND_DATAA FindFileData;
 	HANDLE           hFind;
 	char             tmppath[MAX_PATH + 1];
 
-	const char       *path    = (p == NULL) ? "." : p;
-	const char       *pattern = (pat == NULL) ? "" : pat;
+	const char*      path    = (p == NULL) ? "." : p;
+	const char*      pattern = (pat == NULL) ? "" : pat;
 
 	checkpath(tmppath, path);
 	if (PATHSEP != tmppath[strlen(tmppath) - 1])
@@ -145,7 +146,7 @@ void findfile(const char *p, const char *pat, void(func) (const char *))
  *         2 = File
  *         3 = File but doesn't exist
  */
-int check_filepath(const char *filepath)
+int check_filepath(const char* filepath)
 {
 	DWORD Attribute;
 
@@ -174,7 +175,7 @@ int check_filepath(const char *filepath)
  *         2 = File
  *         3 = Neither a file or directory
  */
-int check_filepath(const char *filepath)
+int check_filepath(const char* filepath)
 {
 	struct stat s;
 
@@ -190,9 +191,9 @@ int check_filepath(const char *filepath)
 	return 0;
 }
 
-static char *checkpath(char *path, const char *srcpath) // just make sure the char*path is not const
+static char* checkpath(char* path, const char* srcpath) // just make sure the char*path is not const
 {
-	char *p = path;
+	char* p = path;
 
 	if (NULL != path && NULL != srcpath)
 		while (*srcpath)
@@ -204,18 +205,19 @@ static char *checkpath(char *path, const char *srcpath) // just make sure the ch
 				*p++ = *srcpath++;
 		}
 
+
 	*p = *srcpath; //EOS
 	return path;
 }
 
-void findfile(const char *p, const char *pat, void(func) (const char *))
+void findfile(const char* p, const char* pat, void(func) (const char*))
 {
-	DIR           *dir;         // pointer to the scanned directory.
-	struct dirent *entry;       // pointer to one directory entry.
-	struct stat   dir_stat;     // used by stat().
-	char          tmppath[MAX_DIR_PATH + 1];
-	char          path[MAX_DIR_PATH + 1] = ".";
-	const char    *pattern               = (pat == NULL) ? "" : pat;
+	DIR*           dir;         // pointer to the scanned directory.
+	struct dirent* entry;       // pointer to one directory entry.
+	struct stat    dir_stat;    // used by stat().
+	char           tmppath[MAX_DIR_PATH + 1];
+	char           path[MAX_DIR_PATH + 1] = ".";
+	const char*    pattern                = (pat == NULL) ? "" : pat;
 
 	if (p != NULL)
 		strcpy(path, p);
@@ -259,7 +261,7 @@ void findfile(const char *p, const char *pat, void(func) (const char *))
 } /* findfile */
 #endif
 
-bool exists(const char *filename)
+bool exists(const char* filename)
 {
 	return !access(filename, F_OK);
 }
@@ -327,7 +329,7 @@ int16 MakeShortLE(int16 val)
 
 	buf[0] = (unsigned char)((val & 0x00FF));
 	buf[1] = (unsigned char)((val & 0xFF00) >> 0x08);
-	return *((int16 *)buf);
+	return *((int16*)buf);
 }
 
 // Converts an int32 from current machine order to little-endian
@@ -339,18 +341,18 @@ int32 MakeLongLE(int32 val)
 	buf[1] = (unsigned char)((val & 0x0000FF00) >> 0x08);
 	buf[2] = (unsigned char)((val & 0x00FF0000) >> 0x10);
 	buf[3] = (unsigned char)((val & 0xFF000000) >> 0x18);
-	return *((int32 *)buf);
+	return *((int32*)buf);
 }
 
 // Reads an uint16 in little-endian from the buffer
-uint16 GetUShort(const unsigned char *buf)
+uint16 GetUShort(const unsigned char* buf)
 {
 	return (((uint16)(buf[0])))
 	       | (((uint16)(buf[1])) << 0x08);
 }
 
 // Reads an uint32 in little-endian from the buffer
-uint32 GetULong(const unsigned char *buf)
+uint32 GetULong(const unsigned char* buf)
 {
 	return (((uint32)(buf[0])))
 	       | (((uint32)(buf[1])) << 0x08)
@@ -359,17 +361,17 @@ uint32 GetULong(const unsigned char *buf)
 }
 
 // Reads an int32 in little-endian from the buffer
-int32 GetLong(const unsigned char *buf)
+int32 GetLong(const unsigned char* buf)
 {
 	return (int32)GetULong(buf);
 }
 
 // Reads a float (32 bits) from the buffer
-float GetFloat(const unsigned char *buf)
+float GetFloat(const unsigned char* buf)
 {
 	uint32 val = GetULong(buf);
 
-	return *((float *)(void *)&val);
+	return *((float*)(void*)&val);
 }
 
 /// calculates the value of A / B, in percent (rounded down)
@@ -396,10 +398,10 @@ unsigned int get_percentage(const unsigned int A, const unsigned int B)
  * Calculates the Levenshtein distance of two strings.
  * @author http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
  */
-int levenshtein(const char *s1, const char *s2)
+int levenshtein(const char* s1, const char* s2)
 {
-	unsigned int s1len, s2len, x, y, lastdiag, olddiag, i;
-	unsigned int *column;
+	unsigned int  s1len, s2len, x, y, lastdiag, olddiag, i;
+	unsigned int* column;
 
 	s1len  = strlen(s1);
 	s2len  = strlen(s2);

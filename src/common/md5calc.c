@@ -16,7 +16,7 @@
 #endif
 
 // Global variable
-static unsigned int *pX;
+static unsigned int* pX;
 
 // String Table
 static const unsigned int T[] =
@@ -66,29 +66,29 @@ static unsigned int Round(unsigned int a, unsigned int b, unsigned int FGHI,
 	return b + ROTATE_LEFT(a + FGHI + pX[k] + T[i], s);
 }
 
-static void Round1(unsigned int *a, unsigned int b, unsigned int c,
+static void Round1(unsigned int* a, unsigned int b, unsigned int c,
                    unsigned int d, unsigned int k, unsigned int s, unsigned int i)
 {
 	*a = Round(*a, b, F(b, c, d), k, s, i);
 }
-static void Round2(unsigned int *a, unsigned int b, unsigned int c,
+static void Round2(unsigned int* a, unsigned int b, unsigned int c,
                    unsigned int d, unsigned int k, unsigned int s, unsigned int i)
 {
 	*a = Round(*a, b, G(b, c, d), k, s, i);
 }
-static void Round3(unsigned int *a, unsigned int b, unsigned int c,
+static void Round3(unsigned int* a, unsigned int b, unsigned int c,
                    unsigned int d, unsigned int k, unsigned int s, unsigned int i)
 {
 	*a = Round(*a, b, H(b, c, d), k, s, i);
 }
-static void Round4(unsigned int *a, unsigned int b, unsigned int c,
+static void Round4(unsigned int* a, unsigned int b, unsigned int c,
                    unsigned int d, unsigned int k, unsigned int s, unsigned int i)
 {
 	*a = Round(*a, b, I(b, c, d), k, s, i);
 }
 
-static void MD5_Round_Calculate(const unsigned char *block,
-                                unsigned int *A2, unsigned int *B2, unsigned int *C2, unsigned int *D2)
+static void MD5_Round_Calculate(const unsigned char* block,
+                                unsigned int* A2, unsigned int* B2, unsigned int* C2, unsigned int* D2)
 {
 	//create X It is since it is required.
 	unsigned int X[16]; //512bit 64byte
@@ -191,22 +191,22 @@ static void MD5_Round_Calculate(const unsigned char *block,
 	memset(pX, 0, sizeof(X));
 } /* MD5_Round_Calculate */
 
-static void MD5_String2binary(const char *string, unsigned char *output)
+static void MD5_String2binary(const char* string, unsigned char* output)
 {
 //var
 	/*8bit*/
-	unsigned char padding_message[64]; //Extended message   512bit 64byte
-	unsigned char *pstring;            //The position of string in the present scanning notes is held.
+	unsigned char  padding_message[64]; //Extended message   512bit 64byte
+	unsigned char* pstring;             //The position of string in the present scanning notes is held.
 
 	/*32bit*/
 	unsigned int string_byte_len,     //The byte chief of string is held.
 	             string_bit_len,      //The bit length of string is held.
 	             copy_len,            //The number of bytes which is used by 1-3 and which remained
 	             msg_digest[4];       //Message digest   128bit 4byte
-	unsigned int *A = &msg_digest[0], //The message digest in accordance with RFC (reference)
-	*B              = &msg_digest[1],
-	*C              = &msg_digest[2],
-	*D              = &msg_digest[3];
+	unsigned int* A = &msg_digest[0], //The message digest in accordance with RFC (reference)
+	* B             = &msg_digest[1],
+	* C             = &msg_digest[2],
+	* D             = &msg_digest[3];
 	int i;
 
 //prog
@@ -219,7 +219,7 @@ static void MD5_String2binary(const char *string, unsigned char *output)
 	//Step 1.Append Padding Bits (extension of a mark bit)
 	//1-1
 	string_byte_len = (unsigned int)strlen(string); //The byte chief of a character sequence is acquired.
-	pstring         = (unsigned char *)string;      //The position of the present character sequence is set.
+	pstring         = (unsigned char*)string;       //The position of the present character sequence is set.
 
 	//1-2  Repeat calculation until length becomes less than 64 bytes.
 	for (i = string_byte_len; 64 <= i; i -= 64, pstring += 64)
@@ -227,7 +227,7 @@ static void MD5_String2binary(const char *string, unsigned char *output)
 
 	//1-3
 	copy_len = string_byte_len % 64;                             //The number of bytes which remained is computed.
-	strncpy((char *)padding_message, (char *)pstring, copy_len); //A message is copied to an extended bit sequence.
+	strncpy((char*)padding_message, (char*)pstring, copy_len);   //A message is copied to an extended bit sequence.
 	memset(padding_message + copy_len, 0, 64 - copy_len);        //It buries by 0 until it becomes extended bit length.
 	padding_message[copy_len] |= 0x80;                           //The next of a message is 1.
 
@@ -260,13 +260,13 @@ static void MD5_String2binary(const char *string, unsigned char *output)
 // The function for the exteriors
 
 /** output is the coded binary in the character sequence which wants to code string. */
-void MD5_Binary(const char *string, unsigned char *output)
+void MD5_Binary(const char* string, unsigned char* output)
 {
 	MD5_String2binary(string, output);
 }
 
 /** output is the coded character sequence in the character sequence which wants to code string. */
-void MD5_String(const char *string, char *output)
+void MD5_String(const char* string, char* output)
 {
 	unsigned char digest[16];
 
@@ -279,7 +279,7 @@ void MD5_String(const char *string, char *output)
 }
 
 /** output is a sequence of non-zero characters to be used as password salt. */
-void MD5_Salt(unsigned int len, char *output)
+void MD5_Salt(unsigned int len, char* output)
 {
 	unsigned int i;
 

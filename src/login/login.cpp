@@ -35,16 +35,16 @@
 #include <stdlib.h>
 
 #define LOGIN_MAX_MSG    30             /// Max number predefined in msg_conf
-static char *msg_table[LOGIN_MAX_MSG];  /// Login Server messages_conf
+static char* msg_table[LOGIN_MAX_MSG];  /// Login Server messages_conf
 
 //definition of exported var declared in .h
 struct mmo_char_server ch_server[MAX_SERVERS];  /// char server data
 struct Login_Config    login_config;            /// Configuration of login-serv
-DBMap                  *online_db;
-DBMap                  *auth_db;
+DBMap*                 online_db;
+DBMap*                 auth_db;
 
 // account database
-AccountDB *accounts = NULL;
+AccountDB* accounts = NULL;
 // Advanced subnet check [LuzZza]
 struct s_subnet {
 	uint32 mask;
@@ -57,17 +57,17 @@ int subnet_count = 0; //number of subnet config
 int login_fd;         // login server file descriptor socket
 
 //early declaration
-bool login_check_password(const char *md5key, int passwdenc, const char *passwd, const char *refpass);
+bool login_check_password(const char* md5key, int passwdenc, const char* passwd, const char* refpass);
 
 ///Accessors
-AccountDB *login_get_accounts_db(void)
+AccountDB* login_get_accounts_db(void)
 {
 	return accounts;
 }
 
 // Console Command Parser [Wizputer]
 //FIXME to be remove (moved to cnslif / will be done once map/char/login, all have their cnslif interface ready)
-int parse_console(const char *buf)
+int parse_console(const char* buf)
 {
 	return cnslif_parse(buf);
 }
@@ -81,7 +81,7 @@ int parse_console(const char *buf)
  */
 DBData login_create_online_user(DBKey key, va_list args)
 {
-	struct online_login_data *p;
+	struct online_login_data* p;
 
 	CREATE(p, struct online_login_data, 1);
 	p->account_id         = key.i;
@@ -97,11 +97,11 @@ DBData login_create_online_user(DBKey key, va_list args)
  * @param account_id : aid connected
  * @return the new online_login_data for that user
  */
-struct online_login_data *login_add_online_user(int char_server, uint32 account_id)
+struct online_login_data* login_add_online_user(int char_server, uint32 account_id)
 {
-	struct online_login_data *p;
+	struct online_login_data* p;
 
-	p              = (struct online_login_data *)idb_ensure(online_db, account_id, login_create_online_user);
+	p              = (struct online_login_data*)idb_ensure(online_db, account_id, login_create_online_user);
 	p->char_server = char_server;
 	if (p->waiting_disconnect != INVALID_TIMER) {
 		delete_timer(p->waiting_disconnect, login_waiting_disconnect_timer);
@@ -118,9 +118,9 @@ struct online_login_data *login_add_online_user(int char_server, uint32 account_
  */
 void login_remove_online_user(uint32 account_id)
 {
-	struct online_login_data *p;
+	struct online_login_data* p;
 
-	p = (struct online_login_data *)idb_get(online_db, account_id);
+	p = (struct online_login_data*)idb_get(online_db, account_id);
 	if (p == NULL)
 		return;
 
@@ -143,7 +143,7 @@ void login_remove_online_user(uint32 account_id)
  */
 int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct online_login_data *p = (struct online_login_data *)idb_get(online_db, id);
+	struct online_login_data* p = (struct online_login_data*)idb_get(online_db, id);
 
 	if (p != NULL && p->waiting_disconnect == tid && p->account_id == id) {
 		p->waiting_disconnect = INVALID_TIMER;
@@ -161,10 +161,10 @@ int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t 
  * @return : Value to be added up by the function that is applying this
  * @see DBApply
  */
-int login_online_db_setoffline(DBKey key, DBData *data, va_list ap)
+int login_online_db_setoffline(DBKey key, DBData* data, va_list ap)
 {
-	struct online_login_data *p     = (struct online_login_data *)db_data2ptr(data);
-	int                      server = va_arg(ap, int);
+	struct online_login_data* p      = (struct online_login_data*)db_data2ptr(data);
+	int                       server = va_arg(ap, int);
 
 	if (server == -1) {
 		p->char_server = -1;
@@ -185,9 +185,9 @@ int login_online_db_setoffline(DBKey key, DBData *data, va_list ap)
  * @return: Value to be added up by the function that is applying this
  * @see DBApply
  */
-static int login_online_data_cleanup_sub(DBKey key, DBData *data, va_list ap)
+static int login_online_data_cleanup_sub(DBKey key, DBData* data, va_list ap)
 {
-	struct online_login_data *character = (struct online_login_data *)db_data2ptr(data);
+	struct online_login_data* character = (struct online_login_data*)db_data2ptr(data);
 
 	if (character->char_server == -2) //Unknown server.. set them offline
 		login_remove_online_user(character->account_id);
@@ -221,7 +221,7 @@ static int login_online_data_cleanup(int tid, unsigned int tick, int id, intptr_
  *	1: incorrect pass or userid (userid|pass too short or already exist);
  *	3: registration limit exceeded;
  */
-int login_mmo_auth_new(const char *userid, const char *pass, const char sex, const char *last_ip)
+int login_mmo_auth_new(const char* userid, const char* pass, const char sex, const char* last_ip)
 {
 	static int          num_regs     = 0; // registration counter
 	static unsigned int new_reg_tick = 0;
@@ -294,7 +294,7 @@ int login_mmo_auth_new(const char *userid, const char *pass, const char sex, con
  *	6: banned
  *	x: acc state (TODO document me deeper)
  */
-int login_mmo_auth(struct login_session_data *sd, bool isServer)
+int login_mmo_auth(struct login_session_data* sd, bool isServer)
 {
 	struct mmo_account acc;
 	int                len;
@@ -305,10 +305,10 @@ int login_mmo_auth(struct login_session_data *sd, bool isServer)
 
 	// DNS Blacklist check
 	if (login_config.use_dnsbl) {
-		char  r_ip[16];
-		char  ip_dnsbl[256];
-		char  *dnsbl_serv;
-		uint8 *sin_addr = (uint8 *)&session[sd->fd]->client_addr;
+		char   r_ip[16];
+		char   ip_dnsbl[256];
+		char*  dnsbl_serv;
+		uint8* sin_addr = (uint8*)&session[sd->fd]->client_addr;
 
 		sprintf(r_ip, "%u.%u.%u.%u", sin_addr[0], sin_addr[1], sin_addr[2], sin_addr[3]);
 
@@ -326,8 +326,8 @@ int login_mmo_auth(struct login_session_data *sd, bool isServer)
 
 	// Account creation with _M/_F
 	if (login_config.new_account_flag) {
-		if (len > 2 && strnlen(sd->passwd, NAME_LENGTH) > 0 // valid user and password lengths
-		    && sd->passwdenc == 0                           // unencoded password
+		if (len > 2 && strnlen(sd->passwd, NAME_LENGTH) > 0                            // valid user and password lengths
+		    && sd->passwdenc == 0                                                      // unencoded password
 		    && sd->userid[len - 2] == '_' && memchr("FfMm", sd->userid[len - 1], 4)) { // _M/_F suffix
 			int result;
 			// remove the _M/_F suffix
@@ -368,8 +368,8 @@ int login_mmo_auth(struct login_session_data *sd, bool isServer)
 	}
 
 	if (login_config.client_hash_check && !isServer) {
-		struct client_hash_node *node = NULL;
-		bool                    match = false;
+		struct client_hash_node* node  = NULL;
+		bool                     match = false;
 
 		for (node = login_config.client_hash_nodes; node; node = node->next)
 		{
@@ -433,7 +433,7 @@ int login_mmo_auth(struct login_session_data *sd, bool isServer)
  * @param passwd: pass to check
  * @return true if matching else false
  */
-bool login_check_encrypted(const char *str1, const char *str2, const char *passwd)
+bool login_check_encrypted(const char* str1, const char* str2, const char* passwd)
 {
 	char tmpstr[64 + 1], md5str[32 + 1];
 
@@ -451,7 +451,7 @@ bool login_check_encrypted(const char *str1, const char *str2, const char *passw
  * @param refpass: pass register in db
  * @return true if matching else false
  */
-bool login_check_password(const char *md5key, int passwdenc, const char *passwd, const char *refpass)
+bool login_check_password(const char* md5key, int passwdenc, const char* passwd, const char* refpass)
 {
 	if (passwdenc == 0) {
 		return(0 == strcmp(passwd, refpass));
@@ -478,11 +478,11 @@ int lan_subnetcheck(uint32 ip)
 
 
 /// Msg_conf tayloring
-int login_msg_config_read(char *cfgName)
+int login_msg_config_read(char* cfgName)
 {
 	return _msg_config_read(cfgName, LOGIN_MAX_MSG, msg_table);
 }
-const char *login_msg_txt(int msg_number)
+const char* login_msg_txt(int msg_number)
 {
 	return _msg_txt(msg_number, LOGIN_MAX_MSG, msg_table);
 }
@@ -499,11 +499,11 @@ void login_do_final_msg(void)
  * @param lancfgName: Name of the lan configuration (could be fullpath)
  * @return 0:success, 1:failure (file not found|readable)
  */
-int login_lan_config_read(const char *lancfgName)
+int login_lan_config_read(const char* lancfgName)
 {
-	FILE *fp;
-	int  line_num = 0, s_subnet = ARRAYLENGTH(subnet);
-	char line[1024], w1[64], w2[64], w3[64], w4[64];
+	FILE* fp;
+	int   line_num = 0, s_subnet = ARRAYLENGTH(subnet);
+	char  line[1024], w1[64], w2[64], w3[64], w4[64];
 
 	if ((fp = fopen(lancfgName, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
@@ -552,10 +552,10 @@ int login_lan_config_read(const char *lancfgName)
  * @param normal: Config read normally when server started
  * @return True:success, Fals:failure (file not found|readable)
  */
-bool login_config_read(const char *cfgName, bool normal)
+bool login_config_read(const char* cfgName, bool normal)
 {
-	char line[1024], w1[32], w2[1024];
-	FILE *fp = fopen(cfgName, "r");
+	char  line[1024], w1[32], w2[1024];
+	FILE* fp = fopen(cfgName, "r");
 
 	if (fp == NULL) {
 		ShowError("Configuration file (%s) not found.\n", cfgName);
@@ -632,7 +632,7 @@ bool login_config_read(const char *cfgName, bool normal)
 			char md5[33];
 
 			if (sscanf(w2, "%3d, %32s", &group, md5) == 2) {
-				struct client_hash_node *nnode;
+				struct client_hash_node* nnode;
 				CREATE(nnode, struct client_hash_node, 1);
 				if (strcmpi(md5, "disabled") == 0) {
 					nnode->hash[0] = '\0';
@@ -747,12 +747,12 @@ void login_set_defaults()
  */
 void do_final(void)
 {
-	struct client_hash_node *hn = login_config.client_hash_nodes;
-	AccountDB               *db = accounts;
+	struct client_hash_node* hn = login_config.client_hash_nodes;
+	AccountDB*               db = accounts;
 
 	while (hn)
 	{
-		struct client_hash_node *tmp = hn;
+		struct client_hash_node* tmp = hn;
 		hn = hn->next;
 		aFree(tmp);
 	}
@@ -826,7 +826,7 @@ void set_server_type(void)
  * @param argv : arguments values from main()
  * @return 0 everything ok else stopping programme execution.
  */
-int do_init(int argc, char **argv)
+int do_init(int argc, char** argv)
 {
 	runflag = LOGINSERVER_ST_STARTING;
 

@@ -28,7 +28,7 @@ void logchrif_on_disconnect(int id);
  * @param len: size of packet
  * @return : the number of char-serv the packet was sent to
  */
-int logchrif_sendallwos(int sfd, uint8 *buf, size_t len)
+int logchrif_sendallwos(int sfd, uint8* buf, size_t len)
 {
 	int i, c;
 
@@ -75,21 +75,21 @@ static int logchrif_sync_ip_addresses(int tid, unsigned int tick, int id, intptr
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int logchrif_parse_reqauth(int fd, int id, char *ip)
+int logchrif_parse_reqauth(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 23)
 		return 0;
 	else {
-		struct auth_node *node;
-		uint32           account_id = RFIFOL(fd, 2);
-		uint32           login_id1  = RFIFOL(fd, 6);
-		uint32           login_id2  = RFIFOL(fd, 10);
-		uint8            sex        = RFIFOB(fd, 14);
+		struct auth_node* node;
+		uint32            account_id = RFIFOL(fd, 2);
+		uint32            login_id1  = RFIFOL(fd, 6);
+		uint32            login_id2  = RFIFOL(fd, 10);
+		uint8             sex        = RFIFOB(fd, 14);
 		//uint32 ip_ = ntohl(RFIFOL(fd,15));
-		int              request_id = RFIFOL(fd, 19);
+		int               request_id = RFIFOL(fd, 19);
 		RFIFOSKIP(fd, 23);
 
-		node = (struct auth_node *)idb_get(auth_db, account_id);
+		node = (struct auth_node*)idb_get(auth_db, account_id);
 		if (runflag == LOGINSERVER_ST_RUNNING
 		    && node != NULL
 		    && node->account_id == account_id
@@ -168,7 +168,7 @@ int logchrif_send_accdata(int fd, uint32 aid)
 	char               pincode[PINCODE_LENGTH + 1];
 	char               isvip      = false;
 	uint8              char_slots = MIN_CHARS, char_vip = 0, char_billing = 0;
-	AccountDB          *accounts  = login_get_accounts_db();
+	AccountDB*         accounts   = login_get_accounts_db();
 
 	memset(pincode, 0, PINCODE_LENGTH + 1);
 	if (!accounts->load_num(accounts, &acc, aid))
@@ -238,7 +238,7 @@ int logchrif_sendvipdata(int fd, struct mmo_account acc, unsigned char flag, int
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int logchrif_parse_reqaccdata(int fd, int id, char *ip)
+int logchrif_parse_reqaccdata(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
@@ -273,13 +273,13 @@ int logchrif_parse_keepalive(int fd)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int logchrif_parse_reqchangemail(int fd, int id, char *ip)
+int logchrif_parse_reqchangemail(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 86)
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
+		AccountDB*         accounts = login_get_accounts_db();
 		char               actual_email[40];
 		char               new_email[40];
 
@@ -316,7 +316,7 @@ int logchrif_parse_reqchangemail(int fd, int id, char *ip)
  * @return 0 not enough info transmitted, 1 success
  * TODO seems pretty damn close to logchrif_parse_reqbanacc
  */
-int logchrif_parse_requpdaccstate(int fd, int id, char *ip)
+int logchrif_parse_requpdaccstate(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 10)
 		return 0;
@@ -325,7 +325,7 @@ int logchrif_parse_requpdaccstate(int fd, int id, char *ip)
 
 		uint32             account_id = RFIFOL(fd, 2);
 		unsigned int       state      = RFIFOL(fd, 6);
-		AccountDB          *accounts  = login_get_accounts_db();
+		AccountDB*         accounts   = login_get_accounts_db();
 
 		RFIFOSKIP(fd, 10);
 
@@ -362,13 +362,13 @@ int logchrif_parse_requpdaccstate(int fd, int id, char *ip)
  * @return 0 not enough info transmitted, 1 success
  * TODO check logchrif_parse_requpdaccstate for possible merge
  */
-int logchrif_parse_reqbanacc(int fd, int id, char *ip)
+int logchrif_parse_reqbanacc(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 10)
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
+		AccountDB*         accounts = login_get_accounts_db();
 
 		uint32             account_id = RFIFOL(fd, 2);
 		int                timediff   = RFIFOL(fd, 6);
@@ -416,13 +416,13 @@ int logchrif_parse_reqbanacc(int fd, int id, char *ip)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int logchrif_parse_reqchgsex(int fd, int id, char *ip)
+int logchrif_parse_reqchgsex(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
+		AccountDB*         accounts = login_get_accounts_db();
 
 		uint32             account_id = RFIFOL(fd, 2);
 		RFIFOSKIP(fd, 6);
@@ -458,13 +458,13 @@ int logchrif_parse_reqchgsex(int fd, int id, char *ip)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int logchrif_parse_upd_global_accreg(int fd, int id, char *ip)
+int logchrif_parse_upd_global_accreg(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 4 || RFIFOREST(fd) < RFIFOW(fd, 2))
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts  = login_get_accounts_db();
+		AccountDB*         accounts   = login_get_accounts_db();
 		uint32             account_id = RFIFOL(fd, 4);
 
 		if (!accounts->load_num(accounts, &acc, account_id))
@@ -483,13 +483,13 @@ int logchrif_parse_upd_global_accreg(int fd, int id, char *ip)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int logchrif_parse_requnbanacc(int fd, int id, char *ip)
+int logchrif_parse_requnbanacc(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
+		AccountDB*         accounts = login_get_accounts_db();
 
 		uint32             account_id = RFIFOL(fd, 2);
 		RFIFOSKIP(fd, 6);
@@ -557,8 +557,8 @@ int logchrif_parse_updonlinedb(int fd, int id)
 		users = RFIFOW(fd, 4);
 		for (i = 0; i < users; i++)
 		{
-			int                      aid = RFIFOL(fd, 6 + i * 4);
-			struct online_login_data *p  = (struct online_login_data *)idb_ensure(online_db, aid, login_create_online_user);
+			int                       aid = RFIFOL(fd, 6 + i * 4);
+			struct online_login_data* p   = (struct online_login_data*)idb_ensure(online_db, aid, login_create_online_user);
 			p->char_server = id;
 			if (p->waiting_disconnect != INVALID_TIMER) {
 				delete_timer(p->waiting_disconnect, login_waiting_disconnect_timer);
@@ -580,9 +580,9 @@ int logchrif_parse_req_global_accreg(int fd)
 	if (RFIFOREST(fd) < 10)
 		return 0;
 	else {
-		AccountDB *accounts  = login_get_accounts_db();
-		uint32    account_id = RFIFOL(fd, 2);
-		uint32    char_id    = RFIFOL(fd, 6);
+		AccountDB* accounts   = login_get_accounts_db();
+		uint32     account_id = RFIFOL(fd, 2);
+		uint32     char_id    = RFIFOL(fd, 6);
 		RFIFOSKIP(fd, 10);
 
 		mmo_send_global_accreg(accounts, fd, account_id, char_id);
@@ -633,7 +633,7 @@ int logchrif_parse_updpincode(int fd)
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
+		AccountDB*         accounts = login_get_accounts_db();
 
 		if (accounts->load_num(accounts, &acc, RFIFOL(fd, 4))) {
 			strncpy(acc.pincode, RFIFOCP(fd, 8), PINCODE_LENGTH + 1);
@@ -656,11 +656,11 @@ int logchrif_parse_pincode_authfail(int fd)
 		return 0;
 	else {
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
+		AccountDB*         accounts = login_get_accounts_db();
 		if (accounts->load_num(accounts, &acc, RFIFOL(fd, 2))) {
-			struct online_login_data *ld;
+			struct online_login_data* ld;
 
-			ld = (struct online_login_data *)idb_get(online_db, acc.account_id);
+			ld = (struct online_login_data*)idb_get(online_db, acc.account_id);
 
 			if (ld == NULL)
 				return 0;
@@ -690,11 +690,11 @@ int logchrif_parse_reqvipdata(int fd)
 		return 0;
 	else {  //request vip info
 		struct mmo_account acc;
-		AccountDB          *accounts = login_get_accounts_db();
-		int                aid       = RFIFOL(fd, 2);
-		int8               flag      = RFIFOB(fd, 6);
-		int32              timediff  = RFIFOL(fd, 7);
-		int                mapfd     = RFIFOL(fd, 11);
+		AccountDB*         accounts = login_get_accounts_db();
+		int                aid      = RFIFOL(fd, 2);
+		int8               flag     = RFIFOB(fd, 6);
+		int32              timediff = RFIFOL(fd, 7);
+		int                mapfd    = RFIFOL(fd, 11);
 		RFIFOSKIP(fd, 15);
 
 		if (accounts->load_num(accounts, &acc, aid)) {
@@ -743,9 +743,9 @@ int logchrif_parse_accinfo(int fd)
 	if (RFIFOREST(fd) < 23)
 		return 0;
 	else {
-		int                map_fd    = RFIFOL(fd, 2), u_fd = RFIFOL(fd, 6), u_aid = RFIFOL(fd, 10), u_group = RFIFOL(fd, 14), account_id = RFIFOL(fd, 18);
-		int8               type      = RFIFOB(fd, 22);
-		AccountDB          *accounts = login_get_accounts_db();
+		int                map_fd   = RFIFOL(fd, 2), u_fd = RFIFOL(fd, 6), u_aid = RFIFOL(fd, 10), u_group = RFIFOL(fd, 14), account_id = RFIFOL(fd, 18);
+		int8               type     = RFIFOB(fd, 22);
+		AccountDB*         accounts = login_get_accounts_db();
 		struct mmo_account acc;
 		RFIFOSKIP(fd, 23);
 
@@ -917,7 +917,7 @@ int logchrif_parse(int fd)
 			return 0;
 	} // while
 	return 1; //or 0
-} /* logchrif_parse */
+}         /* logchrif_parse */
 
 
 /// Constructor destructor and signal handlers

@@ -21,11 +21,11 @@
  * @return Array of found entries. It has *count entries, and it is care of the
  *         caller to aFree() it afterwards.
  */
-struct quest *mapif_quests_fromsql(uint32 char_id, int *count)
+struct quest* mapif_quests_fromsql(uint32 char_id, int* count)
 {
-	struct quest *questlog = NULL;
-	struct quest tmp_quest;
-	SqlStmt      *stmt;
+	struct quest* questlog = NULL;
+	struct quest  tmp_quest;
+	SqlStmt*      stmt;
 
 	if (!count)
 		return NULL;
@@ -59,7 +59,7 @@ struct quest *mapif_quests_fromsql(uint32 char_id, int *count)
 	if (*count > 0) {
 		int i = 0;
 
-		questlog = (struct quest *)aCalloc(*count, sizeof(struct quest));
+		questlog = (struct quest*)aCalloc(*count, sizeof(struct quest));
 		while (SQL_SUCCESS == SqlStmt_NextRow(stmt))
 		{
 			if (i >= *count)  //Sanity check, should never happen
@@ -69,7 +69,7 @@ struct quest *mapif_quests_fromsql(uint32 char_id, int *count)
 		if (i < *count) {
 			//Should never happen. Compact array
 			*count   = i;
-			questlog = (struct quest *)aRealloc(questlog, sizeof(struct quest) * i);
+			questlog = (struct quest*)aRealloc(questlog, sizeof(struct quest) * i);
 		}
 	}
 
@@ -137,13 +137,13 @@ bool mapif_quest_update(uint32 char_id, struct quest qd)
  */
 int mapif_parse_quest_save(int fd)
 {
-	int          i, j, k, old_n, new_n = (RFIFOW(fd, 2) - 8) / sizeof(struct quest);
-	uint32       char_id = RFIFOL(fd, 4);
-	struct quest *old_qd = NULL, *new_qd = NULL;
-	bool         success = true;
+	int           i, j, k, old_n, new_n = (RFIFOW(fd, 2) - 8) / sizeof(struct quest);
+	uint32        char_id = RFIFOL(fd, 4);
+	struct quest* old_qd  = NULL, * new_qd = NULL;
+	bool          success = true;
 
 	if (new_n > 0)
-		new_qd = (struct quest *)RFIFOP(fd, 8);
+		new_qd = (struct quest*)RFIFOP(fd, 8);
 
 	old_qd = mapif_quests_fromsql(char_id, &old_n);
 	for (i = 0; i < new_n; i++)
@@ -191,9 +191,9 @@ int mapif_parse_quest_save(int fd)
  */
 int mapif_parse_quest_load(int fd)
 {
-	uint32       char_id       = RFIFOL(fd, 2);
-	struct quest *tmp_questlog = NULL;
-	int          num_quests;
+	uint32        char_id      = RFIFOL(fd, 2);
+	struct quest* tmp_questlog = NULL;
+	int           num_quests;
 
 	tmp_questlog = mapif_quests_fromsql(char_id, &num_quests);
 

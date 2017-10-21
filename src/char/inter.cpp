@@ -38,7 +38,7 @@
 #define WISDELLIST_MAX    256         // Number of elements in the list Delete data Wis
 
 
-Sql                 *sql_handle = NULL; ///Link to mysql db, connection FD
+Sql*                sql_handle = NULL;  ///Link to mysql db, connection FD
 
 int                 char_server_port     = 3306;
 char                char_server_ip[32]   = "127.0.0.1";
@@ -70,11 +70,11 @@ struct WisData {
 	unsigned long tick;
 	unsigned char src[NAME_LENGTH], dst[NAME_LENGTH], msg[512];
 };
-static DBMap *wis_db = NULL; // int wis_id -> struct WisData*
-static int   wis_dellist[WISDELLIST_MAX], wis_delnum;
+static DBMap* wis_db = NULL; // int wis_id -> struct WisData*
+static int    wis_dellist[WISDELLIST_MAX], wis_delnum;
 
 /* from pc.c due to @accinfo. any ideas to replace this crap are more than welcome. */
-const char *job_name(int class_)
+const char* job_name(int class_)
 {
 	switch (class_)
 	{
@@ -316,12 +316,12 @@ const char *job_name(int class_)
 	default:
 		return msg_txt(118);
 	} // switch
-} // job_name
+}         // job_name
 
 /**
  * [Dekamaster/Nightroad]
  **/
-const char    *geoip_countryname[253] =
+const char*    geoip_countryname[253] =
 {
 	"Unknown",                      "Asia/Pacific Region",             "Europe",                           "Andorra",                              "United Arab Emirates",              "Afghanistan",               "Antigua and Barbuda",         "Anguilla",                               "Albania",                                      "Armenia",                               "Netherlands Antilles",
 	"Angola",                       "Antarctica",                      "Argentina",                        "American Samoa",                       "Austria",                           "Australia",                 "Aruba",                       "Azerbaijan",                             "Bosnia and Herzegovina",                       "Barbados",
@@ -350,14 +350,14 @@ const char    *geoip_countryname[253] =
 	"Zambia",                       "Montenegro",                      "Zimbabwe",                         "Anonymous Proxy",                      "Satellite Provider",                "Other",                     "Aland Islands",               "Guernsey",                               "Isle of Man",                                  "Jersey",
 	"Saint Barthelemy",             "Saint Martin"
 };
-unsigned char *geoip_cache;
+unsigned char* geoip_cache;
 void geoip_readdb(void)
 {
 	struct stat bufa;
-	FILE        *db = fopen("./db/GeoIP.dat", "rb");
+	FILE*       db = fopen("./db/GeoIP.dat", "rb");
 
 	fstat(fileno(db), &bufa);
-	geoip_cache = (unsigned char *)aMalloc(sizeof(unsigned char) * bufa.st_size);
+	geoip_cache = (unsigned char*)aMalloc(sizeof(unsigned char) * bufa.st_size);
 	if (fread(geoip_cache, sizeof(unsigned char), bufa.st_size, db) != bufa.st_size) {
 		ShowError("geoip_cache reading didn't read all elements \n");
 	}
@@ -366,7 +366,7 @@ void geoip_readdb(void)
 }
 /* [Dekamaster/Nightroad] */
 /* WHY NOT A DBMAP: There are millions of entries in GeoIP and it has its own algorithm to go quickly through them, a DBMap wouldn't be efficient */
-const char *geoip_getcountry(uint32 ipnum)
+const char* geoip_getcountry(uint32 ipnum)
 {
 	int          depth;
 	unsigned int x;
@@ -374,7 +374,7 @@ const char *geoip_getcountry(uint32 ipnum)
 
 	for (depth = 31; depth >= 0; depth--)
 	{
-		const unsigned char *buf;
+		const unsigned char* buf;
 		buf = geoip_cache + (long)6 * offset;
 		if (ipnum & (1 << depth)) {
 			/* Take the right-hand branch */
@@ -397,7 +397,7 @@ const char *geoip_getcountry(uint32 ipnum)
 }
 /* sends a mesasge to map server (fd) to a user (u_fd) although we use fd we keep aid for safe-check */
 /* extremely handy I believe it will serve other uses in the near future */
-void inter_to_fd(int fd, int u_fd, int aid, char *msg, ...)
+void inter_to_fd(int fd, int u_fd, int aid, char* msg, ...)
 {
 	char    msg_out[512];
 	va_list ap;
@@ -425,7 +425,7 @@ void inter_to_fd(int fd, int u_fd, int aid, char *msg, ...)
  * @param acc_id : id of player found
  * @param acc_name : name of player found
  */
-static void mapif_acc_info_ack(int fd, int u_fd, int acc_id, const char *acc_name)
+static void mapif_acc_info_ack(int fd, int u_fd, int acc_id, const char* acc_name)
 {
 	WFIFOHEAD(fd, 10 + NAME_LENGTH);
 	WFIFOW(fd, 0) = 0x3808;
@@ -446,7 +446,7 @@ void mapif_parse_accinfo(int fd)
 	char   type = RFIFOB(fd, 14);
 	char   query[NAME_LENGTH], query_esq[NAME_LENGTH * 2 + 1];
 	uint32 account_id = 0;
-	char   *data;
+	char*  data;
 
 	safestrncpy(query, RFIFOCP(fd, 15), NAME_LENGTH);
 	Sql_EscapeString(sql_handle, query_esq, query);
@@ -457,10 +457,10 @@ void mapif_parse_accinfo(int fd)
 		if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `account_id`,`name`,`class`,`base_level`,`job_level`,`online` FROM `%s` WHERE `name` LIKE '%s' LIMIT 10", schema_config.char_db, query_esq)
 		    || Sql_NumRows(sql_handle) == 0) {
 			if (Sql_NumRows(sql_handle) == 0) {
-				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(212), query);
+				inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(212), query);
 			} else {
 				Sql_ShowDebug(sql_handle);
-				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(213));
+				inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(213));
 			}
 			Sql_FreeResult(sql_handle);
 			return;
@@ -471,7 +471,7 @@ void mapif_parse_accinfo(int fd)
 				account_id = atoi(data);
 				Sql_FreeResult(sql_handle);
 			} else { // more than one, listing... [Dekamaster/Nightroad]
-				inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(214), (int)Sql_NumRows(sql_handle));
+				inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(214), (int)Sql_NumRows(sql_handle));
 				while (SQL_SUCCESS == Sql_NextRow(sql_handle))
 				{
 					int   class_;
@@ -491,7 +491,7 @@ void mapif_parse_accinfo(int fd)
 					Sql_GetData(sql_handle, 5, &data, NULL);
 					online = atoi(data);
 
-					inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(215), account_id, name, job_name(class_), base_level, job_level, online ? "Online" : "Offline");
+					inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(215), account_id, name, job_name(class_), base_level, job_level, online ? "Online" : "Offline");
 				}
 				Sql_FreeResult(sql_handle);
 				return;
@@ -501,7 +501,7 @@ void mapif_parse_accinfo(int fd)
 
 	/* it will only get here if we have a single match then ask login-server to fetch the `login` record */
 	if (!account_id || chlogif_req_accinfo(fd, u_fd, u_aid, u_group, account_id, type) != 1) {
-		inter_to_fd(fd, u_fd, u_aid, (char *)msg_txt(213));
+		inter_to_fd(fd, u_fd, u_aid, (char*)msg_txt(213));
 	}
 } // mapif_parse_accinfo
 
@@ -509,14 +509,14 @@ void mapif_parse_accinfo(int fd)
  * Show account info from login-server to user
  */
 void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int account_id, int8 type,
-                       int group_id, int logincount, int state, const char *email, const char *last_ip, const char *lastlogin,
-                       const char *birthdate, const char *user_pass, const char *pincode, const char *userid)
+                       int group_id, int logincount, int state, const char* email, const char* last_ip, const char* lastlogin,
+                       const char* birthdate, const char* user_pass, const char* pincode, const char* userid)
 {
 	if (map_fd <= 0 || !session_isActive(map_fd))
 		return;  // check if we have a valid fd
 
 	if (!success) {
-		inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(216), account_id);
+		inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(216), account_id);
 		return;
 	}
 
@@ -525,20 +525,20 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
 		return;
 	}
 
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(217), account_id);
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(218), userid, group_id, state);
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(219), user_pass[0] != '\0' ? user_pass : msg_txt(220), pincode[0] != '\0' ? msg_txt(220) : pincode);
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(221), email, birthdate);
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(222), last_ip, geoip_getcountry(str2ip(last_ip)));
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(223), logincount, lastlogin);
-	inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(224));
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(217), account_id);
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(218), userid, group_id, state);
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(219), user_pass[0] != '\0' ? user_pass : msg_txt(220), pincode[0] != '\0' ? msg_txt(220) : pincode);
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(221), email, birthdate);
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(222), last_ip, geoip_getcountry(str2ip(last_ip)));
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(223), logincount, lastlogin);
+	inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(224));
 
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`, `name`, `char_num`, `class`, `base_level`, `job_level`, `online` FROM `%s` WHERE `account_id` = '%d' ORDER BY `char_num` LIMIT %d", schema_config.char_db, account_id, MAX_CHARS)
 	    || Sql_NumRows(sql_handle) == 0) {
 		if (Sql_NumRows(sql_handle) == 0)
-			inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(226));
+			inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(226));
 		else {
-			inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(213));
+			inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(213));
 			Sql_ShowDebug(sql_handle);
 		}
 	} else {
@@ -547,7 +547,7 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
 			uint32 char_id, class_;
 			short  char_num, base_level, job_level, online;
 			char   name[NAME_LENGTH];
-			char   *data;
+			char*  data;
 
 			Sql_GetData(sql_handle, 0, &data, NULL);
 			char_id = atoi(data);
@@ -564,7 +564,7 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
 			Sql_GetData(sql_handle, 6, &data, NULL);
 			online = atoi(data);
 
-			inter_to_fd(map_fd, u_fd, u_aid, (char *)msg_txt(225), char_num, char_id, name, job_name(class_), base_level, job_level, online ? "Online" : "Offline");
+			inter_to_fd(map_fd, u_fd, u_aid, (char*)msg_txt(225), char_num, char_id, name, job_name(class_), base_level, job_level, online ? "Online" : "Offline");
 		}
 	}
 	Sql_FreeResult(sql_handle);
@@ -576,14 +576,14 @@ void mapif_accinfo_ack(bool success, int map_fd, int u_fd, int u_aid, int accoun
  * @param val either str or int, depending on type
  * @param type false when int, true otherwise
  **/
-void inter_savereg(uint32 account_id, uint32 char_id, const char *key, unsigned int index, intptr_t val, bool is_string)
+void inter_savereg(uint32 account_id, uint32 char_id, const char* key, unsigned int index, intptr_t val, bool is_string)
 {
 	char esc_val[254 * 2 + 1];
 	char esc_key[32 * 2 + 1];
 
 	Sql_EscapeString(sql_handle, esc_key, key);
 	if (is_string && val) {
-		Sql_EscapeString(sql_handle, esc_val, (char *)val);
+		Sql_EscapeString(sql_handle, esc_val, (char*)val);
 	}
 	if (key[0] == '#' && key[1] == '#') {  // global account reg
 		if (session_isValid(login_fd))
@@ -633,7 +633,7 @@ void inter_savereg(uint32 account_id, uint32 char_id, const char *key, unsigned 
 // Load account_reg from sql (type=2)
 int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 {
-	char         *data;
+	char*        data;
 	size_t       len;
 	unsigned int plen = 0;
 
@@ -809,10 +809,10 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 /*==========================================
  * read config file
  *------------------------------------------*/
-static int inter_config_read(const char *cfgName)
+static int inter_config_read(const char* cfgName)
 {
-	char line[1024];
-	FILE *fp;
+	char  line[1024];
+	FILE* fp;
 
 	fp = fopen(cfgName, "r");
 	if (fp == NULL) {
@@ -859,7 +859,7 @@ static int inter_config_read(const char *cfgName)
 } // inter_config_read
 
 // Save interlog into sql
-int inter_log(char *fmt, ...)
+int inter_log(char* fmt, ...)
 {
 	char    str[255];
 	char    esc_str[sizeof(str) * 2 + 1]; // escaped str
@@ -876,7 +876,7 @@ int inter_log(char *fmt, ...)
 	return 0;
 }
 
-static void yaml_invalid_warning(const char *fmt, YAML::Node &node, std::string &file)
+static void yaml_invalid_warning(const char* fmt, YAML::Node& node, std::string& file)
 {
 	YAML::Emitter out;
 
@@ -903,7 +903,7 @@ static void inter_config_readConf(void)
 		{
 			config = YAML::LoadFile(current_file);
 		}
-		catch (std::exception &e)
+		catch (std::exception& e)
 		{
 			ShowError("Cannot read storage definition file '" CL_WHITE "%s" CL_RESET "' (Caused by : " CL_WHITE "%s" CL_RESET ").\n", current_file.c_str(), e.what());
 			return;
@@ -981,7 +981,7 @@ static void inter_config_defaults(void)
 }
 
 // initialize
-int inter_init_sql(const char *file)
+int inter_init_sql(const char* file)
 {
 	inter_config_defaults();
 	inter_config_read(file);
@@ -1072,9 +1072,9 @@ int inter_mapif_init(int fd)
 //--------------------------------------------------------
 
 // broadcast sending
-int mapif_broadcast(unsigned char *mes, int len, unsigned long fontColor, short fontType, short fontSize, short fontAlign, short fontY, int sfd)
+int mapif_broadcast(unsigned char* mes, int len, unsigned long fontColor, short fontType, short fontSize, short fontAlign, short fontY, int sfd)
 {
-	unsigned char *buf = (unsigned char *)aMalloc((len) * sizeof(unsigned char));
+	unsigned char* buf = (unsigned char*)aMalloc((len) * sizeof(unsigned char));
 
 	WBUFW(buf, 0)  = 0x3800;
 	WBUFW(buf, 2)  = len;
@@ -1091,7 +1091,7 @@ int mapif_broadcast(unsigned char *mes, int len, unsigned long fontColor, short 
 }
 
 // Wis sending
-int mapif_wis_message(struct WisData *wd)
+int mapif_wis_message(struct WisData* wd)
 {
 	unsigned char buf[2048];
 
@@ -1110,7 +1110,7 @@ int mapif_wis_message(struct WisData *wd)
 }
 
 // Wis sending result
-int mapif_wis_end(struct WisData *wd, int flag)
+int mapif_wis_end(struct WisData* wd, int flag)
 {
 	unsigned char buf[27];
 
@@ -1148,10 +1148,10 @@ int mapif_disconnectplayer(int fd, uint32 account_id, uint32 char_id, int reason
  * Existence check of WISP data
  * @see DBApply
  */
-int check_ttl_wisdata_sub(DBKey key, DBData *data, va_list ap)
+int check_ttl_wisdata_sub(DBKey key, DBData* data, va_list ap)
 {
-	unsigned long  tick;
-	struct WisData *wd = (struct WisData *)db_data2ptr(data);
+	unsigned long   tick;
+	struct WisData* wd = (struct WisData*)db_data2ptr(data);
 
 	tick = va_arg(ap, unsigned long);
 
@@ -1172,7 +1172,7 @@ int check_ttl_wisdata(void)
 		wis_db->foreach(wis_db, check_ttl_wisdata_sub, tick);
 		for (i = 0; i < wis_delnum; i++)
 		{
-			struct WisData *wd = (struct WisData *)idb_get(wis_db, wis_dellist[i]);
+			struct WisData* wd = (struct WisData*)idb_get(wis_db, wis_dellist[i]);
 			ShowWarning("inter: wis data id=%d time out : from %s to %s\n", wd->id, wd->src, wd->dst);
 			// removed. not send information after a timeout. Just no answer for the player
 			//mapif_wis_end(wd, 1); // flag: 0: success to send wisper, 1: target character is not loged in?, 2: ignored by target
@@ -1214,11 +1214,11 @@ int mapif_parse_broadcast_item(int fd)
 // Wisp/page request to send
 int mapif_parse_WisRequest(int fd)
 {
-	struct WisData *wd;
-	char           name[NAME_LENGTH];
-	char           esc_name[NAME_LENGTH * 2 + 1]; // escaped name
-	char           *data;
-	size_t         len;
+	struct WisData* wd;
+	char            name[NAME_LENGTH];
+	char            esc_name[NAME_LENGTH * 2 + 1]; // escaped name
+	char*           data;
+	size_t          len;
 
 
 	if (fd <= 0) {
@@ -1246,8 +1246,8 @@ int mapif_parse_WisRequest(int fd)
 		memcpy(WBUFP(buf, 2), RFIFOP(fd, 4), NAME_LENGTH);
 		WBUFB(buf, 26) = 1; // flag: 0: success to send wisper, 1: target character is not loged in?, 2: ignored by target
 		chmapif_send(fd, buf, 27);
-	} else { // Character exists. So, ask all map-servers
-		// to be sure of the correct name, rewrite it
+	} else {                    // Character exists. So, ask all map-servers
+		 // to be sure of the correct name, rewrite it
 		Sql_GetData(sql_handle, 0, &data, &len);
 		memset(name, 0, NAME_LENGTH);
 		memcpy(name, data, zmin(len, NAME_LENGTH));
@@ -1286,12 +1286,12 @@ int mapif_parse_WisRequest(int fd)
 // Wisp/page transmission result
 int mapif_parse_WisReply(int fd)
 {
-	int            id, flag;
-	struct WisData *wd;
+	int             id, flag;
+	struct WisData* wd;
 
 	id   = RFIFOL(fd, 2);
 	flag = RFIFOB(fd, 6);
-	wd   = (struct WisData *)idb_get(wis_db, id);
+	wd   = (struct WisData*)idb_get(wis_db, id);
 	if (wd == NULL)
 		return 0;       // This wisp was probably suppress before, because it was timeout of because of target was found on another map-server
 
@@ -1387,7 +1387,7 @@ int mapif_parse_RegistryRequest(int fd)
 	return 1;
 }
 
-static void mapif_namechange_ack(int fd, uint32 account_id, uint32 char_id, int type, int flag, char *name)
+static void mapif_namechange_ack(int fd, uint32 account_id, uint32 char_id, int type, int flag, char* name)
 {
 	WFIFOHEAD(fd, NAME_LENGTH + 13);
 	WFIFOW(fd, 0)  = 0x3806;
@@ -1403,7 +1403,7 @@ int mapif_parse_NameChangeRequest(int fd)
 {
 	uint32 account_id, char_id;
 	int    type;
-	char   *name;
+	char*  name;
 	int    i;
 
 	account_id = RFIFOL(fd, 2);

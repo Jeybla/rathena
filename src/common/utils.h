@@ -12,13 +12,13 @@ extern "C" {
 #include <stdio.h> // FILE*
 
 // generate a hex dump of the first 'length' bytes of 'buffer'
-void WriteDump(FILE *fp, const void *buffer, size_t length);
-void ShowDump(const void *buffer, size_t length);
+void WriteDump(FILE* fp, const void* buffer, size_t length);
+void ShowDump(const void* buffer, size_t length);
 
-int check_filepath(const char *filepath);
+int check_filepath(const char* filepath);
 
-void findfile(const char *p, const char *pat, void(func) (const char *));
-bool exists(const char *filename);
+void findfile(const char* p, const char* pat, void(func) (const char*));
+bool exists(const char* filename);
 
 /// Caps values to min/max
 #define cap_value(a, min, max)         (((a) >= (max)) ? (max) : ((a) <= (min)) ? (min) : (a))
@@ -46,12 +46,12 @@ extern uint32 MakeDWord(uint16 word0, uint16 word1);
 //////////////////////////////////////////////////////////////////////////
 extern int16 MakeShortLE(int16 val);
 extern int32 MakeLongLE(int32 val);
-extern uint16 GetUShort(const unsigned char *buf);
-extern uint32 GetULong(const unsigned char *buf);
-extern int32 GetLong(const unsigned char *buf);
-extern float GetFloat(const unsigned char *buf);
+extern uint16 GetUShort(const unsigned char* buf);
+extern uint32 GetULong(const unsigned char* buf);
+extern int32 GetLong(const unsigned char* buf);
+extern float GetFloat(const unsigned char* buf);
 
-int levenshtein(const char *s1, const char *s2);
+int levenshtein(const char* s1, const char* s2);
 
 #ifdef __cplusplus
 }

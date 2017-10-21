@@ -31,8 +31,8 @@ typedef struct SESSION {
 	// "lowlevel" Handlers
 	// (Implemented by the protocol specific parser)
 	//
-	bool (*onRecv)(int32 fd);       // return false = disconnect
-	bool (*onSend)(int32 fd);       // return false = disconnect
+	bool (* onRecv)(int32 fd);       // return false = disconnect
+	bool (* onSend)(int32 fd);       // return false = disconnect
 
 	// Event Handlers for LISTENER type sockets
 	//
@@ -48,15 +48,15 @@ typedef struct SESSION {
 	// onDisconnect  gets called when a connection gets disconnected
 	//				 (by peer as well as by core)
 	//
-	bool (*onConnect)(int32 fd);    // return false = disconnect (wont accept)
-	void (*onDisconnect)(int32 fd);
+	bool (* onConnect)(int32 fd);    // return false = disconnect (wont accept)
+	void (* onDisconnect)(int32 fd);
 
 
 	//
 	// Parser specific data
 	//
-	void *netparser_data;   // incase of RO Packet Parser, pointer to packet len table (uint16array)
-	void (*onPacketComplete)(int32 fd, uint16 op, uint16 len, netbuf buf);
+	void* netparser_data;   // incase of RO Packet Parser, pointer to packet len table (uint16array)
+	void (* onPacketComplete)(int32 fd, uint16 op, uint16 len, netbuf buf);
 
 
 	//
@@ -82,7 +82,7 @@ typedef struct SESSION {
 
 	// Application Level data Pointer
 	// (required for backward compatibility with previous athena socket system.)
-	void *data;
+	void* data;
 } SESSION;
 
 
@@ -109,7 +109,7 @@ void network_do();
  *
  * @return -1 on error  otherwise  the identifier of the new listener.
  */
-int32 network_addlistener(bool v6, const char *addr, uint16 port);
+int32 network_addlistener(bool v6, const char* addr, uint16 port);
 
 
 /**
@@ -125,7 +125,7 @@ int32 network_addlistener(bool v6, const char *addr, uint16 port);
  *
  * @return -1 on error  otherwise  the identifier of the new connection
  */
-int32 network_connect(bool v6, const char *addr, uint16 port, const char *from_addr, uint16 from_port, bool (*onConnectionEstablishedHandler)(int32 fd), void (*onConnectionLooseHandler)(int32 fd));
+int32 network_connect(bool v6, const char* addr, uint16 port, const char* from_addr, uint16 from_port, bool (* onConnectionEstablishedHandler)(int32 fd), void (* onConnectionLooseHandler)(int32 fd));
 
 
 /**
@@ -167,7 +167,7 @@ void network_send(int32 fd, netbuf buf);
  *	Static Packets must contain their hader in len so (0x64 ==  55 ..)
  *
  */
-void network_parser_set_ro(int32 fd, int16 *packetlentable, void (*onPacketCompleteProc)(int32 fd, uint16 op, uint16 len, netbuf buf));
+void network_parser_set_ro(int32 fd, int16* packetlentable, void (* onPacketCompleteProc)(int32 fd, uint16 op, uint16 len, netbuf buf));
 
 #define ROPACKET_UNKNOWN    UINT16_MAX
 #define ROPACKET_DYNLEN     0

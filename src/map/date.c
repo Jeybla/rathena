@@ -9,8 +9,8 @@
  */
 int date_get_year(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -22,8 +22,8 @@ int date_get_year(void)
  */
 enum e_month date_get_month(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -35,8 +35,8 @@ enum e_month date_get_month(void)
  */
 int date_get_dayofmonth(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -48,8 +48,8 @@ int date_get_dayofmonth(void)
  */
 enum e_dayofweek date_get_dayofweek(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -61,8 +61,8 @@ enum e_dayofweek date_get_dayofweek(void)
  */
 int date_get_dayofyear(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -74,8 +74,8 @@ int date_get_dayofyear(void)
  */
 int date_get_hour(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -87,8 +87,8 @@ int date_get_hour(void)
  */
 int date_get_min(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);
@@ -100,8 +100,8 @@ int date_get_min(void)
  */
 int date_get_sec(void)
 {
-	time_t    t;
-	struct tm *lt;
+	time_t     t;
+	struct tm* lt;
 
 	t  = time(NULL);
 	lt = localtime(&t);

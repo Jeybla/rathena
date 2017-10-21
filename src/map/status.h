@@ -2200,10 +2200,10 @@ struct regen_data {
 		unsigned overweight : 2; //overweight state (1: 50%, 2: 90%)
 		unsigned block      : 2; //Block regen flag (1: Hp, 2: Sp)
 	}
-	                      state;
+	                       state;
 
 	//skill-regen, sitting-skill-regen (since not all chars with regen need it)
-	struct regen_data_sub *sregen, *ssregen;
+	struct regen_data_sub* sregen, * ssregen;
 };
 
 ///Status display entry
@@ -2241,10 +2241,10 @@ struct status_change {
  * The Storm Gust counter was dropped in renewal
  **/
 #ifndef RENEWAL
-	unsigned char              sg_counter; //Storm gust counter (previous hits from storm gust)
+	unsigned char               sg_counter; //Storm gust counter (previous hits from storm gust)
 #endif
-	unsigned char              bs_counter; // Blood Sucker counter
-	struct status_change_entry *data[SC_MAX];
+	unsigned char               bs_counter; // Blood Sucker counter
+	struct status_change_entry* data[SC_MAX];
 };
 
 // for looking up associated data
@@ -2253,7 +2253,7 @@ int status_sc2skill(sc_type sc);
 unsigned int status_sc2scb_flag(sc_type sc);
 int status_type2relevant_bl_types(int type);
 
-int status_damage(struct block_list *src, struct block_list *target, int64 dhp, int64 dsp, int walkdelay, int flag);
+int status_damage(struct block_list* src, struct block_list* target, int64 dhp, int64 dsp, int walkdelay, int flag);
 
 //Define for standard HP damage attacks.
 #define status_fix_damage(src, target, hp, walkdelay)      status_damage(src, target, hp, 0, walkdelay, 0)
@@ -2262,8 +2262,8 @@ int status_damage(struct block_list *src, struct block_list *target, int64 dhp, 
 //Define for standard HP/SP damage triggers.
 #define status_zap(bl, hp, sp)                             status_damage(NULL, bl, hp, sp, 0, 1)
 //Define for standard HP/SP skill-related cost triggers (mobs require no HP/SP to use skills)
-int64 status_charge(struct block_list *bl, int64 hp, int64 sp);
-int status_percent_change(struct block_list *src, struct block_list *target, int8 hp_rate, int8 sp_rate, uint8 flag);
+int64 status_charge(struct block_list* bl, int64 hp, int64 sp);
+int status_percent_change(struct block_list* src, struct block_list* target, int8 hp_rate, int8 sp_rate, uint8 flag);
 
 //Easier handling of status_percent_change
 #define status_percent_heal(bl, hp_rate, sp_rate)                     status_percent_change(NULL, bl, -(hp_rate), -(sp_rate), 0)
@@ -2272,19 +2272,19 @@ int status_percent_change(struct block_list *src, struct block_list *target, int
 //Instant kill with no drops/exp/etc
 #define status_kill(bl)                                               status_percent_damage(NULL, bl, 100, 0, true)
 //Used to set the hp/sp of an object to an absolute value (can't kill)
-int status_set_hp(struct block_list *bl, unsigned int hp, int flag);
-int status_set_maxhp(struct block_list *bl, unsigned int hp, int flag);
-int status_set_sp(struct block_list *bl, unsigned int sp, int flag);
-int status_set_maxsp(struct block_list *bl, unsigned int hp, int flag);
-int status_heal(struct block_list *bl, int64 hhp, int64 hsp, int flag);
-int status_revive(struct block_list *bl, unsigned char per_hp, unsigned char per_sp);
+int status_set_hp(struct block_list* bl, unsigned int hp, int flag);
+int status_set_maxhp(struct block_list* bl, unsigned int hp, int flag);
+int status_set_sp(struct block_list* bl, unsigned int sp, int flag);
+int status_set_maxsp(struct block_list* bl, unsigned int hp, int flag);
+int status_heal(struct block_list* bl, int64 hhp, int64 hsp, int flag);
+int status_revive(struct block_list* bl, unsigned char per_hp, unsigned char per_sp);
 
-struct regen_data  *status_get_regen_data(struct block_list *bl);
-struct status_data *status_get_status_data(struct block_list *bl);
-struct status_data *status_get_base_status(struct block_list *bl);
-const char *status_get_name(struct block_list *bl);
-int status_get_class(struct block_list *bl);
-int status_get_lv(struct block_list *bl);
+struct regen_data*  status_get_regen_data(struct block_list* bl);
+struct status_data* status_get_status_data(struct block_list* bl);
+struct status_data* status_get_base_status(struct block_list* bl);
+const char* status_get_name(struct block_list* bl);
+int status_get_class(struct block_list* bl);
+int status_get_lv(struct block_list* bl);
 
 #define status_get_range(bl)                    status_get_status_data(bl)->rhw.range
 #define status_get_hp(bl)                       status_get_status_data(bl)->hp
@@ -2299,7 +2299,7 @@ int status_get_lv(struct block_list *bl);
 #define status_get_luk(bl)                      status_get_status_data(bl)->luk
 #define status_get_hit(bl)                      status_get_status_data(bl)->hit
 #define status_get_flee(bl)                     status_get_status_data(bl)->flee
-defType status_get_def(struct block_list *bl);
+defType status_get_def(struct block_list* bl);
 
 #define status_get_mdef(bl)                     status_get_status_data(bl)->mdef
 #define status_get_flee2(bl)                    status_get_status_data(bl)->flee2
@@ -2313,14 +2313,14 @@ defType status_get_def(struct block_list *bl);
 #define status_get_matk_min(bl)                 status_get_status_data(bl)->matk_min
 #define status_get_lwatk(bl)                    status_get_status_data(bl)->lhw.atk
 #define status_get_lwatk2(bl)                   status_get_status_data(bl)->lhw.atk2
-unsigned short status_get_speed(struct block_list *bl);
+unsigned short status_get_speed(struct block_list* bl);
 
 #define status_get_adelay(bl)                   status_get_status_data(bl)->adelay
 #define status_get_amotion(bl)                  status_get_status_data(bl)->amotion
 #define status_get_dmotion(bl)                  status_get_status_data(bl)->dmotion
 #define status_get_element(bl)                  status_get_status_data(bl)->def_ele
 #define status_get_element_level(bl)            status_get_status_data(bl)->ele_lv
-unsigned char status_calc_attack_element(struct block_list *bl, struct status_change *sc, int element);
+unsigned char status_calc_attack_element(struct block_list* bl, struct status_change* sc, int element);
 
 #define status_get_attack_sc_element(bl, sc)    status_calc_attack_element(bl, sc, 0)
 #define status_get_attack_element(bl)           status_get_status_data(bl)->rhw.ele
@@ -2332,42 +2332,42 @@ unsigned char status_calc_attack_element(struct block_list *bl, struct status_ch
 #define status_has_mode(status, md)             (((status)->mode & (md)) == (md))
 #define status_bl_has_mode(bl, md)              status_has_mode(status_get_status_data((bl)), (md))
 
-#define status_get_homstr(bl)                   (status->str + ((TBL_HOM *)bl)->homunculus.str_value)
-#define status_get_homagi(bl)                   (status->agi + ((TBL_HOM *)bl)->homunculus.agi_value)
-#define status_get_homvit(bl)                   (status->vit + ((TBL_HOM *)bl)->homunculus.vit_value)
-#define status_get_homint(bl)                   (status->int_ + ((TBL_HOM *)bl)->homunculus.int_value)
-#define status_get_homdex(bl)                   (status->dex + ((TBL_HOM *)bl)->homunculus.dex_value)
-#define status_get_homluk(bl)                   (status->luk + ((TBL_HOM *)bl)->homunculus.luk_value)
+#define status_get_homstr(bl)                   (status->str + ((TBL_HOM*)bl)->homunculus.str_value)
+#define status_get_homagi(bl)                   (status->agi + ((TBL_HOM*)bl)->homunculus.agi_value)
+#define status_get_homvit(bl)                   (status->vit + ((TBL_HOM*)bl)->homunculus.vit_value)
+#define status_get_homint(bl)                   (status->int_ + ((TBL_HOM*)bl)->homunculus.int_value)
+#define status_get_homdex(bl)                   (status->dex + ((TBL_HOM*)bl)->homunculus.dex_value)
+#define status_get_homluk(bl)                   (status->luk + ((TBL_HOM*)bl)->homunculus.luk_value)
 
-int status_get_party_id(struct block_list *bl);
-int status_get_guild_id(struct block_list *bl);
-int status_get_emblem_id(struct block_list *bl);
-enum e_race2     status_get_race2(struct block_list *bl);
+int status_get_party_id(struct block_list* bl);
+int status_get_guild_id(struct block_list* bl);
+int status_get_emblem_id(struct block_list* bl);
+enum e_race2      status_get_race2(struct block_list* bl);
 
-struct view_data *status_get_viewdata(struct block_list *bl);
-void status_set_viewdata(struct block_list *bl, int class_);
-void status_change_init(struct block_list *bl);
-struct status_change *status_get_sc(struct block_list *bl);
+struct view_data* status_get_viewdata(struct block_list* bl);
+void status_set_viewdata(struct block_list* bl, int class_);
+void status_change_init(struct block_list* bl);
+struct status_change* status_get_sc(struct block_list* bl);
 
-int status_isdead(struct block_list *bl);
-int status_isimmune(struct block_list *bl);
+int status_isdead(struct block_list* bl);
+int status_isimmune(struct block_list* bl);
 
-int status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_type type, int rate, int tick, unsigned char flag);
+int status_get_sc_def(struct block_list* src, struct block_list* bl, enum sc_type type, int rate, int tick, unsigned char flag);
 
 //Short version, receives rate in 1->100 range, and does not uses a flag setting.
 #define sc_start(src, bl, type, rate, val1, tick)                       status_change_start(src, bl, type, 100 * (rate), val1, 0, 0, 0, tick, SCSTART_NONE)
 #define sc_start2(src, bl, type, rate, val1, val2, tick)                status_change_start(src, bl, type, 100 * (rate), val1, val2, 0, 0, tick, SCSTART_NONE)
 #define sc_start4(src, bl, type, rate, val1, val2, val3, val4, tick)    status_change_start(src, bl, type, 100 * (rate), val1, val2, val3, val4, tick, SCSTART_NONE)
 
-int status_change_start(struct block_list *src, struct block_list *bl, enum sc_type type, int rate, int val1, int val2, int val3, int val4, int tick, unsigned char flag);
-int status_change_end_(struct block_list *bl, enum sc_type type, int tid, const char *file, int line);
+int status_change_start(struct block_list* src, struct block_list* bl, enum sc_type type, int rate, int val1, int val2, int val3, int val4, int tick, unsigned char flag);
+int status_change_end_(struct block_list* bl, enum sc_type type, int tid, const char* file, int line);
 
 #define status_change_end(bl, type, tid)    status_change_end_(bl, type, tid, __FILE__, __LINE__)
 int status_change_timer(int tid, unsigned int tick, int id, intptr_t data);
-int status_change_timer_sub(struct block_list *bl, va_list ap);
-int status_change_clear(struct block_list *bl, int type);
-void status_change_clear_buffs(struct block_list *bl, uint8 type);
-void status_change_clear_onChangeMap(struct block_list *bl, struct status_change *sc);
+int status_change_timer_sub(struct block_list* bl, va_list ap);
+int status_change_clear(struct block_list* bl, int type);
+void status_change_clear_buffs(struct block_list* bl, uint8 type);
+void status_change_clear_onChangeMap(struct block_list* bl, struct status_change* sc);
 
 #define status_calc_bl(bl, flag)           status_calc_bl_(bl, (enum scb_flag)(flag), SCO_NONE)
 #define status_calc_mob(md, opt)           status_calc_bl_(&(md)->bl, SCB_ALL, opt)
@@ -2378,39 +2378,39 @@ void status_change_clear_onChangeMap(struct block_list *bl, struct status_change
 #define status_calc_elemental(ed, opt)     status_calc_bl_(&(ed)->bl, SCB_ALL, opt)
 #define status_calc_npc(nd, opt)           status_calc_bl_(&(nd)->bl, SCB_ALL, opt)
 
-bool status_calc_weight(struct map_session_data *sd, enum e_status_calc_weight_opt flag);
-bool status_calc_cart_weight(struct map_session_data *sd, enum e_status_calc_weight_opt flag);
-void status_calc_bl_(struct block_list *bl, enum scb_flag flag, enum e_status_calc_opt opt);
-int status_calc_mob_(struct mob_data *md, enum e_status_calc_opt opt);
-void status_calc_pet_(struct pet_data *pd, enum e_status_calc_opt opt);
-int status_calc_pc_(struct map_session_data *sd, enum e_status_calc_opt opt);
-int status_calc_homunculus_(struct homun_data *hd, enum e_status_calc_opt opt);
-int status_calc_mercenary_(struct mercenary_data *md, enum e_status_calc_opt opt);
-int status_calc_elemental_(struct elemental_data *ed, enum e_status_calc_opt opt);
-int status_calc_npc_(struct npc_data *nd, enum e_status_calc_opt opt);
+bool status_calc_weight(struct map_session_data* sd, enum e_status_calc_weight_opt flag);
+bool status_calc_cart_weight(struct map_session_data* sd, enum e_status_calc_weight_opt flag);
+void status_calc_bl_(struct block_list* bl, enum scb_flag flag, enum e_status_calc_opt opt);
+int status_calc_mob_(struct mob_data* md, enum e_status_calc_opt opt);
+void status_calc_pet_(struct pet_data* pd, enum e_status_calc_opt opt);
+int status_calc_pc_(struct map_session_data* sd, enum e_status_calc_opt opt);
+int status_calc_homunculus_(struct homun_data* hd, enum e_status_calc_opt opt);
+int status_calc_mercenary_(struct mercenary_data* md, enum e_status_calc_opt opt);
+int status_calc_elemental_(struct elemental_data* ed, enum e_status_calc_opt opt);
+int status_calc_npc_(struct npc_data* nd, enum e_status_calc_opt opt);
 
-void status_calc_misc(struct block_list *bl, struct status_data *status, int level);
-void status_calc_regen(struct block_list *bl, struct status_data *status, struct regen_data *regen);
-void status_calc_regen_rate(struct block_list *bl, struct regen_data *regen, struct status_change *sc);
+void status_calc_misc(struct block_list* bl, struct status_data* status, int level);
+void status_calc_regen(struct block_list* bl, struct status_data* status, struct regen_data* regen);
+void status_calc_regen_rate(struct block_list* bl, struct regen_data* regen, struct status_change* sc);
 
-void status_calc_slave_mode(struct mob_data *md, struct mob_data *mmd);
+void status_calc_slave_mode(struct mob_data* md, struct mob_data* mmd);
 
-bool status_check_skilluse(struct block_list *src, struct block_list *target, uint16 skill_id, int flag);
-int status_check_visibility(struct block_list *src, struct block_list *target);
+bool status_check_skilluse(struct block_list* src, struct block_list* target, uint16 skill_id, int flag);
+int status_check_visibility(struct block_list* src, struct block_list* target);
 
-int status_change_spread(struct block_list *src, struct block_list *bl, bool type);
+int status_change_spread(struct block_list* src, struct block_list* bl, bool type);
 
 #ifndef RENEWAL
-unsigned short status_base_matk_min(const struct status_data *status);
-unsigned short status_base_matk_max(const struct status_data *status);
+unsigned short status_base_matk_min(const struct status_data* status);
+unsigned short status_base_matk_max(const struct status_data* status);
 
 #else
-unsigned int status_weapon_atk(struct weapon_atk wa, struct map_session_data *sd);
-unsigned short status_base_matk(struct block_list *bl, const struct status_data *status, int level);
+unsigned int status_weapon_atk(struct weapon_atk wa, struct map_session_data* sd);
+unsigned short status_base_matk(struct block_list* bl, const struct status_data* status, int level);
 
 #endif
 
-unsigned short status_base_atk(const struct block_list *bl, const struct status_data *status);
+unsigned short status_base_atk(const struct block_list* bl, const struct status_data* status);
 
 void initChangeTables(void);
 int status_readdb(void);

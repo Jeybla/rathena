@@ -18,17 +18,17 @@
 #include <stdlib.h> // atoi
 
 //Autotrader
-static DBMap *buyingstore_autotrader_db; /// Holds autotrader info: char_id -> struct s_autotrader
-static void buyingstore_autotrader_remove(struct s_autotrader *at, bool remove);
-static int buyingstore_autotrader_free(DBKey key, DBData *data, va_list ap);
+static DBMap* buyingstore_autotrader_db; /// Holds autotrader info: char_id -> struct s_autotrader
+static void buyingstore_autotrader_remove(struct s_autotrader* at, bool remove);
+static int buyingstore_autotrader_free(DBKey key, DBData* data, va_list ap);
 
 /// constants (client-side restrictions)
 #define BUYINGSTORE_MAX_PRICE     99990000
 #define BUYINGSTORE_MAX_AMOUNT    9999
 
-static DBMap *buyingstore_db;
+static DBMap* buyingstore_db;
 
-DBMap *buyingstore_getdb(void)
+DBMap* buyingstore_getdb(void)
 {
 	return buyingstore_db;
 }
@@ -62,7 +62,7 @@ static unsigned int buyingstore_getuid(void)
  * @param slots Number of item on the list
  * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction
  */
-int8 buyingstore_setup(struct map_session_data *sd, unsigned char slots)
+int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots)
 {
 	nullpo_retr(1, sd);
 
@@ -74,13 +74,13 @@ int8 buyingstore_setup(struct map_session_data *sd, unsigned char slots)
 		return 2;
 	}
 
-	if (map[sd->bl.m].flag.novending) { // custom: no vending maps
+	if (map[sd->bl.m].flag.novending) {                    // custom: no vending maps
 		clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
 		return 3;
 	}
 
 	if (map_getcell(sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOVENDING)) { // custom: no vending cells
-		clif_displaymessage(sd->fd, msg_txt(sd, 204)); // "You can't open a shop on this cell."
+		clif_displaymessage(sd->fd, msg_txt(sd, 204));              // "You can't open a shop on this cell."
 		return 4;
 	}
 
@@ -106,7 +106,7 @@ int8 buyingstore_setup(struct map_session_data *sd, unsigned char slots)
  * @param at Autotrader info, or NULL if requetsed not from autotrade persistance
  * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction, 5 - Invalid count/result, 6 - Cannot give item, 7 - Will be overweight
  */
-int8 buyingstore_create(struct map_session_data *sd, int zenylimit, unsigned char result, const char *storename, const uint8 *itemlist, unsigned int count, struct s_autotrader *at)
+int8 buyingstore_create(struct map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const uint8* itemlist, unsigned int count, struct s_autotrader* at)
 {
 	unsigned int i, weight, listidx;
 	char         message_sql[MESSAGE_SIZE * 2];
@@ -135,13 +135,13 @@ int8 buyingstore_create(struct map_session_data *sd, int zenylimit, unsigned cha
 		return 2;
 	}
 
-	if (map[sd->bl.m].flag.novending) { // custom: no vending maps
+	if (map[sd->bl.m].flag.novending) {                    // custom: no vending maps
 		clif_displaymessage(sd->fd, msg_txt(sd, 276)); // "You can't open a shop on this map"
 		return 3;
 	}
 
 	if (map_getcell(sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOVENDING)) { // custom: no vending cells
-		clif_displaymessage(sd->fd, msg_txt(sd, 204)); // "You can't open a shop on this cell."
+		clif_displaymessage(sd->fd, msg_txt(sd, 204));              // "You can't open a shop on this cell."
 		return 4;
 	}
 
@@ -150,9 +150,9 @@ int8 buyingstore_create(struct map_session_data *sd, int zenylimit, unsigned cha
 	// check item list
 	for (i = 0; i < count; i++)
 	{       // itemlist: <name id>.W <amount>.W <price>.L
-		unsigned short   nameid, amount;
-		int              price, idx;
-		struct item_data *id;
+		unsigned short    nameid, amount;
+		int               price, idx;
+		struct item_data* id;
 
 		nameid = RBUFW(itemlist, i * 8 + 0);
 		amount = RBUFW(itemlist, i * 8 + 2);
@@ -174,7 +174,7 @@ int8 buyingstore_create(struct map_session_data *sd, int zenylimit, unsigned cha
 			break;
 		}
 
-		if (i) { // duplicate check. as the client does this too, only malicious intent should be caught here
+		if (i) {                    // duplicate check. as the client does this too, only malicious intent should be caught here
 			ARR_FIND(0, i, listidx, sd->buyingstore.items[listidx].nameid == nameid);
 			if (listidx != i) { // duplicate
 				ShowWarning("buyingstore_create: Found duplicate item on buying list (nameid=%hu, amount=%hu, account_id=%d, char_id=%d).\n", nameid, amount, sd->status.account_id, sd->status.char_id);
@@ -238,7 +238,7 @@ int8 buyingstore_create(struct map_session_data *sd, int zenylimit, unsigned cha
  * Close buying store and clear buying store data from tables
  * @param sd
  */
-void buyingstore_close(struct map_session_data *sd)
+void buyingstore_close(struct map_session_data* sd)
 {
 	nullpo_retv(sd);
 
@@ -265,9 +265,9 @@ void buyingstore_close(struct map_session_data *sd)
  * @param sd Player
  * @param account_id Buyer account ID
  */
-void buyingstore_open(struct map_session_data *sd, uint32 account_id)
+void buyingstore_open(struct map_session_data* sd, uint32 account_id)
 {
-	struct map_session_data *pl_sd;
+	struct map_session_data* pl_sd;
 
 	nullpo_retv(sd);
 
@@ -299,11 +299,11 @@ void buyingstore_open(struct map_session_data *sd, uint32 account_id)
  * @param *itemlist List of sold items { <index>.W, <nameid>.W, <amount>.W }*
  * @param count Number of item on the itemlist
  */
-void buyingstore_trade(struct map_session_data *sd, uint32 account_id, unsigned int buyer_id, const uint8 *itemlist, unsigned int count)
+void buyingstore_trade(struct map_session_data* sd, uint32 account_id, unsigned int buyer_id, const uint8* itemlist, unsigned int count)
 {
-	int                     zeny = 0;
-	unsigned int            i, weight, listidx, k;
-	struct map_session_data *pl_sd;
+	int                      zeny = 0;
+	unsigned int             i, weight, listidx, k;
+	struct map_session_data* pl_sd;
 
 	nullpo_retv(sd);
 
@@ -349,7 +349,7 @@ void buyingstore_trade(struct map_session_data *sd, uint32 account_id, unsigned 
 		nameid = RBUFW(itemlist, i * 6 + 2);
 		amount = RBUFW(itemlist, i * 6 + 4);
 
-		if (i) { // duplicate check. as the client does this too, only malicious intent should be caught here
+		if (i) {              // duplicate check. as the client does this too, only malicious intent should be caught here
 			ARR_FIND(0, i, k, RBUFW(itemlist, k * 6 + 0) - 2 == index);
 			if (k != i) { // duplicate
 				ShowWarning("buyingstore_trade: Found duplicate item on selling list (prevnameid=%hu, prevamount=%hu, nameid=%hu, amount=%hu, account_id=%d, char_id=%d).\n",
@@ -386,7 +386,7 @@ void buyingstore_trade(struct map_session_data *sd, uint32 account_id, unsigned 
 		}
 
 		if (amount * (unsigned int)sd->inventory_data[index]->weight > pl_sd->max_weight - weight) { // normally this is not supposed to happen, as the total weight is
-			                                                                                    // checked upon creation, but the buyer could have gained items
+			                                                                                     // checked upon creation, but the buyer could have gained items
 			clif_buyingstore_trade_failed_seller(sd, BUYINGSTORE_TRADE_SELLER_FAILED, nameid);
 			return;
 		}
@@ -444,11 +444,11 @@ void buyingstore_trade(struct map_session_data *sd, uint32 account_id, unsigned 
 
 	// check whether or not there is still something to buy
 	ARR_FIND(0, pl_sd->buyingstore.slots, i, pl_sd->buyingstore.items[i].amount != 0);
-	if (i == pl_sd->buyingstore.slots) { // everything was bought
+	if (i == pl_sd->buyingstore.slots) {            // everything was bought
 		clif_buyingstore_trade_failed_buyer(pl_sd, BUYINGSTORE_TRADE_BUYER_NO_ITEMS);
 	} else if (pl_sd->buyingstore.zenylimit == 0) { // zeny limit reached
 		clif_buyingstore_trade_failed_buyer(pl_sd, BUYINGSTORE_TRADE_BUYER_ZENY);
-	} else { // continue buying
+	} else {                                        // continue buying
 		if (Sql_Query(mmysql_handle, "UPDATE `%s` SET `limit` = %d WHERE `id` = %d;", buyingstores_table, pl_sd->buyingstore.zenylimit, pl_sd->buyer_id) != SQL_SUCCESS) {
 			Sql_ShowDebug(mmysql_handle);
 		}
@@ -467,7 +467,7 @@ void buyingstore_trade(struct map_session_data *sd, uint32 account_id, unsigned 
 
 
 /// Checks if an item is being bought in given player's buying store.
-bool buyingstore_search(struct map_session_data *sd, unsigned short nameid)
+bool buyingstore_search(struct map_session_data* sd, unsigned short nameid)
 {
 	unsigned int i;
 
@@ -488,10 +488,10 @@ bool buyingstore_search(struct map_session_data *sd, unsigned short nameid)
 
 /// Searches for all items in a buyingstore, that match given ids, price and possible cards.
 /// @return Whether or not the search should be continued.
-bool buyingstore_searchall(struct map_session_data *sd, const struct s_search_store_search *s)
+bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_store_search* s)
 {
-	unsigned int              i, idx;
-	struct s_buyingstore_item *it;
+	unsigned int               i, idx;
+	struct s_buyingstore_item* it;
 
 	nullpo_ret(sd);
 
@@ -530,16 +530,16 @@ bool buyingstore_searchall(struct map_session_data *sd, const struct s_search_st
  * Open buyingstore for Autotrader
  * @param sd Player as autotrader
  */
-void buyingstore_reopen(struct map_session_data *sd)
+void buyingstore_reopen(struct map_session_data* sd)
 {
-	struct s_autotrader *at  = NULL;
-	int8                fail = -1;
+	struct s_autotrader* at   = NULL;
+	int8                 fail = -1;
 
 	nullpo_retv(sd);
 
 	// Ready to open buyingstore for this char
-	if ((at = (struct s_autotrader *)uidb_get(buyingstore_autotrader_db, sd->status.char_id)) && at->count && at->entries) {
-		uint8  *data, *p;
+	if ((at = (struct s_autotrader*)uidb_get(buyingstore_autotrader_db, sd->status.char_id)) && at->count && at->entries) {
+		uint8* data, * p;
 		uint16 j, count;
 
 		// Init buyingstore data for autotrader
@@ -547,10 +547,10 @@ void buyingstore_reopen(struct map_session_data *sd)
 
 		for (j = 0, p = data, count = at->count; j < at->count; j++)
 		{
-			struct s_autotrade_entry *entry   = at->entries[j];
-			unsigned short           *item_id = (uint16 *)(p + 0);
-			uint16                   *amount  = (uint16 *)(p + 2);
-			uint32                   *price   = (uint32 *)(p + 4);
+			struct s_autotrade_entry* entry   = at->entries[j];
+			unsigned short*           item_id = (uint16*)(p + 0);
+			uint16*                   amount  = (uint16*)(p + 2);
+			uint32*                   price   = (uint32*)(p + 4);
 
 			*item_id = entry->item_id;
 			*amount  = entry->amount;
@@ -615,15 +615,15 @@ void do_init_buyingstore_autotrade(void)
 		}
 
 		if (Sql_NumRows(mmysql_handle) > 0) {
-			uint16              items = 0;
-			DBIterator          *iter = NULL;
-			struct s_autotrader *at   = NULL;
+			uint16               items = 0;
+			DBIterator*          iter  = NULL;
+			struct s_autotrader* at    = NULL;
 
 			// Init each autotrader data
 			while (SQL_SUCCESS == Sql_NextRow(mmysql_handle))
 			{
 				size_t len;
-				char   *data;
+				char*  data;
 
 				at = NULL;
 				CREATE(at, struct s_autotrader, 1);
@@ -666,7 +666,7 @@ void do_init_buyingstore_autotrade(void)
 
 			// Init items for each autotraders
 			iter = db_iterator(buyingstore_autotrader_db);
-			for (at = (struct s_autotrader *)dbi_first(iter); dbi_exists(iter); at = (struct s_autotrader *)dbi_next(iter))
+			for (at = (struct s_autotrader*)dbi_first(iter); dbi_exists(iter); at = (struct s_autotrader*)dbi_next(iter))
 			{
 				uint16 j = 0;
 
@@ -687,13 +687,13 @@ void do_init_buyingstore_autotrade(void)
 				}
 
 				//Init the list
-				CREATE(at->entries, struct s_autotrade_entry *, at->count);
+				CREATE(at->entries, struct s_autotrade_entry*, at->count);
 
 				//Add the item into list
 				j = 0;
 				while (SQL_SUCCESS == Sql_NextRow(mmysql_handle) && j < at->count)
 				{
-					char *data;
+					char* data;
 					CREATE(at->entries[j], struct s_autotrade_entry, 1);
 					Sql_GetData(mmysql_handle, 0, &data, NULL);
 					at->entries[j]->item_id = atoi(data);
@@ -724,7 +724,7 @@ void do_init_buyingstore_autotrade(void)
  * @param at Autotrader
  * @param remove If true will removes from buyingstore_autotrader_db
  **/
-static void buyingstore_autotrader_remove(struct s_autotrader *at, bool remove)
+static void buyingstore_autotrader_remove(struct s_autotrader* at, bool remove)
 {
 	nullpo_retv(at);
 	if (at->count && at->entries) {
@@ -745,9 +745,9 @@ static void buyingstore_autotrader_remove(struct s_autotrader *at, bool remove)
  * Clear all autotraders
  * @author [Cydh]
  */
-static int buyingstore_autotrader_free(DBKey key, DBData *data, va_list ap)
+static int buyingstore_autotrader_free(DBKey key, DBData* data, va_list ap)
 {
-	struct s_autotrader *at = (struct s_autotrader *)db_data2ptr(data);
+	struct s_autotrader* at = (struct s_autotrader*)db_data2ptr(data);
 
 	if (at)
 		buyingstore_autotrader_remove(at, false);

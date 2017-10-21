@@ -50,45 +50,45 @@ public:
 	YAML::Node root;
 	yamlwrapper(std::string file);
 	yamlwrapper(YAML::Node node);
-	yamliterator *iterator();
+	yamliterator* iterator();
 };
 #else
 typedef struct yamlwrapper    yamlwrapper;
 typedef struct yamliterator   yamliterator;
 #endif
 
-yamlwrapper *yaml_load_file(const char *file_name);
-void yaml_destroy_wrapper(yamlwrapper *wrapper);
-char *yaml_get_c_string(yamlwrapper *wrapper, const char *key);
-int yaml_get_int(yamlwrapper *wrapper, const char *key);
-int16 yaml_get_int16(yamlwrapper *wrapper, const char *key);
-int32 yaml_get_int32(yamlwrapper *wrapper, const char *key);
-int64 yaml_get_int64(yamlwrapper *wrapper, const char *key);
-int yaml_get_uint(yamlwrapper *wrapper, const char *key);
-int16 yaml_get_uint16(yamlwrapper *wrapper, const char *key);
-int32 yaml_get_uint32(yamlwrapper *wrapper, const char *key);
-int64 yaml_get_uint64(yamlwrapper *wrapper, const char *key);
-bool yaml_get_boolean(yamlwrapper *wrapper, const char *key);
-char *yaml_as_c_string(yamlwrapper *wrapper);
-int yaml_as_int(yamlwrapper *wrapper);
-int16 yaml_as_int16(yamlwrapper *wrapper);
-int32 yaml_as_int32(yamlwrapper *wrapper);
-int64 yaml_as_int64(yamlwrapper *wrapper);
-int yaml_as_uint(yamlwrapper *wrapper);
-int16 yaml_as_uint16(yamlwrapper *wrapper);
-int32 yaml_as_uint32(yamlwrapper *wrapper);
-int64 yaml_as_uint64(yamlwrapper *wrapper);
-bool yaml_as_boolean(yamlwrapper *wrapper);
-bool yaml_node_is_defined(yamlwrapper *wrapper, const char *key);
-yamlwrapper *yaml_get_subnode(yamlwrapper *wrapper, const char *key);
-char *yaml_verify_nodes(yamlwrapper *wrapper, int amount, char **nodes);
-yamliterator *yaml_get_iterator(yamlwrapper *wrapper);
+yamlwrapper* yaml_load_file(const char* file_name);
+void yaml_destroy_wrapper(yamlwrapper* wrapper);
+char* yaml_get_c_string(yamlwrapper* wrapper, const char* key);
+int yaml_get_int(yamlwrapper* wrapper, const char* key);
+int16 yaml_get_int16(yamlwrapper* wrapper, const char* key);
+int32 yaml_get_int32(yamlwrapper* wrapper, const char* key);
+int64 yaml_get_int64(yamlwrapper* wrapper, const char* key);
+int yaml_get_uint(yamlwrapper* wrapper, const char* key);
+int16 yaml_get_uint16(yamlwrapper* wrapper, const char* key);
+int32 yaml_get_uint32(yamlwrapper* wrapper, const char* key);
+int64 yaml_get_uint64(yamlwrapper* wrapper, const char* key);
+bool yaml_get_boolean(yamlwrapper* wrapper, const char* key);
+char* yaml_as_c_string(yamlwrapper* wrapper);
+int yaml_as_int(yamlwrapper* wrapper);
+int16 yaml_as_int16(yamlwrapper* wrapper);
+int32 yaml_as_int32(yamlwrapper* wrapper);
+int64 yaml_as_int64(yamlwrapper* wrapper);
+int yaml_as_uint(yamlwrapper* wrapper);
+int16 yaml_as_uint16(yamlwrapper* wrapper);
+int32 yaml_as_uint32(yamlwrapper* wrapper);
+int64 yaml_as_uint64(yamlwrapper* wrapper);
+bool yaml_as_boolean(yamlwrapper* wrapper);
+bool yaml_node_is_defined(yamlwrapper* wrapper, const char* key);
+yamlwrapper* yaml_get_subnode(yamlwrapper* wrapper, const char* key);
+char* yaml_verify_nodes(yamlwrapper* wrapper, int amount, char** nodes);
+yamliterator* yaml_get_iterator(yamlwrapper* wrapper);
 
-bool yaml_iterator_is_valid(yamliterator *it);
-yamlwrapper *yaml_iterator_first(yamliterator *it);
-yamlwrapper *yaml_iterator_next(yamliterator *it);
-bool yaml_iterator_has_next(yamliterator *it);
-void yaml_iterator_destroy(yamliterator *it);
+bool yaml_iterator_is_valid(yamliterator* it);
+yamlwrapper* yaml_iterator_first(yamliterator* it);
+yamlwrapper* yaml_iterator_next(yamliterator* it);
+bool yaml_iterator_has_next(yamliterator* it);
+void yaml_iterator_destroy(yamliterator* it);
 
 #ifdef __cplusplus
 }

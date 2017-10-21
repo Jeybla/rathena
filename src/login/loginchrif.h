@@ -29,7 +29,7 @@ int logchrif_parse(int fd);
  * @param len: size of packet
  * @return : the number of char-serv the packet was sent to
  */
-int logchrif_sendallwos(int sfd, uint8 *buf, size_t len);
+int logchrif_sendallwos(int sfd, uint8* buf, size_t len);
 
 /**
  * loginchrif constructor

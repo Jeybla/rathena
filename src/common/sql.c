@@ -23,19 +23,19 @@ unsigned int mysql_reconnect_count;
 
 /// Sql handle
 struct Sql {
-	StringBuf     buf;
-	MYSQL         handle;
-	MYSQL_RES     *result;
-	MYSQL_ROW     row;
-	unsigned long *lengths;
-	int           keepalive;
+	StringBuf      buf;
+	MYSQL          handle;
+	MYSQL_RES*     result;
+	MYSQL_ROW      row;
+	unsigned long* lengths;
+	int            keepalive;
 };
 
 
 // Column length receiver.
 // Takes care of the possible size missmatch between uint32 and unsigned long.
 struct s_column_length {
-	uint32        *out_length;
+	uint32*       out_length;
 	unsigned long length;
 };
 typedef struct s_column_length   s_column_length;
@@ -43,15 +43,15 @@ typedef struct s_column_length   s_column_length;
 
 /// Sql statement
 struct SqlStmt {
-	StringBuf       buf;
-	MYSQL_STMT      *stmt;
-	MYSQL_BIND      *params;
-	MYSQL_BIND      *columns;
-	s_column_length *column_lengths;
-	size_t          max_params;
-	size_t          max_columns;
-	bool            bind_params;
-	bool            bind_columns;
+	StringBuf        buf;
+	MYSQL_STMT*      stmt;
+	MYSQL_BIND*      params;
+	MYSQL_BIND*      columns;
+	s_column_length* column_lengths;
+	size_t           max_params;
+	size_t           max_columns;
+	bool             bind_params;
+	bool             bind_columns;
 };
 
 
@@ -61,9 +61,9 @@ struct SqlStmt {
 
 
 /// Allocates and initializes a new Sql handle.
-Sql *Sql_Malloc(void)
+Sql* Sql_Malloc(void)
 {
-	Sql *self;
+	Sql* self;
 
 	CREATE(self, Sql, 1);
 	mysql_init(&self->handle);
@@ -76,7 +76,7 @@ Sql *Sql_Malloc(void)
 }
 
 
-static int Sql_P_Keepalive(Sql *self);
+static int Sql_P_Keepalive(Sql* self);
 
 /**
  * Establishes a connection to schema
@@ -88,7 +88,7 @@ static int Sql_P_Keepalive(Sql *self);
  * @param db : schema name
  * @return
  */
-int Sql_Connect(Sql *self, const char *user, const char *passwd, const char *host, uint16 port, const char *db)
+int Sql_Connect(Sql* self, const char* user, const char* passwd, const char* host, uint16 port, const char* db)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -110,10 +110,10 @@ int Sql_Connect(Sql *self, const char *user, const char *passwd, const char *hos
 
 
 /// Retrieves the timeout of the connection.
-int Sql_GetTimeout(Sql *self, uint32 *out_timeout)
+int Sql_GetTimeout(Sql* self, uint32* out_timeout)
 {
 	if (self && out_timeout && SQL_SUCCESS == Sql_Query(self, "SHOW VARIABLES LIKE 'wait_timeout'")) {
-		char   *data;
+		char*  data;
 		size_t len;
 		if (SQL_SUCCESS == Sql_NextRow(self)
 		    && SQL_SUCCESS == Sql_GetData(self, 1, &data, &len)) {
@@ -128,9 +128,9 @@ int Sql_GetTimeout(Sql *self, uint32 *out_timeout)
 
 
 /// Retrieves the name of the columns of a table into out_buf, with the separator after each name.
-int Sql_GetColumnNames(Sql *self, const char *table, char *out_buf, size_t buf_len, char sep)
+int Sql_GetColumnNames(Sql* self, const char* table, char* out_buf, size_t buf_len, char sep)
 {
-	char   *data;
+	char*  data;
 	size_t len;
 	size_t off = 0;
 
@@ -157,7 +157,7 @@ int Sql_GetColumnNames(Sql *self, const char *table, char *out_buf, size_t buf_l
 
 
 /// Changes the encoding of the connection.
-int Sql_SetEncoding(Sql *self, const char *encoding)
+int Sql_SetEncoding(Sql* self, const char* encoding)
 {
 	if (self && Sql_Query(self, "SET NAMES %s", encoding) == 0)
 		return SQL_SUCCESS;
@@ -167,7 +167,7 @@ int Sql_SetEncoding(Sql *self, const char *encoding)
 
 
 /// Pings the connection.
-int Sql_Ping(Sql *self)
+int Sql_Ping(Sql* self)
 {
 	if (self && mysql_ping(&self->handle) == 0)
 		return SQL_SUCCESS;
@@ -181,7 +181,7 @@ int Sql_Ping(Sql *self)
 /// @private
 static int Sql_P_KeepaliveTimer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	Sql *self = (Sql *)data;
+	Sql* self = (Sql*)data;
 
 	ShowInfo("Pinging SQL server to keep connection alive...\n");
 	Sql_Ping(self);
@@ -193,7 +193,7 @@ static int Sql_P_KeepaliveTimer(int tid, unsigned int tick, int id, intptr_t dat
 ///
 /// @return the keepalive timer id, or INVALID_TIMER
 /// @private
-static int Sql_P_Keepalive(Sql *self)
+static int Sql_P_Keepalive(Sql* self)
 {
 	uint32 timeout, ping_interval;
 
@@ -214,7 +214,7 @@ static int Sql_P_Keepalive(Sql *self)
 
 
 /// Escapes a string.
-size_t Sql_EscapeString(Sql *self, char *out_to, const char *from)
+size_t Sql_EscapeString(Sql* self, char* out_to, const char* from)
 {
 	if (self)
 		return (size_t)mysql_real_escape_string(&self->handle, out_to, from, (unsigned long)strlen(from));
@@ -224,7 +224,7 @@ size_t Sql_EscapeString(Sql *self, char *out_to, const char *from)
 
 
 /// Escapes a string.
-size_t Sql_EscapeStringLen(Sql *self, char *out_to, const char *from, size_t from_len)
+size_t Sql_EscapeStringLen(Sql* self, char* out_to, const char* from, size_t from_len)
 {
 	if (self)
 		return (size_t)mysql_real_escape_string(&self->handle, out_to, from, (unsigned long)from_len);
@@ -234,7 +234,7 @@ size_t Sql_EscapeStringLen(Sql *self, char *out_to, const char *from, size_t fro
 
 
 /// Executes a query.
-int Sql_Query(Sql *self, const char *query, ...)
+int Sql_Query(Sql* self, const char* query, ...)
 {
 	int     res;
 	va_list args;
@@ -248,7 +248,7 @@ int Sql_Query(Sql *self, const char *query, ...)
 
 
 /// Executes a query.
-int Sql_QueryV(Sql *self, const char *query, va_list args)
+int Sql_QueryV(Sql* self, const char* query, va_list args)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -272,7 +272,7 @@ int Sql_QueryV(Sql *self, const char *query, va_list args)
 
 
 /// Executes a query.
-int Sql_QueryStr(Sql *self, const char *query)
+int Sql_QueryStr(Sql* self, const char* query)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -296,7 +296,7 @@ int Sql_QueryStr(Sql *self, const char *query)
 
 
 /// Returns the number of the AUTO_INCREMENT column of the last INSERT/UPDATE query.
-uint64 Sql_LastInsertId(Sql *self)
+uint64 Sql_LastInsertId(Sql* self)
 {
 	if (self)
 		return (uint64)mysql_insert_id(&self->handle);
@@ -306,7 +306,7 @@ uint64 Sql_LastInsertId(Sql *self)
 
 
 /// Returns the number of columns in each row of the result.
-uint32 Sql_NumColumns(Sql *self)
+uint32 Sql_NumColumns(Sql* self)
 {
 	if (self && self->result)
 		return (uint32)mysql_num_fields(self->result);
@@ -316,7 +316,7 @@ uint32 Sql_NumColumns(Sql *self)
 
 
 /// Returns the number of rows in the result.
-uint64 Sql_NumRows(Sql *self)
+uint64 Sql_NumRows(Sql* self)
 {
 	if (self && self->result)
 		return (uint64)mysql_num_rows(self->result);
@@ -326,7 +326,7 @@ uint64 Sql_NumRows(Sql *self)
 
 
 /// Returns the number of rows affected by the last query
-uint64 Sql_NumRowsAffected(Sql *self)
+uint64 Sql_NumRowsAffected(Sql* self)
 {
 	if (self)
 		return (uint64)mysql_affected_rows(&self->handle);
@@ -336,7 +336,7 @@ uint64 Sql_NumRowsAffected(Sql *self)
 
 
 /// Fetches the next row.
-int Sql_NextRow(Sql *self)
+int Sql_NextRow(Sql* self)
 {
 	if (self && self->result) {
 		self->row = mysql_fetch_row(self->result);
@@ -353,7 +353,7 @@ int Sql_NextRow(Sql *self)
 
 
 /// Gets the data of a column.
-int Sql_GetData(Sql *self, size_t col, char **out_buf, size_t *out_len)
+int Sql_GetData(Sql* self, size_t col, char** out_buf, size_t* out_len)
 {
 	if (self && self->row) {
 		if (col < Sql_NumColumns(self)) {
@@ -374,7 +374,7 @@ int Sql_GetData(Sql *self, size_t col, char **out_buf, size_t *out_len)
 
 
 /// Frees the result of the query.
-void Sql_FreeResult(Sql *self)
+void Sql_FreeResult(Sql* self)
 {
 	if (self && self->result) {
 		mysql_free_result(self->result);
@@ -386,7 +386,7 @@ void Sql_FreeResult(Sql *self)
 
 
 /// Shows debug information (last query).
-void Sql_ShowDebug_(Sql *self, const char *debug_file, const unsigned long debug_line)
+void Sql_ShowDebug_(Sql* self, const char* debug_file, const unsigned long debug_line)
 {
 	if (self == NULL)
 		ShowDebug("at %s:%lu - self is NULL\n", debug_file, debug_line);
@@ -398,7 +398,7 @@ void Sql_ShowDebug_(Sql *self, const char *debug_file, const unsigned long debug
 
 
 /// Frees a Sql handle returned by Sql_Malloc.
-void Sql_Free(Sql *self)
+void Sql_Free(Sql* self)
 {
 	if (self) {
 		Sql_FreeResult(self);
@@ -444,7 +444,7 @@ static enum enum_field_types Sql_P_SizeToMysqlIntType(int sz)
 /// Binds a parameter/result.
 ///
 /// @private
-static int Sql_P_BindSqlDataType(MYSQL_BIND *bind, enum SqlDataType buffer_type, void *buffer, size_t buffer_len, unsigned long *out_length, int8 *out_is_null)
+static int Sql_P_BindSqlDataType(MYSQL_BIND* bind, enum SqlDataType buffer_type, void* buffer, size_t buffer_len, unsigned long* out_length, int8* out_is_null)
 {
 	memset(bind, 0, sizeof(MYSQL_BIND));
 	switch (buffer_type)
@@ -556,7 +556,7 @@ static int Sql_P_BindSqlDataType(MYSQL_BIND *bind, enum SqlDataType buffer_type,
 	bind->buffer        = buffer;
 	bind->buffer_length = (unsigned long)buffer_len;
 	bind->length        = out_length;
-	bind->is_null       = (my_bool *)out_is_null;
+	bind->is_null       = (my_bool*)out_is_null;
 	return SQL_SUCCESS;
 } /* Sql_P_BindSqlDataType */
 
@@ -564,10 +564,10 @@ static int Sql_P_BindSqlDataType(MYSQL_BIND *bind, enum SqlDataType buffer_type,
 /// Prints debug information about a field (type and length).
 ///
 /// @private
-static void Sql_P_ShowDebugMysqlFieldInfo(const char *prefix, enum enum_field_types type, int is_unsigned, unsigned long length, const char *length_postfix)
+static void Sql_P_ShowDebugMysqlFieldInfo(const char* prefix, enum enum_field_types type, int is_unsigned, unsigned long length, const char* length_postfix)
 {
-	const char *sign = (is_unsigned ? "UNSIGNED " : "");
-	const char *type_string;
+	const char* sign = (is_unsigned ? "UNSIGNED " : "");
+	const char* type_string;
 
 	switch (type)
 	{
@@ -605,11 +605,11 @@ static void Sql_P_ShowDebugMysqlFieldInfo(const char *prefix, enum enum_field_ty
 /// Reports debug information about a truncated column.
 ///
 /// @private
-static void SqlStmt_P_ShowDebugTruncatedColumn(SqlStmt *self, size_t i)
+static void SqlStmt_P_ShowDebugTruncatedColumn(SqlStmt* self, size_t i)
 {
-	MYSQL_RES   *meta;
-	MYSQL_FIELD *field;
-	MYSQL_BIND  *column;
+	MYSQL_RES*   meta;
+	MYSQL_FIELD* field;
+	MYSQL_BIND*  column;
 
 	meta  = mysql_stmt_result_metadata(self->stmt);
 	field = mysql_fetch_field_direct(meta, (unsigned int)i);
@@ -626,10 +626,10 @@ static void SqlStmt_P_ShowDebugTruncatedColumn(SqlStmt *self, size_t i)
 
 
 /// Allocates and initializes a new SqlStmt handle.
-SqlStmt *SqlStmt_Malloc(Sql *sql)
+SqlStmt* SqlStmt_Malloc(Sql* sql)
 {
-	SqlStmt    *self;
-	MYSQL_STMT *stmt;
+	SqlStmt*    self;
+	MYSQL_STMT* stmt;
 
 	if (sql == NULL)
 		return NULL;
@@ -655,7 +655,7 @@ SqlStmt *SqlStmt_Malloc(Sql *sql)
 
 
 /// Prepares the statement.
-int SqlStmt_Prepare(SqlStmt *self, const char *query, ...)
+int SqlStmt_Prepare(SqlStmt* self, const char* query, ...)
 {
 	int     res;
 	va_list args;
@@ -669,7 +669,7 @@ int SqlStmt_Prepare(SqlStmt *self, const char *query, ...)
 
 
 /// Prepares the statement.
-int SqlStmt_PrepareV(SqlStmt *self, const char *query, va_list args)
+int SqlStmt_PrepareV(SqlStmt* self, const char* query, va_list args)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -689,7 +689,7 @@ int SqlStmt_PrepareV(SqlStmt *self, const char *query, va_list args)
 
 
 /// Prepares the statement.
-int SqlStmt_PrepareStr(SqlStmt *self, const char *query)
+int SqlStmt_PrepareStr(SqlStmt* self, const char* query)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -709,7 +709,7 @@ int SqlStmt_PrepareStr(SqlStmt *self, const char *query)
 
 
 /// Returns the number of parameters in the prepared statement.
-size_t SqlStmt_NumParams(SqlStmt *self)
+size_t SqlStmt_NumParams(SqlStmt* self)
 {
 	if (self)
 		return (size_t)mysql_stmt_param_count(self->stmt);
@@ -719,7 +719,7 @@ size_t SqlStmt_NumParams(SqlStmt *self)
 
 
 /// Binds a parameter to a buffer.
-int SqlStmt_BindParam(SqlStmt *self, size_t idx, enum SqlDataType buffer_type, void *buffer, size_t buffer_len)
+int SqlStmt_BindParam(SqlStmt* self, size_t idx, enum SqlDataType buffer_type, void* buffer, size_t buffer_len)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -746,7 +746,7 @@ int SqlStmt_BindParam(SqlStmt *self, size_t idx, enum SqlDataType buffer_type, v
 
 
 /// Executes the prepared statement.
-int SqlStmt_Execute(SqlStmt *self)
+int SqlStmt_Execute(SqlStmt* self)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -770,7 +770,7 @@ int SqlStmt_Execute(SqlStmt *self)
 
 
 /// Returns the number of the AUTO_INCREMENT column of the last INSERT/UPDATE statement.
-uint64 SqlStmt_LastInsertId(SqlStmt *self)
+uint64 SqlStmt_LastInsertId(SqlStmt* self)
 {
 	if (self)
 		return (uint64)mysql_stmt_insert_id(self->stmt);
@@ -780,7 +780,7 @@ uint64 SqlStmt_LastInsertId(SqlStmt *self)
 
 
 /// Returns the number of columns in each row of the result.
-size_t SqlStmt_NumColumns(SqlStmt *self)
+size_t SqlStmt_NumColumns(SqlStmt* self)
 {
 	if (self)
 		return (size_t)mysql_stmt_field_count(self->stmt);
@@ -790,7 +790,7 @@ size_t SqlStmt_NumColumns(SqlStmt *self)
 
 
 /// Binds the result of a column to a buffer.
-int SqlStmt_BindColumn(SqlStmt *self, size_t idx, enum SqlDataType buffer_type, void *buffer, size_t buffer_len, uint32 *out_length, int8 *out_is_null)
+int SqlStmt_BindColumn(SqlStmt* self, size_t idx, enum SqlDataType buffer_type, void* buffer, size_t buffer_len, uint32* out_length, int8* out_is_null)
 {
 	if (self == NULL)
 		return SQL_ERROR;
@@ -800,7 +800,7 @@ int SqlStmt_BindColumn(SqlStmt *self, size_t idx, enum SqlDataType buffer_type, 
 			ShowDebug("SqlStmt_BindColumn: buffer_len(%d) is too small, no room for the nul-terminator\n", buffer_len);
 			return SQL_ERROR;
 		}
-		--buffer_len; // nul-terminator
+		--buffer_len;      // nul-terminator
 	}
 	if (!self->bind_columns) { // initialize the bindings
 		size_t i;
@@ -828,7 +828,7 @@ int SqlStmt_BindColumn(SqlStmt *self, size_t idx, enum SqlDataType buffer_type, 
 
 
 /// Returns the number of rows in the result.
-uint64 SqlStmt_NumRows(SqlStmt *self)
+uint64 SqlStmt_NumRows(SqlStmt* self)
 {
 	if (self)
 		return (uint64)mysql_stmt_num_rows(self->stmt);
@@ -838,7 +838,7 @@ uint64 SqlStmt_NumRows(SqlStmt *self)
 
 
 /// Fetches the next row.
-int SqlStmt_NextRow(SqlStmt *self)
+int SqlStmt_NextRow(SqlStmt* self)
 {
 	int    err;
 	size_t i;
@@ -871,7 +871,7 @@ int SqlStmt_NextRow(SqlStmt *self)
 		cols = SqlStmt_NumColumns(self);
 		for (i = 0; i < cols; ++i)
 		{
-			MYSQL_BIND *column = &self->columns[i];
+			MYSQL_BIND* column = &self->columns[i];
 			column->error = &truncated;
 			mysql_stmt_fetch_column(self->stmt, column, (unsigned int)i, 0);
 			column->error = NULL;
@@ -894,11 +894,11 @@ int SqlStmt_NextRow(SqlStmt *self)
 	cols = SqlStmt_NumColumns(self);
 	for (i = 0; i < cols; ++i)
 	{
-		unsigned long length  = self->column_lengths[i].length;
-		MYSQL_BIND    *column = &self->columns[i];
+		unsigned long length = self->column_lengths[i].length;
+		MYSQL_BIND*   column = &self->columns[i];
 #if !defined (MYSQL_DATA_TRUNCATED)
 		// MySQL 4.1/(below?) returns success even if data is truncated, so we test truncation manually [FlavioJS]
-		if (column->buffer_length < length) { // report truncated column
+		if (column->buffer_length < length) {                                                             // report truncated column
 			if (column->buffer_type == MYSQL_TYPE_STRING || column->buffer_type == MYSQL_TYPE_BLOB) { // string/enum/blob column
 				SqlStmt_P_ShowDebugTruncatedColumn(self, i);
 				return SQL_ERROR;
@@ -908,10 +908,10 @@ int SqlStmt_NextRow(SqlStmt *self)
 #endif
 		if (self->column_lengths[i].out_length)
 			*self->column_lengths[i].out_length = (uint32)length;
-		if (column->buffer_type == MYSQL_TYPE_STRING) { // clear unused part of the string/enum buffer (and nul-terminate)
-			memset((char *)column->buffer + length, 0, column->buffer_length - length + 1);
+		if (column->buffer_type == MYSQL_TYPE_STRING) {                                        // clear unused part of the string/enum buffer (and nul-terminate)
+			memset((char*)column->buffer + length, 0, column->buffer_length - length + 1);
 		} else if (column->buffer_type == MYSQL_TYPE_BLOB && length < column->buffer_length) { // clear unused part of the blob buffer
-			memset((char *)column->buffer + length, 0, column->buffer_length - length);
+			memset((char*)column->buffer + length, 0, column->buffer_length - length);
 		}
 	}
 
@@ -920,7 +920,7 @@ int SqlStmt_NextRow(SqlStmt *self)
 
 
 /// Frees the result of the statement execution.
-void SqlStmt_FreeResult(SqlStmt *self)
+void SqlStmt_FreeResult(SqlStmt* self)
 {
 	if (self)
 		mysql_stmt_free_result(self->stmt);
@@ -928,7 +928,7 @@ void SqlStmt_FreeResult(SqlStmt *self)
 
 
 /// Shows debug information (with statement).
-void SqlStmt_ShowDebug_(SqlStmt *self, const char *debug_file, const unsigned long debug_line)
+void SqlStmt_ShowDebug_(SqlStmt* self, const char* debug_file, const unsigned long debug_line)
 {
 	if (self == NULL)
 		ShowDebug("at %s:%lu -  self is NULL\n", debug_file, debug_line);
@@ -940,7 +940,7 @@ void SqlStmt_ShowDebug_(SqlStmt *self, const char *debug_file, const unsigned lo
 
 
 /// Frees a SqlStmt returned by SqlStmt_Malloc.
-void SqlStmt_Free(SqlStmt *self)
+void SqlStmt_Free(SqlStmt* self)
 {
 	if (self) {
 		SqlStmt_FreeResult(self);
@@ -974,10 +974,10 @@ void ra_mysql_error_handler(unsigned int ecode)
 	}
 }
 
-void Sql_inter_server_read(const char *cfgName, bool first)
+void Sql_inter_server_read(const char* cfgName, bool first)
 {
-	char line[1024], w1[1024], w2[1024];
-	FILE *fp;
+	char  line[1024], w1[1024], w2[1024];
+	FILE* fp;
 
 	fp = fopen(cfgName, "r");
 	if (fp == NULL) {

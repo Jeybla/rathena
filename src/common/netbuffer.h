@@ -10,7 +10,7 @@ typedef struct netbuf {
 	sysint         pool;                    // The pool ID this buffer belongs to,
 	// is set to -1 if its an emergency allocated buffer
 
-	struct netbuf  *next;           // Used by Network system.
+	struct netbuf* next;            // Used by Network system.
 
 	volatile int32 refcnt;          // Internal Refcount, it gets lowered every call to netbuffer_put,
 	// if its getting zero, the buffer will returned back to the pool
@@ -37,7 +37,7 @@ typedef struct netbuf {
 
 	// The Bufferspace itself.
 	char buf[32];
-} *netbuf;
+}* netbuf;
 
 
 void netbuffer_init();
@@ -73,10 +73,10 @@ void netbuffer_incref(netbuf buf);
 
 
 // Some Useful macros
-#define NBUFP(netbuf, pos)    (((uint8 *)(netbuf->buf)) + (pos))
-#define NBUFB(netbuf, pos)    (*(uint8 *)((netbuf->buf) + (pos)))
-#define NBUFW(netbuf, pos)    (*(uint16 *)((netbuf->buf) + (pos)))
-#define NBUFL(netbuf, pos)    (*(uint32 *)((netbuf->buf) + (pos)))
+#define NBUFP(netbuf, pos)    (((uint8*)(netbuf->buf)) + (pos))
+#define NBUFB(netbuf, pos)    (*(uint8*)((netbuf->buf) + (pos)))
+#define NBUFW(netbuf, pos)    (*(uint16*)((netbuf->buf) + (pos)))
+#define NBUFL(netbuf, pos)    (*(uint32*)((netbuf->buf) + (pos)))
 
 
 #endif

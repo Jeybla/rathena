@@ -13,10 +13,10 @@
 
 #include <stdlib.h>
 
-struct s_pet *pet_pt;
+struct s_pet* pet_pt;
 
 //---------------------------------------------------------
-int inter_pet_tosql(int pet_id, struct s_pet *p)
+int inter_pet_tosql(int pet_id, struct s_pet* p)
 {
 	//`pet` (`pet_id`, `class`,`name`,`account_id`,`char_id`,`level`,`egg_id`,`equip`,`intimate`,`hungry`,`rename_flag`,`incubate`)
 	char esc_name[NAME_LENGTH * 2 + 1]; // escaped pet name
@@ -49,9 +49,9 @@ int inter_pet_tosql(int pet_id, struct s_pet *p)
 	return 1;
 }
 
-int inter_pet_fromsql(int pet_id, struct s_pet *p)
+int inter_pet_fromsql(int pet_id, struct s_pet* p)
 {
-	char   *data;
+	char*  data;
 	size_t len;
 
 #ifdef NOISY
@@ -106,7 +106,7 @@ int inter_pet_fromsql(int pet_id, struct s_pet *p)
 int inter_pet_sql_init(void)
 {
 	//memory alloc
-	pet_pt = (struct s_pet *)aCalloc(sizeof(struct s_pet), 1);
+	pet_pt = (struct s_pet*)aCalloc(sizeof(struct s_pet), 1);
 	return 0;
 }
 void inter_pet_sql_final(void)
@@ -124,7 +124,7 @@ int inter_pet_delete(int pet_id)
 	return 0;
 }
 //------------------------------------------------------
-int mapif_pet_created(int fd, uint32 account_id, struct s_pet *p)
+int mapif_pet_created(int fd, uint32 account_id, struct s_pet* p)
 {
 	WFIFOHEAD(fd, 12);
 	WFIFOW(fd, 0) = 0x3880;
@@ -142,7 +142,7 @@ int mapif_pet_created(int fd, uint32 account_id, struct s_pet *p)
 	return 0;
 }
 
-int mapif_pet_info(int fd, uint32 account_id, struct s_pet *p)
+int mapif_pet_info(int fd, uint32 account_id, struct s_pet* p)
 {
 	WFIFOHEAD(fd, sizeof(struct s_pet) + 9);
 	WFIFOW(fd, 0) = 0x3881;
@@ -189,7 +189,7 @@ int mapif_delete_pet_ack(int fd, int flag)
 	return 0;
 }
 
-int mapif_create_pet(int fd, uint32 account_id, uint32 char_id, short pet_class, short pet_lv, unsigned short pet_egg_id, unsigned short pet_equip, short intimate, short hungry, char rename_flag, char incubate, char *pet_name)
+int mapif_create_pet(int fd, uint32 account_id, uint32 char_id, short pet_class, short pet_lv, unsigned short pet_egg_id, unsigned short pet_equip, short intimate, short hungry, char rename_flag, char incubate, char* pet_name)
 {
 	memset(pet_pt, 0, sizeof(struct s_pet));
 	safestrncpy(pet_pt->name, pet_name, NAME_LENGTH);
@@ -246,7 +246,7 @@ int mapif_load_pet(int fd, uint32 account_id, uint32 char_id, int pet_id)
 	return 0;
 }
 
-int mapif_save_pet(int fd, uint32 account_id, struct s_pet *data)
+int mapif_save_pet(int fd, uint32 account_id, struct s_pet* data)
 {
 	//here process pet save request.
 	int len;
@@ -296,7 +296,7 @@ int mapif_parse_LoadPet(int fd)
 int mapif_parse_SavePet(int fd)
 {
 	RFIFOHEAD(fd);
-	mapif_save_pet(fd, RFIFOL(fd, 4), (struct s_pet *)RFIFOP(fd, 8));
+	mapif_save_pet(fd, RFIFOL(fd, 4), (struct s_pet*)RFIFOP(fd, 8));
 	return 0;
 }
 

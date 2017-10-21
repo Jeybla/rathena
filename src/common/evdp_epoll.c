@@ -34,11 +34,11 @@ void evdp_final()
 } //end: evdp_final()
 
 
-int32 evdp_wait(EVDP_EVENT *out_fds, int32 max_events, int32 timeout_ticks)
+int32 evdp_wait(EVDP_EVENT* out_fds, int32 max_events, int32 timeout_ticks)
 {
-	struct epoll_event          l_events[EPOLL_MAX_PER_CYCLE];
-	register struct epoll_event *ev;
-	register int                nfds, n;
+	struct epoll_event           l_events[EPOLL_MAX_PER_CYCLE];
+	register struct epoll_event* ev;
+	register int                 nfds, n;
 
 	if (max_events > EPOLL_MAX_PER_CYCLE)
 		max_events = EPOLL_MAX_PER_CYCLE;
@@ -75,7 +75,7 @@ int32 evdp_wait(EVDP_EVENT *out_fds, int32 max_events, int32 timeout_ticks)
 } //end: evdp_wait()
 
 
-void evdp_remove(int32 fd, EVDP_DATA *ep)
+void evdp_remove(int32 fd, EVDP_DATA* ep)
 {
 	if (ep->ev_added == true) {
 		if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, &ep->ev_data) != 0) {
@@ -90,7 +90,7 @@ void evdp_remove(int32 fd, EVDP_DATA *ep)
 } //end: evdp_remove()
 
 
-bool evdp_addlistener(int32 fd, EVDP_DATA *ep)
+bool evdp_addlistener(int32 fd, EVDP_DATA* ep)
 {
 	ep->ev_data.events  = EPOLLET | EPOLLIN;
 	ep->ev_data.data.fd = fd;
@@ -111,7 +111,7 @@ bool evdp_addlistener(int32 fd, EVDP_DATA *ep)
 } //end: evdp_addlistener()
 
 
-bool evdp_addclient(int32 fd, EVDP_DATA *ep)
+bool evdp_addclient(int32 fd, EVDP_DATA* ep)
 {
 	ep->ev_data.events  = EPOLLIN | EPOLLHUP;
 	ep->ev_data.data.fd = fd;
@@ -133,7 +133,7 @@ bool evdp_addclient(int32 fd, EVDP_DATA *ep)
 } //end: evdp_addclient()
 
 
-bool evdp_addconnecting(int32 fd, EVDP_DATA *ep)
+bool evdp_addconnecting(int32 fd, EVDP_DATA* ep)
 {
 	ep->ev_data.events  = EPOLLET | EPOLLOUT | EPOLLHUP;
 	ep->ev_data.data.fd = fd;
@@ -150,7 +150,7 @@ bool evdp_addconnecting(int32 fd, EVDP_DATA *ep)
 } //end: evdp_addconnecting()
 
 
-bool evdp_outgoingconnection_established(int32 fd, EVDP_DATA *ep)
+bool evdp_outgoingconnection_established(int32 fd, EVDP_DATA* ep)
 {
 	int32 saved_mask;
 
@@ -174,7 +174,7 @@ bool evdp_outgoingconnection_established(int32 fd, EVDP_DATA *ep)
 } //end: evdp_outgoingconnection_established()
 
 
-bool evdp_writable_add(int32 fd, EVDP_DATA *ep)
+bool evdp_writable_add(int32 fd, EVDP_DATA* ep)
 {
 	if (ep->ev_added != true) {
 		ShowError("evdp [EPOLL]: evdp_writable_add - tried to add not added fd #%u\n", fd);
@@ -194,7 +194,7 @@ bool evdp_writable_add(int32 fd, EVDP_DATA *ep)
 } //end: evdp_writable_add()
 
 
-void evdp_writable_remove(int32 fd, EVDP_DATA *ep)
+void evdp_writable_remove(int32 fd, EVDP_DATA* ep)
 {
 	if (ep->ev_added != true) {
 		ShowError("evdp [EPOLL]: evdp_writable_remove - tried to remove not added fd #%u\n", fd);

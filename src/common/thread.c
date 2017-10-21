@@ -37,7 +37,7 @@ struct rAthread {
 
 	RATHREAD_PRIO prio;
 	rAthreadProc  proc;
-	void          *param;
+	void*         param;
 
 	#ifdef WIN32
 	HANDLE        hThread;
@@ -110,11 +110,11 @@ static void rat_thread_terminated(prAthread handle)
 DWORD WINAPI _raThreadMainRedirector(LPVOID p)
 {
 #else
-static void *_raThreadMainRedirector(void *p)
+static void* _raThreadMainRedirector(void* p)
 {
 	sigset_t set; // on Posix Thread platforms
 #endif
-	void     *ret;
+	void*    ret;
 
 	// Update myID @ TLS to right id.
 #ifdef HAS_TLS
@@ -154,13 +154,13 @@ static void *_raThreadMainRedirector(void *p)
 ///
 /// API Level
 ///
-prAthread rathread_create(rAthreadProc entryPoint, void *param)
+prAthread rathread_create(rAthreadProc entryPoint, void* param)
 {
 	return rathread_createEx(entryPoint, param, (1 << 23) /*8MB*/, RAT_PRIO_NORMAL);
 } //end: rathread_create()
 
 
-prAthread rathread_createEx(rAthreadProc entryPoint, void *param, size_t szStack, RATHREAD_PRIO prio)
+prAthread rathread_createEx(rAthreadProc entryPoint, void* param, size_t szStack, RATHREAD_PRIO prio)
 {
 #ifndef WIN32
 	pthread_attr_t attr;
@@ -195,12 +195,12 @@ prAthread rathread_createEx(rAthreadProc entryPoint, void *param, size_t szStack
 	handle->param = param;
 
 #ifdef WIN32
-	handle->hThread = CreateThread(NULL, szStack, _raThreadMainRedirector, (void *)handle, 0, NULL);
+	handle->hThread = CreateThread(NULL, szStack, _raThreadMainRedirector, (void*)handle, 0, NULL);
 #else
 	pthread_attr_init(&attr);
 	pthread_attr_setstacksize(&attr, szStack);
 
-	if (pthread_create(&handle->hThread, &attr, _raThreadMainRedirector, (void *)handle) != 0) {
+	if (pthread_create(&handle->hThread, &attr, _raThreadMainRedirector, (void*)handle) != 0) {
 		handle->proc  = NULL;
 		handle->param = NULL;
 		return NULL;
@@ -281,7 +281,7 @@ int rathread_get_tid()
 } //end: rathread_get_tid()
 
 
-bool rathread_wait(prAthread handle, void **out_exitCode)
+bool rathread_wait(prAthread handle, void** out_exitCode)
 {
 	// Hint:
 	// no thread data cleanup routine call here!

@@ -43,11 +43,11 @@ extern "C" {
 #define aStrdup(p)        _mstrdup(p, ALC_MARK)
 #define aFree(p)          _mfree(p, ALC_MARK)
 
-void *_mmalloc(size_t size, const char *file, int line, const char *func);
-void *_mcalloc(size_t num, size_t size, const char *file, int line, const char *func);
-void *_mrealloc(void *p, size_t size, const char *file, int line, const char *func);
-char *_mstrdup(const char *p, const char *file, int line, const char *func);
-void  _mfree(void *p, const char *file, int line, const char *func);
+void* _mmalloc(size_t size, const char* file, int line, const char* func);
+void* _mcalloc(size_t num, size_t size, const char* file, int line, const char* func);
+void* _mrealloc(void* p, size_t size, const char* file, int line, const char* func);
+char* _mstrdup(const char* p, const char* file, int line, const char* func);
+void  _mfree(void* p, const char* file, int line, const char* func);
 
 #else
 
@@ -57,11 +57,11 @@ void  _mfree(void *p, const char *file, int line, const char *func);
 #define aStrdup(p)        aStrdup_(p, ALC_MARK)
 #define aFree(p)          aFree_(p, ALC_MARK)
 
-void *aMalloc_(size_t size, const char *file, int line, const char *func);
-void *aCalloc_(size_t num, size_t size, const char *file, int line, const char *func);
-void *aRealloc_(void *p, size_t size, const char *file, int line, const char *func);
-char *aStrdup_(const char *p, const char *file, int line, const char *func);
-void  aFree_(void *p, const char *file, int line, const char *func);
+void* aMalloc_(size_t size, const char* file, int line, const char* func);
+void* aCalloc_(size_t num, size_t size, const char* file, int line, const char* func);
+void* aRealloc_(void* p, size_t size, const char* file, int line, const char* func);
+char* aStrdup_(const char* p, const char* file, int line, const char* func);
+void  aFree_(void* p, const char* file, int line, const char* func);
 
 #endif
 
@@ -75,20 +75,20 @@ void  aFree_(void *p, const char *file, int line, const char *func);
 
 #else // others don't, so we emulate them
 
-	#define CREATE_BUFFER(name, type, size)    type * name = (type *)aCalloc(size, sizeof(type))
+	#define CREATE_BUFFER(name, type, size)    type * name = (type*)aCalloc(size, sizeof(type))
 	#define DELETE_BUFFER(name)                aFree(name)
 
 #endif
 
 ////////////// Others //////////////////////////
 // should be merged with any of above later
-#define CREATE(result, type, number)      (result) = (type *)aCalloc((number), sizeof(type))
-#define RECREATE(result, type, number)    (result) = (type *)aRealloc((result), sizeof(type) * (number))
+#define CREATE(result, type, number)      (result) = (type*)aCalloc((number), sizeof(type))
+#define RECREATE(result, type, number)    (result) = (type*)aRealloc((result), sizeof(type) * (number))
 
 ////////////////////////////////////////////////
 
 void malloc_memory_check(void);
-bool malloc_verify_ptr(void *ptr);
+bool malloc_verify_ptr(void* ptr);
 size_t malloc_usage(void);
 void malloc_init(void);
 void malloc_final(void);

@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #if PACKETVER_SUPPORTS_PINCODE
-bool pincode_allowed(char *pincode);
+bool pincode_allowed(char* pincode);
 
 #endif
 
@@ -30,7 +30,7 @@ bool pincode_allowed(char *pincode);
 // reason
 // 0: success
 // 1: failed
-void chclif_moveCharSlotReply(int fd, struct char_session_data *sd, unsigned short index, short reason)
+void chclif_moveCharSlotReply(int fd, struct char_session_data* sd, unsigned short index, short reason)
 {
 	WFIFOHEAD(fd, 8);
 	WFIFOW(fd, 0) = 0x8d5;
@@ -43,7 +43,7 @@ void chclif_moveCharSlotReply(int fd, struct char_session_data *sd, unsigned sho
 /*
  * Client is requesting to move a charslot
  */
-int chclif_parse_moveCharSlot(int fd, struct char_session_data *sd)
+int chclif_parse_moveCharSlot(int fd, struct char_session_data* sd)
 {
 	uint16 from, to;
 
@@ -118,7 +118,7 @@ int chclif_parse_moveCharSlot(int fd, struct char_session_data *sd)
  *   7 = char select window shows a button - client sends 0x8c5
  *   8 = pincode was incorrect
  */
-void chclif_pincode_sendstate(int fd, struct char_session_data *sd, enum pincode_state state)
+void chclif_pincode_sendstate(int fd, struct char_session_data* sd, enum pincode_state state)
 {
 	WFIFOHEAD(fd, 12);
 	WFIFOW(fd, 0)  = 0x8b9;
@@ -131,7 +131,7 @@ void chclif_pincode_sendstate(int fd, struct char_session_data *sd, enum pincode
 /*
  * Client just entering charserv from login, send him pincode confirmation
  */
-int chclif_parse_reqpincode_window(int fd, struct char_session_data *sd)
+int chclif_parse_reqpincode_window(int fd, struct char_session_data* sd)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
@@ -150,7 +150,7 @@ int chclif_parse_reqpincode_window(int fd, struct char_session_data *sd)
 /*
  * Client as anwsered pincode questionning, checking if valid anwser
  */
-int chclif_parse_pincode_check(int fd, struct char_session_data *sd)
+int chclif_parse_pincode_check(int fd, struct char_session_data* sd)
 {
 	char pin[PINCODE_LENGTH + 1];
 
@@ -161,7 +161,7 @@ int chclif_parse_pincode_check(int fd, struct char_session_data *sd)
 		return 1;
 
 	memset(pin, 0, PINCODE_LENGTH + 1);
-	strncpy((char *)pin, RFIFOCP(fd, 6), PINCODE_LENGTH);
+	strncpy((char*)pin, RFIFOCP(fd, 6), PINCODE_LENGTH);
 	RFIFOSKIP(fd, 10);
 
 	char_pincode_decrypt(sd->pincode_seed, pin);
@@ -174,7 +174,7 @@ int chclif_parse_pincode_check(int fd, struct char_session_data *sd)
 /*
  * Helper function to check if a new pincode contains illegal characters or combinations
  */
-bool pincode_allowed(char *pincode)
+bool pincode_allowed(char* pincode)
 {
 	int  i;
 	char c, n, compare[PINCODE_LENGTH + 1];
@@ -249,7 +249,7 @@ bool pincode_allowed(char *pincode)
 /*
  * Client request to change pincode
  */
-int chclif_parse_pincode_change(int fd, struct char_session_data *sd)
+int chclif_parse_pincode_change(int fd, struct char_session_data* sd)
 {
 	if (RFIFOREST(fd) < 14)
 		return 0;
@@ -288,7 +288,7 @@ int chclif_parse_pincode_change(int fd, struct char_session_data *sd)
 /*
  * activate PIN system and set first PIN
  */
-int chclif_parse_pincode_setnew(int fd, struct char_session_data *sd)
+int chclif_parse_pincode_setnew(int fd, struct char_session_data* sd)
 {
 	if (RFIFOREST(fd) < 10)
 		return 0;
@@ -319,7 +319,7 @@ int chclif_parse_pincode_setnew(int fd, struct char_session_data *sd)
 //----------------------------------------
 // Tell client how many pages, kRO sends 17 (Yommy)
 //----------------------------------------
-void chclif_charlist_notify(int fd, struct char_session_data *sd)
+void chclif_charlist_notify(int fd, struct char_session_data* sd)
 {
 // This is needed on RE clients from october 2015 onwards
 #if defined (PACKETVER_RE) && PACKETVER >= 20151001
@@ -341,7 +341,7 @@ void chclif_charlist_notify(int fd, struct char_session_data *sd)
 //----------------------------------------
 // Function to send characters to a player
 //----------------------------------------
-int chclif_mmo_send006b(int fd, struct char_session_data *sd)
+int chclif_mmo_send006b(int fd, struct char_session_data* sd)
 {
 	int j, offset;
 
@@ -373,7 +373,7 @@ int chclif_mmo_send006b(int fd, struct char_session_data *sd)
 //----------------------------------------
 // Notify client about charselect window data [Ind]
 //----------------------------------------
-void chclif_mmo_send082d(int fd, struct char_session_data *sd)
+void chclif_mmo_send082d(int fd, struct char_session_data* sd)
 {
 	if (charserv_config.save_log)
 		ShowInfo("Loading Char Data ("CL_BOLD "%d"CL_RESET ")\n", sd->account_id);
@@ -389,7 +389,7 @@ void chclif_mmo_send082d(int fd, struct char_session_data *sd)
 	WFIFOSET(fd, 29);
 }
 
-void chclif_mmo_send099d(int fd, struct char_session_data *sd)
+void chclif_mmo_send099d(int fd, struct char_session_data* sd)
 {
 	WFIFOHEAD(fd, 4 + (MAX_CHARS * MAX_CHAR_BUF));
 	WFIFOW(fd, 0) = 0x99d;
@@ -401,7 +401,7 @@ void chclif_mmo_send099d(int fd, struct char_session_data *sd)
 /*
  * Function to choose wich kind of charlist to send to client depending on his version
  */
-void chclif_mmo_char_send(int fd, struct char_session_data *sd)
+void chclif_mmo_char_send(int fd, struct char_session_data* sd)
 {
 #if PACKETVER >= 20130000
 	chclif_mmo_send082d(fd, sd);
@@ -496,12 +496,12 @@ void chclif_char_delete2_cancel_ack(int fd, uint32 char_id, uint32 result)
 }
 
 // CH: <0827>.W <char id>.L
-int chclif_parse_char_delete2_req(int fd, struct char_session_data *sd)
+int chclif_parse_char_delete2_req(int fd, struct char_session_data* sd)
 {
 	FIFOSD_CHECK(6)
 	{
 		uint32 char_id, i, guild_id, party_id;
-		char   *data;
+		char*  data;
 		time_t delete_date;
 
 		char_id = RFIFOL(fd, 2);
@@ -562,7 +562,7 @@ int chclif_parse_char_delete2_req(int fd, struct char_session_data *sd)
  * @param flag Delete flag
  * @return true:Success, false:Failure
  **/
-static bool chclif_delchar_check(struct char_session_data *sd, char *delcode, uint8 flag)
+static bool chclif_delchar_check(struct char_session_data* sd, char* delcode, uint8 flag)
 {
 	// E-Mail check
 	if (flag & CHAR_DEL_EMAIL && (
@@ -588,7 +588,7 @@ static bool chclif_delchar_check(struct char_session_data *sd, char *delcode, ui
 }
 
 // CH: <0829>.W <char id>.L <birth date:YYMMDD>.6B
-int chclif_parse_char_delete2_accept(int fd, struct char_session_data *sd)
+int chclif_parse_char_delete2_accept(int fd, struct char_session_data* sd)
 {
 	FIFOSD_CHECK(12)
 	{
@@ -650,7 +650,7 @@ int chclif_parse_char_delete2_accept(int fd, struct char_session_data *sd)
 } /* chclif_parse_char_delete2_accept */
 
 // CH: <082b>.W <char id>.L
-int chclif_parse_char_delete2_cancel(int fd, struct char_session_data *sd)
+int chclif_parse_char_delete2_cancel(int fd, struct char_session_data* sd)
 {
 	uint32 char_id, i;
 
@@ -687,9 +687,9 @@ int chclif_parse_maplogin(int fd)
 	if (RFIFOREST(fd) < 60)
 		return 0;
 	else {
-		int  i;
-		char *l_user = RFIFOCP(fd, 2);
-		char *l_pass = RFIFOCP(fd, 26);
+		int   i;
+		char* l_user = RFIFOCP(fd, 2);
+		char* l_pass = RFIFOCP(fd, 26);
 		l_user[23] = '\0';
 		l_pass[23] = '\0';
 		ARR_FIND(0, ARRAYLENGTH(map_server), i, map_server[i].fd <= 0);
@@ -717,18 +717,18 @@ int chclif_parse_maplogin(int fd)
 }
 
 // 0065 <account id>.L <login id1>.L <login id2>.L <???>.W <sex>.B
-int chclif_parse_reqtoconnect(int fd, struct char_session_data *sd, uint32 ipl)
+int chclif_parse_reqtoconnect(int fd, struct char_session_data* sd, uint32 ipl)
 {
 	if (RFIFOREST(fd) < 17)  // request to connect
 		return 0;
 	else {
-		struct auth_node *node;
-		DBMap            *auth_db = char_get_authdb();
+		struct auth_node* node;
+		DBMap*            auth_db = char_get_authdb();
 
-		uint32           account_id = RFIFOL(fd, 2);
-		uint32           login_id1  = RFIFOL(fd, 6);
-		uint32           login_id2  = RFIFOL(fd, 10);
-		int              sex        = RFIFOB(fd, 16);
+		uint32            account_id = RFIFOL(fd, 2);
+		uint32            login_id1  = RFIFOL(fd, 6);
+		uint32            login_id2  = RFIFOL(fd, 10);
+		int               sex        = RFIFOB(fd, 16);
 		RFIFOSKIP(fd, 17);
 
 		ShowInfo("request connect - account_id:%d/login_id1:%d/login_id2:%d\n", account_id, login_id1, login_id2);
@@ -742,7 +742,7 @@ int chclif_parse_reqtoconnect(int fd, struct char_session_data *sd, uint32 ipl)
 		}
 
 		CREATE(session[fd]->session_data, struct char_session_data, 1);
-		sd             = (struct char_session_data *)session[fd]->session_data;
+		sd             = (struct char_session_data*)session[fd]->session_data;
 		sd->account_id = account_id;
 		sd->login_id1  = login_id1;
 		sd->login_id2  = login_id2;
@@ -760,7 +760,7 @@ int chclif_parse_reqtoconnect(int fd, struct char_session_data *sd, uint32 ipl)
 		}
 
 		// search authentification
-		node = (struct auth_node *)idb_get(auth_db, account_id);
+		node = (struct auth_node*)idb_get(auth_db, account_id);
 		if (node != NULL
 		    && node->account_id == account_id
 		    && node->login_id1 == login_id1
@@ -768,7 +768,7 @@ int chclif_parse_reqtoconnect(int fd, struct char_session_data *sd, uint32 ipl)
 		                                     * node->ip         == ipl*/) { // authentication found (coming from map server)
 			idb_remove(auth_db, account_id);
 			char_auth_ok(fd, sd);
-		} else { // authentication not found (coming from login server)
+		} else {                                       // authentication not found (coming from login server)
 			if (login_fd > 0) {                    // don't send request if no login-server
 				WFIFOHEAD(login_fd, 23);
 				WFIFOW(login_fd, 0)  = 0x2712; // ask login-server to authentify an account
@@ -788,7 +788,7 @@ int chclif_parse_reqtoconnect(int fd, struct char_session_data *sd, uint32 ipl)
 } /* chclif_parse_reqtoconnect */
 
 //struct PACKET_CH_CHARLIST_REQ { 0x0 short PacketType}
-int chclif_parse_req_charlist(int fd, struct char_session_data *sd)
+int chclif_parse_req_charlist(int fd, struct char_session_data* sd)
 {
 	if (RFIFOREST(fd) < 2)
 		return 0;
@@ -798,21 +798,21 @@ int chclif_parse_req_charlist(int fd, struct char_session_data *sd)
 	return 1;
 }
 
-int chclif_parse_charselect(int fd, struct char_session_data *sd, uint32 ipl)
+int chclif_parse_charselect(int fd, struct char_session_data* sd, uint32 ipl)
 {
 	FIFOSD_CHECK(3);
 	{
-		struct mmo_charstatus char_dat;
-		struct mmo_charstatus *cd;
-		char                  *data;
-		uint32                char_id;
-		uint32                subnet_map_ip;
-		struct auth_node      *node;
-		int                   i, map_fd;
-		DBMap                 *auth_db  = char_get_authdb();
-		DBMap                 *char_db_ = char_get_chardb();
+		struct mmo_charstatus  char_dat;
+		struct mmo_charstatus* cd;
+		char*                  data;
+		uint32                 char_id;
+		uint32                 subnet_map_ip;
+		struct auth_node*      node;
+		int                    i, map_fd;
+		DBMap*                 auth_db  = char_get_authdb();
+		DBMap*                 char_db_ = char_get_chardb();
 
-		int                   slot = RFIFOB(fd, 2);
+		int                    slot = RFIFOB(fd, 2);
 		RFIFOSKIP(fd, 3);
 
 		// Check if the character exists and is not scheduled for deletion
@@ -850,7 +850,7 @@ int chclif_parse_charselect(int fd, struct char_session_data *sd, uint32 ipl)
 		}
 
 		//Have to switch over to the DB instance otherwise data won't propagate [Kevin]
-		cd = (struct mmo_charstatus *)idb_get(char_db_, char_id);
+		cd = (struct mmo_charstatus*)idb_get(char_db_, char_id);
 		if (cd->sex == SEX_ACCOUNT)
 			cd->sex = sd->sex;
 
@@ -942,7 +942,7 @@ int chclif_parse_charselect(int fd, struct char_session_data *sd, uint32 ipl)
 // S 0970 <name>.24B <slot>.B <hair color>.W <hair style>.W
 // S 0067 <name>.24B <str>.B <agi>.B <vit>.B <int>.B <dex>.B <luk>.B <slot>.B <hair color>.W <hair style>.W
 // S 0a39 <name>.24B <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.(W or 2 B's)??? <sex>.B
-int chclif_parse_createnewchar(int fd, struct char_session_data *sd, int cmd)
+int chclif_parse_createnewchar(int fd, struct char_session_data* sd, int cmd)
 {
 	int char_id = 0;
 
@@ -1033,7 +1033,7 @@ void chclif_refuse_delchar(int fd, uint8 errCode)
 	WFIFOSET(fd, 3);
 }
 
-int chclif_parse_delchar(int fd, struct char_session_data *sd, int cmd)
+int chclif_parse_delchar(int fd, struct char_session_data* sd, int cmd)
 {
 	if (cmd == 0x68)
 		FIFOSD_CHECK(46)
@@ -1101,7 +1101,7 @@ int chclif_parse_keepalive(int fd)
 // result:
 //		0 = name is not OK
 //		1 = name is OK
-void chclif_reqrename_response(int fd, struct char_session_data *sd, bool name_valid)
+void chclif_reqrename_response(int fd, struct char_session_data* sd, bool name_valid)
 {
 	WFIFOHEAD(fd, 4);
 	WFIFOW(fd, 0) = 0x28e;
@@ -1111,7 +1111,7 @@ void chclif_reqrename_response(int fd, struct char_session_data *sd, bool name_v
 
 // Request for checking the new name on character renaming
 // 028d <account ID>.l <char ID>.l <new name>.24B (CH_REQ_IS_VALID_CHARNAME)
-int chclif_parse_reqrename(int fd, struct char_session_data *sd)
+int chclif_parse_reqrename(int fd, struct char_session_data* sd)
 {
 	int  i, cid, aid;
 	char name[NAME_LENGTH];
@@ -1146,10 +1146,10 @@ int chclif_parse_reqrename(int fd, struct char_session_data *sd)
 
 int charblock_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct char_session_data *sd = NULL;
-	int                      i   = 0;
+	struct char_session_data* sd = NULL;
+	int                       i  = 0;
 
-	ARR_FIND(0, fd_max, i, session[i] && (sd = (struct char_session_data *)session[i]->session_data) && sd->account_id == id);
+	ARR_FIND(0, fd_max, i, session[i] && (sd = (struct char_session_data*)session[i]->session_data) && sd->account_id == id);
 
 	if (sd == NULL || sd->charblock_timer == INVALID_TIMER) //has disconected or was required to stop
 		return 0;
@@ -1166,7 +1166,7 @@ int charblock_timer(int tid, unsigned int tick, int id, intptr_t data)
  * 0x20d <PacketLength>.W <TAG_CHARACTER_BLOCK_INFO>24B (HC_BLOCK_CHARACTER)
  * <GID>L <szExpireDate>20B (TAG_CHARACTER_BLOCK_INFO)
  */
-void chclif_block_character(int fd, struct char_session_data *sd)
+void chclif_block_character(int fd, struct char_session_data* sd)
 {
 	int    i   = 0, j = 0, len = 4;
 	time_t now = time(NULL);
@@ -1220,7 +1220,7 @@ void chclif_block_character(int fd, struct char_session_data *sd)
 //		8: Name contains invalid characters. Character name change failed.
 //		9: The name change is prohibited. Character name change failed.
 //		10: Character name change failed, due an unknown error.
-void chclif_rename_response(int fd, struct char_session_data *sd, int16 response)
+void chclif_rename_response(int fd, struct char_session_data* sd, int16 response)
 {
 #if PACKETVER >= 20111101
 	WFIFOHEAD(fd, 6);
@@ -1238,7 +1238,7 @@ void chclif_rename_response(int fd, struct char_session_data *sd, int16 response
 // Request to change a character name
 // 028f <char_id>.L (CH_REQ_CHANGE_CHARNAME)
 // 08fc <char_id>.L <new name>.24B (CH_REQ_CHANGE_CHARACTERNAME)
-int chclif_parse_ackrename(int fd, struct char_session_data *sd)
+int chclif_parse_ackrename(int fd, struct char_session_data* sd)
 {
 #if PACKETVER >= 20111101
 	FIFOSD_CHECK(30)
@@ -1334,8 +1334,8 @@ int chclif_parse_chkcaptcha(int fd)
  */
 int chclif_parse(int fd)
 {
-	struct char_session_data *sd = (struct char_session_data *)session[fd]->session_data;
-	uint32                   ipl = session[fd]->client_addr;
+	struct char_session_data* sd  = (struct char_session_data*)session[fd]->session_data;
+	uint32                    ipl = session[fd]->client_addr;
 
 	// disconnect any player if no login-server.
 	if (login_fd < 0)
@@ -1343,8 +1343,8 @@ int chclif_parse(int fd)
 
 	if (session[fd]->flag.eof) {
 		if (sd != NULL && sd->auth) {  // already authed client
-			DBMap                   *online_char_db = char_get_onlinedb();
-			struct online_char_data *data           = (struct online_char_data *)idb_get(online_char_db, sd->account_id);
+			DBMap*                   online_char_db = char_get_onlinedb();
+			struct online_char_data* data           = (struct online_char_data*)idb_get(online_char_db, sd->account_id);
 			if (data != NULL && data->fd == fd)
 				data->fd = -1;
 			if (data == NULL || data->server == -1) //If it is not in any server, send it offline. [Skotlex]

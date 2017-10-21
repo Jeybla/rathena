@@ -11,9 +11,9 @@
 
 #include <stdlib.h>
 
-bool mercenary_owner_fromsql(uint32 char_id, struct mmo_charstatus *status)
+bool mercenary_owner_fromsql(uint32 char_id, struct mmo_charstatus* status)
 {
-	char *data;
+	char* data;
 
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `merc_id`, `arch_calls`, `arch_faith`, `spear_calls`, `spear_faith`, `sword_calls`, `sword_faith` FROM `%s` WHERE `char_id` = '%d'", schema_config.mercenary_owner_db, char_id)) {
 		Sql_ShowDebug(sql_handle);
@@ -44,7 +44,7 @@ bool mercenary_owner_fromsql(uint32 char_id, struct mmo_charstatus *status)
 	return true;
 }
 
-bool mercenary_owner_tosql(uint32 char_id, struct mmo_charstatus *status)
+bool mercenary_owner_tosql(uint32 char_id, struct mmo_charstatus* status)
 {
 	if (SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`char_id`, `merc_id`, `arch_calls`, `arch_faith`, `spear_calls`, `spear_faith`, `sword_calls`, `sword_faith`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')",
 	                           schema_config.mercenary_owner_db, char_id, status->mer_id, status->arch_calls, status->arch_faith, status->spear_calls, status->spear_faith, status->sword_calls, status->sword_faith)) {
@@ -66,7 +66,7 @@ bool mercenary_owner_delete(uint32 char_id)
 	return true;
 }
 
-bool mapif_mercenary_save(struct s_mercenary *merc)
+bool mapif_mercenary_save(struct s_mercenary* merc)
 {
 	bool flag = true;
 
@@ -88,9 +88,9 @@ bool mapif_mercenary_save(struct s_mercenary *merc)
 	return flag;
 }
 
-bool mapif_mercenary_load(int merc_id, uint32 char_id, struct s_mercenary *merc)
+bool mapif_mercenary_load(int merc_id, uint32 char_id, struct s_mercenary* merc)
 {
-	char *data;
+	char* data;
 
 	memset(merc, 0, sizeof(struct s_mercenary));
 	merc->mercenary_id = merc_id;
@@ -133,7 +133,7 @@ bool mapif_mercenary_delete(int merc_id)
 	return true;
 }
 
-static void mapif_mercenary_send(int fd, struct s_mercenary *merc, unsigned char flag)
+static void mapif_mercenary_send(int fd, struct s_mercenary* merc, unsigned char flag)
 {
 	int size = sizeof(struct s_mercenary) + 5;
 
@@ -145,7 +145,7 @@ static void mapif_mercenary_send(int fd, struct s_mercenary *merc, unsigned char
 	WFIFOSET(fd, size);
 }
 
-static void mapif_parse_mercenary_create(int fd, struct s_mercenary *merc)
+static void mapif_parse_mercenary_create(int fd, struct s_mercenary* merc)
 {
 	bool result = mapif_mercenary_save(merc);
 
@@ -183,7 +183,7 @@ static void mapif_mercenary_saved(int fd, unsigned char flag)
 	WFIFOSET(fd, 3);
 }
 
-static void mapif_parse_mercenary_save(int fd, struct s_mercenary *merc)
+static void mapif_parse_mercenary_save(int fd, struct s_mercenary* merc)
 {
 	bool result = mapif_mercenary_save(merc);
 
@@ -208,7 +208,7 @@ int inter_mercenary_parse_frommap(int fd)
 	switch (cmd)
 	{
 	case 0x3070:
-		mapif_parse_mercenary_create(fd, (struct s_mercenary *)RFIFOP(fd, 4));
+		mapif_parse_mercenary_create(fd, (struct s_mercenary*)RFIFOP(fd, 4));
 		break;
 
 	case 0x3071:
@@ -220,7 +220,7 @@ int inter_mercenary_parse_frommap(int fd)
 		break;
 
 	case 0x3073:
-		mapif_parse_mercenary_save(fd, (struct s_mercenary *)RFIFOP(fd, 4));
+		mapif_parse_mercenary_save(fd, (struct s_mercenary*)RFIFOP(fd, 4));
 		break;
 
 	default:

@@ -10,7 +10,7 @@
  * Return the message string of the specified number by [Yor]
  * (read in table msg_table, with specified lenght table in size)
  */
-const char *_msg_txt(int msg_number, int size, char **msg_table)
+const char* _msg_txt(int msg_number, int size, char** msg_table)
 {
 	if (msg_number >= 0 && msg_number < size
 	    && msg_table[msg_number] != NULL && msg_table[msg_number][0] != '\0')
@@ -23,11 +23,11 @@ const char *_msg_txt(int msg_number, int size, char **msg_table)
 /*
  * Read txt file and store them into msg_table
  */
-int _msg_config_read(const char *cfgName, int size, char **msg_table)
+int _msg_config_read(const char* cfgName, int size, char** msg_table)
 {
 	uint16     msg_number, msg_count = 0, line_num = 0;
 	char       line[1024], w1[8], w2[512];
-	FILE       *fp;
+	FILE*      fp;
 	static int called = 1;
 
 	if ((fp = fopen(cfgName, "r")) == NULL) {
@@ -53,7 +53,7 @@ int _msg_config_read(const char *cfgName, int size, char **msg_table)
 			if (msg_number >= 0 && msg_number < size) {
 				if (msg_table[msg_number] != NULL)
 					aFree(msg_table[msg_number]);
-				msg_table[msg_number] = (char *)aMalloc((strlen(w2) + 1) * sizeof(char));
+				msg_table[msg_number] = (char*)aMalloc((strlen(w2) + 1) * sizeof(char));
 				strcpy(msg_table[msg_number], w2);
 				msg_count++;
 			} else
@@ -70,7 +70,7 @@ int _msg_config_read(const char *cfgName, int size, char **msg_table)
 /*
  * Destroy msg_table (freeup mem)
  */
-void _do_final_msg(int size, char **msg_table)
+void _do_final_msg(int size, char** msg_table)
 {
 	int i;
 
@@ -82,7 +82,7 @@ void _do_final_msg(int size, char **msg_table)
  * lookup a langtype string into his associate langtype number
  * return -1 if not found
  */
-int msg_langstr2langtype(char *langtype)
+int msg_langstr2langtype(char* langtype)
 {
 	int lang = -1;
 
@@ -114,7 +114,7 @@ int msg_langstr2langtype(char *langtype)
  * lookup a langtype into his associate lang string
  * return ?? if not found
  */
-const char *msg_langtype2langstr(int langtype)
+const char* msg_langtype2langstr(int langtype)
 {
 	switch (langtype)
 	{

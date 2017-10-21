@@ -16,13 +16,13 @@
 
 #include <stdlib.h>
 
-static struct eri *mapreg_ers;
+static struct eri* mapreg_ers;
 
-bool              skip_insert = false;
+bool               skip_insert = false;
 
-static char       mapreg_table[32] = "mapreg";
-static bool       mapreg_dirty     = false; // Whether there are modified regs to be saved
-struct reg_db     regs;
+static char        mapreg_table[32] = "mapreg";
+static bool        mapreg_dirty     = false; // Whether there are modified regs to be saved
+struct reg_db      regs;
 
 #define MAPREG_AUTOSAVE_INTERVAL    (300 * 1000)
 
@@ -35,7 +35,7 @@ struct reg_db     regs;
  */
 int mapreg_readreg(int64 uid)
 {
-	struct mapreg_save *m = (struct mapreg_save *)i64db_get(regs.vars, uid);
+	struct mapreg_save* m = (struct mapreg_save*)i64db_get(regs.vars, uid);
 
 	return m ? m->u.i : 0;
 }
@@ -46,9 +46,9 @@ int mapreg_readreg(int64 uid)
  * @param uid: variable's unique identifier
  * @return: variable's string value
  */
-char *mapreg_readregstr(int64 uid)
+char* mapreg_readregstr(int64 uid)
 {
-	struct mapreg_save *m = (struct mapreg_save *)i64db_get(regs.vars, uid);
+	struct mapreg_save* m = (struct mapreg_save*)i64db_get(regs.vars, uid);
 
 	return m ? m->u.str : NULL;
 }
@@ -62,10 +62,10 @@ char *mapreg_readregstr(int64 uid)
  */
 bool mapreg_setreg(int64 uid, int val)
 {
-	struct mapreg_save *m;
-	int                num   = script_getvarid(uid);
-	unsigned int       i     = script_getvaridx(uid);
-	const char         *name = get_str(num);
+	struct mapreg_save* m;
+	int                 num  = script_getvarid(uid);
+	unsigned int        i    = script_getvaridx(uid);
+	const char*         name = get_str(num);
 
 	if (val != 0) {
 		if ((m = i64db_get(regs.vars, uid))) {
@@ -119,12 +119,12 @@ bool mapreg_setreg(int64 uid, int val)
  * @param str: new value
  * @return: true value was successfully set
  */
-bool mapreg_setregstr(int64 uid, const char *str)
+bool mapreg_setregstr(int64 uid, const char* str)
 {
-	struct mapreg_save *m;
-	int                num   = script_getvarid(uid);
-	unsigned int       i     = script_getvaridx(uid);
-	const char         *name = get_str(num);
+	struct mapreg_save* m;
+	int                 num  = script_getvarid(uid);
+	unsigned int        i    = script_getvaridx(uid);
+	const char*         name = get_str(num);
 
 	if (str == NULL || *str == 0) {
 		if (i)
@@ -185,13 +185,13 @@ static void script_load_mapreg(void)
 	 *      0        1       2
 	 * +-------------------------+
 	 | varname | index | value |
-	 |+-------------------------+
+	 ||+-------------------------+
 	 */
-	SqlStmt *stmt = SqlStmt_Malloc(mmysql_handle);
-	char    varname[32 + 1];
-	int     index;
-	char    value[255 + 1];
-	uint32  length;
+	SqlStmt* stmt = SqlStmt_Malloc(mmysql_handle);
+	char     varname[32 + 1];
+	int      index;
+	char     value[255 + 1];
+	uint32   length;
 
 	if (SQL_ERROR == SqlStmt_Prepare(stmt, "SELECT `varname`, `index`, `value` FROM `%s`", mapreg_table)
 	    || SQL_ERROR == SqlStmt_Execute(stmt)
@@ -235,14 +235,14 @@ static void script_load_mapreg(void)
 static void script_save_mapreg(void)
 {
 	if (mapreg_dirty) {
-		DBIterator         *iter = db_iterator(regs.vars);
-		struct mapreg_save *m;
+		DBIterator*         iter = db_iterator(regs.vars);
+		struct mapreg_save* m;
 		for (m = dbi_first(iter); dbi_exists(iter); m = dbi_next(iter))
 		{
 			if (m->save) {
-				int        num   = script_getvarid(m->uid);
-				int        i     = script_getvaridx(m->uid);
-				const char *name = get_str(num);
+				int         num  = script_getvarid(m->uid);
+				int         i    = script_getvaridx(m->uid);
+				const char* name = get_str(num);
 				if (!m->is_string) {
 					char esc_name[32 * 2 + 1];
 					Sql_EscapeStringLen(mmysql_handle, esc_name, name, strnlen(name, 32));
@@ -278,9 +278,9 @@ static int script_autosave_mapreg(int tid, unsigned int tick, int id, intptr_t d
  *
  * @see DBApply
  */
-int mapreg_destroyreg(DBKey key, DBData *data, va_list ap)
+int mapreg_destroyreg(DBKey key, DBData* data, va_list ap)
 {
-	struct mapreg_save *m = NULL;
+	struct mapreg_save* m = NULL;
 
 	if (data->type != DB_DATA_PTR) // Sanity check
 		return 0;
@@ -351,7 +351,7 @@ void mapreg_init(void)
 /**
  * Loads the mapreg configuration file.
  */
-bool mapreg_config_read(const char *w1, const char *w2)
+bool mapreg_config_read(const char* w1, const char* w2)
 {
 	if (!strcmpi(w1, "mapreg_table"))
 		safestrncpy(mapreg_table, w2, sizeof(mapreg_table));

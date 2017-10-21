@@ -31,8 +31,8 @@ static char   log_db_database[32] = "";
 static char   log_codepage[32]    = "";
 static char   log_login_db[256]   = "loginlog";
 
-static Sql    *sql_handle = NULL;
-static bool   enabled     = false;
+static Sql*   sql_handle = NULL;
+static bool   enabled    = false;
 
 
 /**
@@ -53,7 +53,7 @@ unsigned long loginlog_failedattempts(uint32 ip, unsigned int minutes)
 		Sql_ShowDebug(sql_handle);
 
 	if (SQL_SUCCESS == Sql_NextRow(sql_handle)) {
-		char *data;
+		char* data;
 		Sql_GetData(sql_handle, 0, &data, NULL);
 		failures = strtoul(data, NULL, 10);
 		Sql_FreeResult(sql_handle);
@@ -69,7 +69,7 @@ unsigned long loginlog_failedattempts(uint32 ip, unsigned int minutes)
  * @param rcode:
  * @param message:
  */
-void login_log(uint32 ip, const char *username, int rcode, const char *message)
+void login_log(uint32 ip, const char* username, int rcode, const char* message)
 {
 	char esc_username[NAME_LENGTH * 2 + 1];
 	char esc_message[255 * 2 + 1];
@@ -95,9 +95,9 @@ void login_log(uint32 ip, const char *username, int rcode, const char *message)
  * @param value: config value for keyword
  * @return true if successful, false if config not complete or server already running
  */
-bool loginlog_config_read(const char *key, const char *value)
+bool loginlog_config_read(const char* key, const char* value)
 {
-	const char *signature;
+	const char* signature;
 
 	signature = "sql.";
 	if (strncmpi(key, signature, strlen(signature)) == 0) {
@@ -161,12 +161,12 @@ bool loginlog_config_read(const char *key, const char *value)
  */
 bool loginlog_init(void)
 {
-	const char *username;
-	const char *password;
-	const char *hostname;
-	uint16     port;
-	const char *database;
-	const char *codepage;
+	const char* username;
+	const char* password;
+	const char* hostname;
+	uint16      port;
+	const char* database;
+	const char* codepage;
 
 	if (log_db_hostname[0] != '\0') { // local settings
 		username = log_db_username;

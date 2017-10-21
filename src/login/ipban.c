@@ -28,7 +28,7 @@ static char   ipban_codepage[32]    = "";
 static char   ipban_table[32]       = "ipbanlist";
 
 // globals
-static Sql  *sql_handle      = NULL;
+static Sql* sql_handle       = NULL;
 static int  cleanup_timer_id = INVALID_TIMER;
 static bool ipban_inited     = false;
 
@@ -42,9 +42,9 @@ int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data);
  */
 bool ipban_check(uint32 ip)
 {
-	uint8 *p    = (uint8 *)&ip;
-	char  *data = NULL;
-	int   matches;
+	uint8* p    = (uint8*)&ip;
+	char*  data = NULL;
+	int    matches;
 
 	if (!login_config.ipban)
 		return false;  // ipban disabled
@@ -82,7 +82,7 @@ void ipban_log(uint32 ip)
 
 	// if over the limit, add a temporary ban entry
 	if (failures >= login_config.dynamic_pass_failure_ban_limit) {
-		uint8 *p = (uint8 *)&ip;
+		uint8* p = (uint8*)&ip;
 		if (SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s`(`list`,`btime`,`rtime`,`reason`) VALUES ('%u.%u.%u.*', NOW() , NOW() +  INTERVAL %d MINUTE ,'Password error ban')",
 		                           ipban_table, p[3], p[2], p[1], login_config.dynamic_pass_failure_ban_duration))
 			Sql_ShowDebug(sql_handle);
@@ -116,9 +116,9 @@ int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data)
  * @param value: config value for keyword
  * @return true if successful, false if config not complete or server already running
  */
-bool ipban_config_read(const char *key, const char *value)
+bool ipban_config_read(const char* key, const char* value)
 {
-	const char *signature;
+	const char* signature;
 
 	if (ipban_inited)
 		return false;  // settings can only be changed before init
@@ -187,17 +187,17 @@ bool ipban_config_read(const char *key, const char *value)
  */
 void ipban_init(void)
 {
-	const char *username = ipban_db_username;
-	const char *password = ipban_db_password;
-	const char *hostname = ipban_db_hostname;
-	uint16     port      = ipban_db_port;
-	const char *database = ipban_db_database;
-	const char *codepage = ipban_codepage;
+	const char* username = ipban_db_username;
+	const char* password = ipban_db_password;
+	const char* hostname = ipban_db_hostname;
+	uint16      port     = ipban_db_port;
+	const char* database = ipban_db_database;
+	const char* codepage = ipban_codepage;
 
 	ipban_inited = true;
 
 	if (!login_config.ipban)
-		return;  // ipban disabled
+		return;                     // ipban disabled
 
 	if (ipban_db_hostname[0] != '\0') { // local settings
 		username = ipban_db_username;

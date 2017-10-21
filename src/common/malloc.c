@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include "dmalloc.h"
 #define MALLOC(n, file, line, func)        dmalloc_malloc((file), (line), (n), DMALLOC_FUNC_MALLOC, 0, 0)
-#define CALLOC(m, n, file, line, func)     dmalloc_malloc((file), (line), (m) *(n), DMALLOC_FUNC_CALLOC, 0, 0)
+#define CALLOC(m, n, file, line, func)     dmalloc_malloc((file), (line), (m)*(n), DMALLOC_FUNC_CALLOC, 0, 0)
 #define REALLOC(p, n, file, line, func)    dmalloc_realloc((file), (line), (p), (n), DMALLOC_FUNC_REALLOC, 0)
 #define STRDUP(p, file, line, func)        strdup(p)
 #define FREE(p, file, line, func)          free(p)
@@ -47,7 +47,7 @@
 #define RETURN_ADDR
 #endif
 #define MALLOC(n, file, line, func)        GC_debug_malloc((n), RETURN_ADDR(file), (line))
-#define CALLOC(m, n, file, line, func)     GC_debug_malloc((m) *(n), RETURN_ADDR(file), (line))
+#define CALLOC(m, n, file, line, func)     GC_debug_malloc((m)*(n), RETURN_ADDR(file), (line))
 #define REALLOC(p, n, file, line, func)    GC_debug_realloc((p), (n), RETURN_ADDR(file), (line))
 #define STRDUP(p, file, line, func)        GC_debug_strdup((p), RETURN_ADDR(file), (line))
 #define FREE(p, file, line, func)          GC_debug_free(p)
@@ -68,9 +68,9 @@
 
 #endif
 
-void *aMalloc_(size_t size, const char *file, int line, const char *func)
+void* aMalloc_(size_t size, const char* file, int line, const char* func)
 {
-	void *ret = MALLOC(size, file, line, func);
+	void* ret = MALLOC(size, file, line, func);
 
 	// ShowMessage("%s:%d: in func %s: aMalloc %d\n",file,line,func,size);
 	if (ret == NULL) {
@@ -80,9 +80,9 @@ void *aMalloc_(size_t size, const char *file, int line, const char *func)
 
 	return ret;
 }
-void *aCalloc_(size_t num, size_t size, const char *file, int line, const char *func)
+void* aCalloc_(size_t num, size_t size, const char* file, int line, const char* func)
 {
-	void *ret = CALLOC(num, size, file, line, func);
+	void* ret = CALLOC(num, size, file, line, func);
 
 	// ShowMessage("%s:%d: in func %s: aCalloc %d %d\n",file,line,func,num,size);
 	if (ret == NULL) {
@@ -91,9 +91,9 @@ void *aCalloc_(size_t num, size_t size, const char *file, int line, const char *
 	}
 	return ret;
 }
-void *aRealloc_(void *p, size_t size, const char *file, int line, const char *func)
+void* aRealloc_(void* p, size_t size, const char* file, int line, const char* func)
 {
-	void *ret = REALLOC(p, size, file, line, func);
+	void* ret = REALLOC(p, size, file, line, func);
 
 	// ShowMessage("%s:%d: in func %s: aRealloc %p %d\n",file,line,func,p,size);
 	if (ret == NULL) {
@@ -102,9 +102,9 @@ void *aRealloc_(void *p, size_t size, const char *file, int line, const char *fu
 	}
 	return ret;
 }
-char *aStrdup_(const char *p, const char *file, int line, const char *func)
+char* aStrdup_(const char* p, const char* file, int line, const char* func)
 {
-	char *ret = STRDUP(p, file, line, func);
+	char* ret = STRDUP(p, file, line, func);
 
 	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
 	if (ret == NULL) {
@@ -113,7 +113,7 @@ char *aStrdup_(const char *p, const char *file, int line, const char *func)
 	}
 	return ret;
 }
-void aFree_(void *p, const char *file, int line, const char *func)
+void aFree_(void* p, const char* file, int line, const char* func)
 {
 	// ShowMessage("%s:%d: in func %s: aFree %p\n",file,line,func,p);
 	if (p)
@@ -164,9 +164,9 @@ void aFree_(void *p, const char *file, int line, const char *func)
 
 /* block */
 struct block {
-	struct block   *block_next;     /* Then the allocated area */
-	struct block   *unfill_prev;    /* The previous area not filled */
-	struct block   *unfill_next;    /* The next area not filled */
+	struct block*  block_next;      /* Then the allocated area */
+	struct block*  unfill_prev;     /* The previous area not filled */
+	struct block*  unfill_next;     /* The next area not filled */
 	unsigned short unit_size;       /* The size of the unit */
 	unsigned short unit_hash;       /* The hash of the unit */
 	unsigned short unit_count;      /* The number of units */
@@ -177,32 +177,32 @@ struct block {
 };
 
 struct unit_head {
-	struct block   *block;
-	const char     *file;
+	struct block*  block;
+	const char*    file;
 	unsigned short line;
 	unsigned short size;
 	long           checksum;
 };
 
-static struct block *hash_unfill[BLOCK_DATA_COUNT1 + BLOCK_DATA_COUNT2 + 1];
-static struct block *block_first, *block_last, block_head;
+static struct block* hash_unfill[BLOCK_DATA_COUNT1 + BLOCK_DATA_COUNT2 + 1];
+static struct block* block_first, * block_last, block_head;
 
 /* Data for areas that do not use the memory be turned */
 struct unit_head_large {
-	size_t                 size;
-	struct unit_head_large *prev;
-	struct unit_head_large *next;
-	struct unit_head       unit_head;
+	size_t                  size;
+	struct unit_head_large* prev;
+	struct unit_head_large* next;
+	struct unit_head        unit_head;
 };
 
-static struct unit_head_large *unit_head_large_first = NULL;
+static struct unit_head_large* unit_head_large_first = NULL;
 
-static struct block           *block_malloc(unsigned short hash);
-static void          block_free(struct block *p);
+static struct block*           block_malloc(unsigned short hash);
+static void          block_free(struct block* p);
 
 static size_t memmgr_usage_bytes;
 
-#define block2unit(p, n)    ((struct unit_head *)(&(p)->data[p->unit_size * (n)]))
+#define block2unit(p, n)    ((struct unit_head*)(&(p)->data[p->unit_size * (n)]))
 #define memmgr_assert(v)    do { if (!(v)) { ShowError("Memory manager: assertion '" # v "' failed!\n"); } \
 }                                                                                                          \
         while (0)
@@ -228,11 +228,11 @@ static size_t hash2size(unsigned short hash)
 	}
 }
 
-void *_mmalloc(size_t size, const char *file, int line, const char *func)
+void* _mmalloc(size_t size, const char* file, int line, const char* func)
 {
-	struct block     *block;
-	short            size_hash = size2hash(size);
-	struct unit_head *head;
+	struct block*     block;
+	short             size_hash = size2hash(size);
+	struct unit_head* head;
 
 	if (((long)size) < 0) {
 		ShowError("_mmalloc: %d\n", size);
@@ -247,7 +247,7 @@ void *_mmalloc(size_t size, const char *file, int line, const char *func)
 	/* To ensure the area that exceeds the length of the block, using malloc () to */
 	/* At that time, the distinction by assigning NULL to unit_head.block */
 	if (hash2size(size_hash) > BLOCK_DATA_SIZE - sizeof(struct unit_head)) {
-		struct unit_head_large *p = (struct unit_head_large *)MALLOC(sizeof(struct unit_head_large) + size, file, line, func);
+		struct unit_head_large* p = (struct unit_head_large*)MALLOC(sizeof(struct unit_head_large) + size, file, line, func);
 		if (p != NULL) {
 			p->size            = size;
 			p->unit_head.block = NULL;
@@ -261,9 +261,9 @@ void *_mmalloc(size_t size, const char *file, int line, const char *func)
 				unit_head_large_first->prev = p;
 				p->next                     = unit_head_large_first;
 			}
-			unit_head_large_first                                                       = p;
-			*(long *)((char *)p + sizeof(struct unit_head_large) - sizeof(long) + size) = 0xdeadbeaf;
-			return (char *)p + sizeof(struct unit_head_large) - sizeof(long);
+			unit_head_large_first                                                     = p;
+			*(long*)((char*)p + sizeof(struct unit_head_large) - sizeof(long) + size) = 0xdeadbeaf;
+			return (char*)p + sizeof(struct unit_head_large) - sizeof(long);
 		} else {
 			ShowFatalError("Memory manager::memmgr_alloc failed (allocating %d+%d bytes at %s:%d).\n", sizeof(struct unit_head_large), size, file, line);
 			exit(EXIT_FAILURE);
@@ -308,7 +308,7 @@ void *_mmalloc(size_t size, const char *file, int line, const char *func)
 		size_t i, sz = hash2size(size_hash);
 		for (i = 0; i < sz; i++)
 		{
-			if (((unsigned char *)head)[sizeof(struct unit_head) - sizeof(long) + i] != 0xfd) {
+			if (((unsigned char*)head)[sizeof(struct unit_head) - sizeof(long) + i] != 0xfd) {
 				if (head->line != 0xfdfd) {
 					ShowError("Memory manager: freed-data is changed. (freed in %s line %d)\n", head->file, head->line);
 				} else {
@@ -317,27 +317,27 @@ void *_mmalloc(size_t size, const char *file, int line, const char *func)
 				break;
 			}
 		}
-		memset((char *)head + sizeof(struct unit_head) - sizeof(long), 0xcd, sz);
+		memset((char*)head + sizeof(struct unit_head) - sizeof(long), 0xcd, sz);
 	}
 #endif
 
-	head->block                                                              = block;
-	head->file                                                               = file;
-	head->line                                                               = line;
-	head->size                                                               = (unsigned short)size;
-	*(long *)((char *)head + sizeof(struct unit_head) - sizeof(long) + size) = 0xdeadbeaf;
-	return (char *)head + sizeof(struct unit_head) - sizeof(long);
+	head->block                                                            = block;
+	head->file                                                             = file;
+	head->line                                                             = line;
+	head->size                                                             = (unsigned short)size;
+	*(long*)((char*)head + sizeof(struct unit_head) - sizeof(long) + size) = 0xdeadbeaf;
+	return (char*)head + sizeof(struct unit_head) - sizeof(long);
 } /* _mmalloc */
 
-void *_mcalloc(size_t num, size_t size, const char *file, int line, const char *func)
+void* _mcalloc(size_t num, size_t size, const char* file, int line, const char* func)
 {
-	void *p = _mmalloc(num * size, file, line, func);
+	void* p = _mmalloc(num * size, file, line, func);
 
 	memset(p, 0, num * size);
 	return p;
 }
 
-void *_mrealloc(void *memblock, size_t size, const char *file, int line, const char *func)
+void* _mrealloc(void* memblock, size_t size, const char* file, int line, const char* func)
 {
 	size_t old_size;
 
@@ -345,16 +345,16 @@ void *_mrealloc(void *memblock, size_t size, const char *file, int line, const c
 		return _mmalloc(size, file, line, func);
 	}
 
-	old_size = ((struct unit_head *)((char *)memblock - sizeof(struct unit_head) + sizeof(long)))->size;
+	old_size = ((struct unit_head*)((char*)memblock - sizeof(struct unit_head) + sizeof(long)))->size;
 	if (old_size == 0) {
-		old_size = ((struct unit_head_large *)((char *)memblock - sizeof(struct unit_head_large) + sizeof(long)))->size;
+		old_size = ((struct unit_head_large*)((char*)memblock - sizeof(struct unit_head_large) + sizeof(long)))->size;
 	}
 	if (old_size > size) {
 		// Size reduction - return> as it is (negligence)
 		return memblock;
 	} else {
 		// Size Large
-		void *p = _mmalloc(size, file, line, func);
+		void* p = _mmalloc(size, file, line, func);
 		if (p != NULL) {
 			memcpy(p, memblock, old_size);
 		}
@@ -363,31 +363,31 @@ void *_mrealloc(void *memblock, size_t size, const char *file, int line, const c
 	}
 }
 
-char *_mstrdup(const char *p, const char *file, int line, const char *func)
+char* _mstrdup(const char* p, const char* file, int line, const char* func)
 {
 	if (p == NULL) {
 		return NULL;
 	} else {
-		size_t len     = strlen(p);
-		char   *string = (char *)_mmalloc(len + 1, file, line, func);
+		size_t len    = strlen(p);
+		char*  string = (char*)_mmalloc(len + 1, file, line, func);
 		memcpy(string, p, len + 1);
 		return string;
 	}
 }
 
-void _mfree(void *ptr, const char *file, int line, const char *func)
+void _mfree(void* ptr, const char* file, int line, const char* func)
 {
-	struct unit_head *head;
+	struct unit_head* head;
 
 	if (ptr == NULL)
 		return;
 
-	head = (struct unit_head *)((char *)ptr - sizeof(struct unit_head) + sizeof(long));
+	head = (struct unit_head*)((char*)ptr - sizeof(struct unit_head) + sizeof(long));
 	if (head->size == 0) {
 		/* area that is directly secured by malloc () */
-		struct unit_head_large *head_large = (struct unit_head_large *)((char *)ptr - sizeof(struct unit_head_large) + sizeof(long));
+		struct unit_head_large* head_large = (struct unit_head_large*)((char*)ptr - sizeof(struct unit_head_large) + sizeof(long));
 		if (
-		        *(long *)((char *)head_large + sizeof(struct unit_head_large) - sizeof(long) + head_large->size)
+		        *(long*)((char*)head_large + sizeof(struct unit_head_large) - sizeof(long) + head_large->size)
 		        != 0xdeadbeaf) {
 			ShowError("Memory manager: args of aFree 0x%p is overflowed pointer %s line %d\n", ptr, file, line);
 		} else {
@@ -409,12 +409,12 @@ void _mfree(void *ptr, const char *file, int line, const char *func)
 		}
 	} else {
 		/* Release unit */
-		struct block *block = head->block;
-		if ((char *)head - (char *)block > sizeof(struct block)) {
+		struct block* block = head->block;
+		if ((char*)head - (char*)block > sizeof(struct block)) {
 			ShowError("Memory manager: args of aFree 0x%p is invalid pointer %s line %d\n", ptr, file, line);
 		} else if (head->block == NULL) {
 			ShowError("Memory manager: args of aFree 0x%p is freed pointer %s:%d@%s\n", ptr, file, line, func);
-		} else if (*(long *)((char *)head + sizeof(struct unit_head) - sizeof(long) + head->size) != 0xdeadbeaf) {
+		} else if (*(long*)((char*)head + sizeof(struct unit_head) - sizeof(long) + head->size) != 0xdeadbeaf) {
 			ShowError("Memory manager: args of aFree 0x%p is overflowed pointer %s line %d\n", ptr, file, line);
 		} else {
 			memmgr_usage_bytes -= head->size;
@@ -446,9 +446,9 @@ void _mfree(void *ptr, const char *file, int line, const char *func)
 } /* _mfree */
 
 /* Allocating blocks */
-static struct block *block_malloc(unsigned short hash)
+static struct block* block_malloc(unsigned short hash)
 {
-	struct block *p;
+	struct block* p;
 
 	if (hash_unfill[0] != NULL) {
 		/* Space for the block has already been secured */
@@ -457,7 +457,7 @@ static struct block *block_malloc(unsigned short hash)
 	} else {
 		int i;
 		/* Newly allocated space for the block */
-		p = (struct block *)MALLOC(sizeof(struct block) * (BLOCK_ALLOC), __FILE__, __LINE__, __func__);
+		p = (struct block*)MALLOC(sizeof(struct block) * (BLOCK_ALLOC), __FILE__, __LINE__, __func__);
 		if (p == NULL) {
 			ShowFatalError("Memory manager::block_alloc failed.\n");
 			exit(EXIT_FAILURE);
@@ -504,7 +504,7 @@ static struct block *block_malloc(unsigned short hash)
 	return p;
 } /* block_malloc */
 
-static void block_free(struct block *p)
+static void block_free(struct block* p)
 {
 	if (p->unfill_prev) {
 		if (p->unfill_prev == &block_head) {
@@ -528,15 +528,15 @@ size_t memmgr_usage(void)
 }
 
 #ifdef LOG_MEMMGR
-static char memmer_logfile[128];
-static FILE *log_fp;
+static char  memmer_logfile[128];
+static FILE* log_fp;
 
-static void memmgr_log(char *buf)
+static void memmgr_log(char* buf)
 {
 	if (!log_fp) {
-		const char *version;
-		time_t     raw;
-		struct tm  *t;
+		const char* version;
+		time_t      raw;
+		struct tm*  t;
 
 		log_fp = fopen(memmer_logfile, "at");
 		if (!log_fp)
@@ -562,10 +562,10 @@ static void memmgr_log(char *buf)
 ///
 /// @param ptr Pointer to the memory
 /// @return true if the memory is active
-bool memmgr_verify(void *ptr)
+bool memmgr_verify(void* ptr)
 {
-	struct block           *block = block_first;
-	struct unit_head_large *large = unit_head_large_first;
+	struct block*           block = block_first;
+	struct unit_head_large* large = unit_head_large_first;
 
 	if (ptr == NULL)
 		return false;  // never valid
@@ -573,13 +573,13 @@ bool memmgr_verify(void *ptr)
 	// search small blocks
 	while (block)
 	{
-		if ((char *)ptr >= (char *)block && (char *)ptr < ((char *)block) + sizeof(struct block)) { // found memory block
-			if (block->unit_used && (char *)ptr >= block->data) { // memory block is being used and ptr points to a sub-unit
-				size_t           i     = (size_t)((char *)ptr - block->data) / block->unit_size;
-				struct unit_head *head = block2unit(block, i);
+		if ((char*)ptr >= (char*)block && (char*)ptr < ((char*)block) + sizeof(struct block)) { // found memory block
+			if (block->unit_used && (char*)ptr >= block->data) {                            // memory block is being used and ptr points to a sub-unit
+				size_t            i    = (size_t)((char*)ptr - block->data) / block->unit_size;
+				struct unit_head* head = block2unit(block, i);
 				if (i < block->unit_maxused && head->block != NULL) { // memory unit is allocated, check if ptr points to the usable part
-					return((char *)ptr >= ((char *)head) + sizeof(struct unit_head) - sizeof(long)
-					       && (char *)ptr < ((char *)head) + sizeof(struct unit_head) - sizeof(long) + head->size);
+					return((char*)ptr >= ((char*)head) + sizeof(struct unit_head) - sizeof(long)
+					       && (char*)ptr < ((char*)head) + sizeof(struct unit_head) - sizeof(long) + head->size);
 				}
 			}
 			return false;
@@ -590,9 +590,9 @@ bool memmgr_verify(void *ptr)
 	// search large blocks
 	while (large)
 	{
-		if ((char *)ptr >= (char *)large && (char *)ptr < ((char *)large) + large->size) { // found memory block, check if ptr points to the usable part
-			return((char *)ptr >= ((char *)large) + sizeof(struct unit_head_large) - sizeof(long)
-			       && (char *)ptr < ((char *)large) + sizeof(struct unit_head_large) - sizeof(long) + large->size);
+		if ((char*)ptr >= (char*)large && (char*)ptr < ((char*)large) + large->size) {     // found memory block, check if ptr points to the usable part
+			return((char*)ptr >= ((char*)large) + sizeof(struct unit_head_large) - sizeof(long)
+			       && (char*)ptr < ((char*)large) + sizeof(struct unit_head_large) - sizeof(long) + large->size);
 		}
 		large = large->next;
 	}
@@ -601,8 +601,8 @@ bool memmgr_verify(void *ptr)
 
 static void memmgr_final(void)
 {
-	struct block           *block = block_first;
-	struct unit_head_large *large = unit_head_large_first;
+	struct block*           block = block_first;
+	struct unit_head_large* large = unit_head_large_first;
 
 #ifdef LOG_MEMMGR
 	int count = 0;
@@ -614,11 +614,11 @@ static void memmgr_final(void)
 			int i;
 			for (i = 0; i < block->unit_maxused; i++)
 			{
-				struct unit_head *head = block2unit(block, i);
+				struct unit_head* head = block2unit(block, i);
 				if (head->block != NULL) {
-					char *ptr = (char *)head + sizeof(struct unit_head) - sizeof(long);
+					char* ptr = (char*)head + sizeof(struct unit_head) - sizeof(long);
 #ifdef LOG_MEMMGR
-					char buf[1024];
+					char  buf[1024];
 					sprintf(buf,
 					        "%04d : %s line %d size %lu address 0x%p\n", ++count,
 					        head->file, head->line, (unsigned long)head->size, ptr);
@@ -634,9 +634,9 @@ static void memmgr_final(void)
 
 	while (large)
 	{
-		struct unit_head_large *large2;
+		struct unit_head_large* large2;
 #ifdef LOG_MEMMGR
-		char                   buf[1024];
+		char                    buf[1024];
 		sprintf(buf,
 		        "%04d : %s line %d size %lu address 0x%p\n", ++count,
 		        large->unit_head.file, large->unit_head.line, (unsigned long)large->size, &large->unit_head.checksum);
@@ -669,7 +669,7 @@ static void memmgr_init(void)
 
 /*======================================
  * Initialise
- **--------------------------------------
+ ***--------------------------------------
  */
 
 
@@ -682,7 +682,7 @@ void malloc_memory_check(void)
 
 /// Returns true if a pointer is valid.
 /// The check is best-effort, false positives are possible.
-bool malloc_verify_ptr(void *ptr)
+bool malloc_verify_ptr(void* ptr)
 {
 #ifdef USE_MEMMGR
 	return memmgr_verify(ptr) && MEMORY_VERIFY(ptr);

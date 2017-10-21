@@ -25,14 +25,14 @@
 #define TIMER_MAX_INTERVAL    1000
 
 // timers (array)
-static struct TimerData *timer_data    = NULL;
-static int              timer_data_max = 0;
-static int              timer_data_num = 0;
+static struct TimerData* timer_data     = NULL;
+static int               timer_data_max = 0;
+static int               timer_data_num = 0;
 
 // free timers (array)
-static int *free_timer_list    = NULL;
-static int free_timer_list_max = 0;
-static int free_timer_list_pos = 0;
+static int* free_timer_list     = NULL;
+static int  free_timer_list_max = 0;
+static int  free_timer_list_pos = 0;
 
 
 /// Comparator for the timer heap. (minimum tick at top)
@@ -55,16 +55,16 @@ time_t start_time;
  *      Timer debugging
  *----------------------------*/
 struct timer_func_list {
-	struct timer_func_list *next;
-	TimerFunc              func;
-	char                   *name;
+	struct timer_func_list* next;
+	TimerFunc               func;
+	char*                   name;
 }
-*tfl_root = NULL;
+* tfl_root = NULL;
 
 /// Sets the name of a timer function.
-int add_timer_func_list(TimerFunc func, const char *name)
+int add_timer_func_list(TimerFunc func, const char* name)
 {
-	struct timer_func_list *tfl;
+	struct timer_func_list* tfl;
 
 	if (name) {
 		for (tfl = tfl_root; tfl != NULL; tfl = tfl->next)
@@ -84,9 +84,9 @@ int add_timer_func_list(TimerFunc func, const char *name)
 }
 
 /// Returns the name of the timer function.
-char *search_timer_func_list(TimerFunc func)
+char* search_timer_func_list(TimerFunc func)
 {
-	struct timer_func_list *tfl;
+	struct timer_func_list* tfl;
 
 	for (tfl = tfl_root; tfl != NULL; tfl = tfl->next)
 		if (func == tfl->func)
@@ -288,7 +288,7 @@ int add_timer_interval(unsigned int tick, TimerFunc func, int id, intptr_t data,
 }
 
 /// Retrieves internal timer data
-const struct TimerData *get_timer(int tid)
+const struct TimerData* get_timer(int tid)
 {
 	return (tid >= 0 && tid < timer_data_num) ? &timer_data[tid] : NULL;
 }
@@ -418,7 +418,7 @@ unsigned long get_uptime(void)
  * @param format, format to convert timestamp on, see strftime format
  * @return the string of timestamp
  */
-const char *timestamp2string(char *str, size_t size, time_t timestamp, const char *format)
+const char* timestamp2string(char* str, size_t size, time_t timestamp, const char* format)
 {
 	size_t len = strftime(str, size, format, localtime(&timestamp));
 
@@ -429,7 +429,7 @@ const char *timestamp2string(char *str, size_t size, time_t timestamp, const cha
 /*
  * Split given timein into year, month, day, hour, minute, second
  */
-void split_time(int timein, int *year, int *month, int *day, int *hour, int *minute, int *second)
+void split_time(int timein, int* year, int* month, int* day, int* hour, int* minute, int* second)
 {
 	const int factor_min   = 60;
 	const int factor_hour  = factor_min * 60;
@@ -460,7 +460,7 @@ void split_time(int timein, int *year, int *month, int *day, int *hour, int *min
 /*
  * Create a "timestamp" with the given argument
  */
-double solve_time(char *modif_p)
+double solve_time(char* modif_p)
 {
 	double    totaltime = 0;
 	struct tm then_tm;
@@ -524,8 +524,8 @@ void timer_init(void)
 
 void timer_final(void)
 {
-	struct timer_func_list *tfl;
-	struct timer_func_list *next;
+	struct timer_func_list* tfl;
+	struct timer_func_list* next;
 
 	for (tfl = tfl_root; tfl != NULL; tfl = next)
 	{

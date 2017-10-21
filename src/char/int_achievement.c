@@ -24,13 +24,13 @@
  * @param count: Pointer to return the number of found entries.
  * @return Array of found entries. It has *count entries, and it is care of the caller to aFree() it afterwards.
  */
-struct achievement *mapif_achievements_fromsql(uint32 char_id, int *count)
+struct achievement* mapif_achievements_fromsql(uint32 char_id, int* count)
 {
-	struct achievement *achievelog = NULL;
-	struct achievement tmp_achieve;
-	SqlStmt            *stmt;
-	StringBuf          buf;
-	int                i;
+	struct achievement* achievelog = NULL;
+	struct achievement  tmp_achieve;
+	SqlStmt*            stmt;
+	StringBuf           buf;
+	int                 i;
 
 	if (!count)
 		return NULL;
@@ -63,7 +63,7 @@ struct achievement *mapif_achievements_fromsql(uint32 char_id, int *count)
 	if (*count > 0) {
 		i = 0;
 
-		achievelog = (struct achievement *)aCalloc(*count, sizeof(struct achievement));
+		achievelog = (struct achievement*)aCalloc(*count, sizeof(struct achievement));
 		while (SQL_SUCCESS == SqlStmt_NextRow(stmt))
 		{
 			if (i >= *count) // Sanity check, should never happen
@@ -73,7 +73,7 @@ struct achievement *mapif_achievements_fromsql(uint32 char_id, int *count)
 		if (i < *count) {
 			// Should never happen. Compact array
 			*count     = i;
-			achievelog = (struct achievement *)aRealloc(achievelog, sizeof(struct achievement) * i);
+			achievelog = (struct achievement*)aRealloc(achievelog, sizeof(struct achievement) * i);
 		}
 	}
 
@@ -200,13 +200,13 @@ void mapif_achievement_save(int fd, uint32 char_id, bool success)
  */
 int mapif_parse_achievement_save(int fd)
 {
-	int                i, j, k, old_n, new_n = (RFIFOW(fd, 2) - 8) / sizeof(struct achievement);
-	uint32             char_id = RFIFOL(fd, 4);
-	struct achievement *old_ad = NULL, *new_ad = NULL;
-	bool               success = true;
+	int                 i, j, k, old_n, new_n = (RFIFOW(fd, 2) - 8) / sizeof(struct achievement);
+	uint32              char_id = RFIFOL(fd, 4);
+	struct achievement* old_ad  = NULL, * new_ad = NULL;
+	bool                success = true;
 
 	if (new_n > 0)
-		new_ad = (struct achievement *)RFIFOP(fd, 8);
+		new_ad = (struct achievement*)RFIFOP(fd, 8);
 
 	old_ad = mapif_achievements_fromsql(char_id, &old_n);
 
@@ -253,8 +253,8 @@ int mapif_parse_achievement_save(int fd)
  */
 void mapif_achievement_load(int fd, uint32 char_id)
 {
-	struct achievement *tmp_achievementlog = NULL;
-	int                num_achievements    = 0;
+	struct achievement* tmp_achievementlog = NULL;
+	int                 num_achievements   = 0;
 
 	tmp_achievementlog = mapif_achievements_fromsql(char_id, &num_achievements);
 

@@ -97,7 +97,7 @@ int sock2newfd(SOCKET s)
 	// find an empty position
 	for (fd = 1; fd < sock_arr_len; ++fd)
 		if (sock_arr[fd] == INVALID_SOCKET)
-			break;  // empty position
+			break;             // empty position
 	if (fd == ARRAYLENGTH(sock_arr)) { // too many sockets
 		closesocket(s);
 		WSASetLastError(WSAEMFILE);
@@ -109,7 +109,7 @@ int sock2newfd(SOCKET s)
 	return fd;
 }
 
-int sAccept(int fd, struct sockaddr *addr, int *addrlen)
+int sAccept(int fd, struct sockaddr* addr, int* addrlen)
 {
 	SOCKET s;
 
@@ -141,7 +141,7 @@ int sSocket(int af, int type, int protocol)
 	return sock2newfd(s);
 }
 
-char *sErr(int code)
+char* sErr(int code)
 {
 	static char sbuf[512];
 
@@ -239,7 +239,7 @@ static time_t socket_data_last_tick = 0;
 // The connection is closed if it goes over the limit.
 #define WFIFO_MAX    (1 * 1024 * 1024)
 
-struct socket_data *session[FD_SETSIZE];
+struct socket_data* session[FD_SETSIZE];
 
 #ifdef SEND_SHORTLIST
 int    send_shortlist_array[FD_SETSIZE];           // we only support FD_SETSIZE sockets, limit the array to that
@@ -255,7 +255,7 @@ static int connect_check(uint32 ip);
 
 #endif
 
-const char *error_msg(void)
+const char* error_msg(void)
 {
 	static char buf[512];
 	int         code = sErrno;
@@ -307,15 +307,15 @@ void setsocketopts(int fd, int delay_timeout)
 	// set SO_REAUSEADDR to true, unix only. on windows this option causes
 	// the previous owner of the socket to give up, which is not desirable
 	// in most cases, neither compatible with unix.
-	sSetsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes));
+	sSetsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char*)&yes, sizeof(yes));
 #ifdef SO_REUSEPORT
-	sSetsockopt(fd, SOL_SOCKET, SO_REUSEPORT, (char *)&yes, sizeof(yes));
+	sSetsockopt(fd, SOL_SOCKET, SO_REUSEPORT, (char*)&yes, sizeof(yes));
 #endif
 #endif
 
 	// Set the socket into no-delay mode; otherwise packets get delayed for up to 200ms, likely creating server-side lag.
 	// The RO protocol is mainly single-packet request/response, plus the FIFO model already does packet grouping anyway.
-	sSetsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(yes));
+	sSetsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char*)&yes, sizeof(yes));
 
 	// force the socket into no-wait, graceful-close mode (should be the default, but better make sure)
 	//(https://msdn.microsoft.com/en-us/library/windows/desktop/ms737582%28v=vs.85%29.aspx)
@@ -323,7 +323,7 @@ void setsocketopts(int fd, int delay_timeout)
 		struct linger opt;
 		opt.l_onoff  = 0; // SO_DONTLINGER
 		opt.l_linger = 0; // Do not care
-		if (sSetsockopt(fd, SOL_SOCKET, SO_LINGER, (char *)&opt, sizeof(opt)))
+		if (sSetsockopt(fd, SOL_SOCKET, SO_LINGER, (char*)&opt, sizeof(opt)))
 			ShowWarning("setsocketopts: Unable to set SO_LINGER mode for connection #%d!\n", fd);
 	}
 	if (delay_timeout) {
@@ -335,9 +335,9 @@ void setsocketopts(int fd, int delay_timeout)
 		timeout.tv_usec = 0;
 #endif
 
-		if (sSetsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+		if (sSetsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0)
 			ShowError("setsocketopts: Unable to set SO_RCVTIMEO timeout for connection #%d!\n");
-		if (sSetsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
+		if (sSetsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0)
 			ShowError("setsocketopts: Unable to set SO_SNDTIMEO timeout for connection #%d!\n");
 	}
 } /* setsocketopts */
@@ -363,7 +363,7 @@ int recv_to_fifo(int fd)
 	if (!session_isActive(fd))
 		return -1;
 
-	len = sRecv(fd, (char *)session[fd]->rdata + session[fd]->rdata_size, (int)RFIFOSPACE(fd), 0);
+	len = sRecv(fd, (char*)session[fd]->rdata + session[fd]->rdata_size, (int)RFIFOSPACE(fd), 0);
 
 	if (len == SOCKET_ERROR) { //An exception has occured
 		if (sErrno != S_EWOULDBLOCK) {
@@ -400,7 +400,7 @@ int send_from_fifo(int fd)
 	if (session[fd]->wdata_size == 0)
 		return 0;  // nothing to send
 
-	len = sSend(fd, (const char *)session[fd]->wdata, (int)session[fd]->wdata_size, MSG_NOSIGNAL);
+	len = sSend(fd, (const char*)session[fd]->wdata, (int)session[fd]->wdata_size, MSG_NOSIGNAL);
 
 	if (len == SOCKET_ERROR) { //An exception has occured
 		if (sErrno != S_EWOULDBLOCK) {
@@ -459,7 +459,7 @@ int connect_client(int listen_fd)
 
 	len = sizeof(client_address);
 
-	fd = sAccept(listen_fd, (struct sockaddr *)&client_address, &len);
+	fd = sAccept(listen_fd, (struct sockaddr*)&client_address, &len);
 	if (fd == -1) {
 		ShowError("connect_client: accept failed (%s)!\n", error_msg());
 		return -1;
@@ -525,7 +525,7 @@ int make_listen_bind(uint32 ip, uint16 port)
 	server_address.sin_addr.s_addr = htonl(ip);
 	server_address.sin_port        = htons(port);
 
-	result = sBind(fd, (struct sockaddr *)&server_address, sizeof(server_address));
+	result = sBind(fd, (struct sockaddr*)&server_address, sizeof(server_address));
 	if (result == SOCKET_ERROR) {
 		ShowError("make_listen_bind: bind failed (socket #%d, %s)!\n", fd, error_msg());
 		exit(EXIT_FAILURE);
@@ -582,7 +582,7 @@ int make_connection(uint32 ip, uint16 port, bool silent, int timeout)
 	// On Windows we have to set the socket non-blocking before the connection to make timeout work. [Lemongrass]
 	set_nonblocking(fd, 1);
 
-	result = sConnect(fd, (struct sockaddr *)(&remote_address), sizeof(struct sockaddr_in));
+	result = sConnect(fd, (struct sockaddr*)(&remote_address), sizeof(struct sockaddr_in));
 
 	// Only enter if a socket error occurred
 	// Create a pseudo scope to be able to break out in case of successful connection
@@ -637,7 +637,7 @@ int make_connection(uint32 ip, uint16 port, bool silent, int timeout)
 	}
 	// Keep the socket in non-blocking mode, since we would set it to non-blocking here on unix. [Lemongrass]
 #else
-	result = sConnect(fd, (struct sockaddr *)(&remote_address), sizeof(struct sockaddr_in));
+	result = sConnect(fd, (struct sockaddr*)(&remote_address), sizeof(struct sockaddr_in));
 	if (result == SOCKET_ERROR) {
 		if (!silent)
 			ShowError("make_connection: connect failed (socket #%d, %s)!\n", fd, error_msg());
@@ -720,7 +720,7 @@ int realloc_writefifo(int fd, size_t addition)
 	if (session[fd]->max_wdata >= (size_t)2 * (session[fd]->flag.server ? FIFOSIZE_SERVERLINK : WFIFO_SIZE)
 	    && (session[fd]->wdata_size + addition) * 4 < session[fd]->max_wdata) { // shrink rule, shrink by 2 when only a quarter of the fifo is used, don't shrink below nominal size.
 		newsize = session[fd]->max_wdata / 2;
-	} else  // no change
+	} else                                                                      // no change
 		return 0;
 
 	RECREATE(session[fd]->wdata, unsigned char, newsize);
@@ -732,7 +732,7 @@ int realloc_writefifo(int fd, size_t addition)
 /// advance the RFIFO cursor (marking 'len' bytes as processed)
 int RFIFOSKIP(int fd, size_t len)
 {
-	struct socket_data *s;
+	struct socket_data* s;
 
 	if (!session_isActive(fd))
 		return 0;
@@ -754,8 +754,8 @@ int RFIFOSKIP(int fd, size_t len)
 /// advance the WFIFO cursor (marking 'len' bytes for sending)
 int WFIFOSET(int fd, size_t len)
 {
-	size_t             newreserve;
-	struct socket_data *s = session[fd];
+	size_t              newreserve;
+	struct socket_data* s = session[fd];
 
 	if (!session_isValid(fd) || s->wdata == NULL)
 		return 0;
@@ -764,7 +764,7 @@ int WFIFOSET(int fd, size_t len)
 	if (s->wdata_size + len > s->max_wdata) { // actually there was a buffer overflow already
 		uint32 ip = s->client_addr;
 		ShowFatalError("WFIFOSET: Write Buffer Overflow. Connection %d (%d.%d.%d.%d) has written %u bytes on a %u/%u bytes buffer.\n", fd, CONVIP(ip), (unsigned int)len, (unsigned int)s->wdata_size, (unsigned int)s->max_wdata);
-		ShowDebug("Likely command that caused it: 0x%x\n", (*(uint16 *)(s->wdata + s->wdata_size)));
+		ShowDebug("Likely command that caused it: 0x%x\n", (*(uint16*)(s->wdata + s->wdata_size)));
 		// no other chance, make a better fifo model
 		exit(EXIT_FAILURE);
 	}
@@ -772,7 +772,7 @@ int WFIFOSET(int fd, size_t len)
 	if (len > 0xFFFF) {
 		// dynamic packets allow up to UINT16_MAX bytes (<packet_id>.W <packet_len>.W ...)
 		// all known fixed-size packets are within this limit, so use the same limit
-		ShowFatalError("WFIFOSET: Packet 0x%x is too big. (len=%u, max=%u)\n", (*(uint16 *)(s->wdata + s->wdata_size)), (unsigned int)len, 0xFFFF);
+		ShowFatalError("WFIFOSET: Packet 0x%x is too big. (len=%u, max=%u)\n", (*(uint16*)(s->wdata + s->wdata_size)), (unsigned int)len, 0xFFFF);
 		exit(EXIT_FAILURE);
 	} else if (len == 0) {
 		// abuses the fact, that the code that did WFIFOHEAD(fd,0), already wrote
@@ -885,7 +885,7 @@ int do_sockets(int next)
 		if (session[i]->wdata_size)
 			session[i]->func_send(i);
 
-		if (session[i]->flag.eof) { //func_send can't free a session, this is safe.
+		if (session[i]->flag.eof) {        //func_send can't free a session, this is safe.
 			//Finally, even if there is no data to parse, connections signalled eof should be closed, so we call parse_func [Skotlex]
 			session[i]->func_parse(i); //This should close the session immediately.
 		}
@@ -946,11 +946,11 @@ int do_sockets(int next)
 // IP rules and DDoS protection
 
 typedef struct _connect_history {
-	struct _connect_history *next;
-	uint32                  ip;
-	uint32                  tick;
-	int                     count;
-	unsigned                ddos : 1;
+	struct _connect_history* next;
+	uint32                   ip;
+	uint32                   tick;
+	int                      count;
+	unsigned                 ddos : 1;
 } ConnectHistory;
 
 typedef struct _access_control {
@@ -964,18 +964,18 @@ enum _aco {
 	ACO_MUTUAL_FAILURE
 };
 
-static AccessControl *access_allow   = NULL;
-static AccessControl *access_deny    = NULL;
-static int           access_order    = ACO_DENY_ALLOW;
-static int           access_allownum = 0;
-static int           access_denynum  = 0;
-static int           access_debug    = 0;
-static int           ddos_count      = 10;
-static int           ddos_interval   = 3 * 1000;
-static int           ddos_autoreset  = 10 * 60 * 1000;
+static AccessControl* access_allow    = NULL;
+static AccessControl* access_deny     = NULL;
+static int            access_order    = ACO_DENY_ALLOW;
+static int            access_allownum = 0;
+static int            access_denynum  = 0;
+static int            access_debug    = 0;
+static int            ddos_count      = 10;
+static int            ddos_interval   = 3 * 1000;
+static int            ddos_autoreset  = 10 * 60 * 1000;
 /// Connection history, an array of linked lists.
 /// The array's index for any ip is ip&0xFFFF
-static ConnectHistory *connect_history[0x10000];
+static ConnectHistory* connect_history[0x10000];
 
 static int connect_check_(uint32 ip);
 
@@ -996,11 +996,11 @@ static int connect_check(uint32 ip)
 ///  1 or 2 : Connection Accepted
 static int connect_check_(uint32 ip)
 {
-	ConnectHistory *hist = connect_history[ip & 0xFFFF];
-	int            i;
-	int            is_allowip = 0;
-	int            is_denyip  = 0;
-	int            connect_ok = 0;
+	ConnectHistory* hist = connect_history[ip & 0xFFFF];
+	int             i;
+	int             is_allowip = 0;
+	int             is_denyip  = 0;
+	int             connect_ok = 0;
 
 	// Search the allow list
 	for (i = 0; i < access_allownum; ++i)
@@ -1066,12 +1066,12 @@ static int connect_check_(uint32 ip)
 	// Inspect connection history
 	while (hist)
 	{
-		if (ip == hist->ip) { // IP found
-			if (hist->ddos) { // flagged as DDoS
+		if (ip == hist->ip) {                                                  // IP found
+			if (hist->ddos) {                                              // flagged as DDoS
 				return(connect_ok == 2 ? 1 : 0);
 			} else if (DIFF_TICK(gettick(), hist->tick) < ddos_interval) { // connection within ddos_interval
 				hist->tick = gettick();
-				if (hist->count++ >= ddos_count) { // DDoS attack detected
+				if (hist->count++ >= ddos_count) {                     // DDoS attack detected
 					hist->ddos = 1;
 					ShowWarning("connect_check: DDoS Attack detected from %d.%d.%d.%d!\n", CONVIP(ip));
 					return(connect_ok == 2 ? 1 : 0);
@@ -1099,12 +1099,12 @@ static int connect_check_(uint32 ip)
 /// Deletes old connection history records.
 static int connect_check_clear(int tid, unsigned int tick, int id, intptr_t data)
 {
-	int            i;
-	int            clear = 0;
-	int            list  = 0;
-	ConnectHistory root;
-	ConnectHistory *prev_hist;
-	ConnectHistory *hist;
+	int             i;
+	int             clear = 0;
+	int             list  = 0;
+	ConnectHistory  root;
+	ConnectHistory* prev_hist;
+	ConnectHistory* hist;
 
 	for (i = 0; i < 0x10000; ++i)
 	{
@@ -1134,7 +1134,7 @@ static int connect_check_clear(int tid, unsigned int tick, int id, intptr_t data
 
 /// Parses the ip address and mask and puts it into acc.
 /// Returns 1 is successful, 0 otherwise.
-int access_ipmask(const char *str, AccessControl *acc)
+int access_ipmask(const char* str, AccessControl* acc)
 {
 	uint32 ip;
 	uint32 mask;
@@ -1155,7 +1155,7 @@ int access_ipmask(const char *str, AccessControl *acc)
 			return 0;
 		}
 		ip = MAKEIP(a[0], a[1], a[2], a[3]);
-		if (n == 8) { // standard mask
+		if (n == 8) {        // standard mask
 			mask = MAKEIP(m[0], m[1], m[2], m[3]);
 		} else if (n == 5) { // bit mask
 			mask = 0;
@@ -1179,10 +1179,10 @@ int access_ipmask(const char *str, AccessControl *acc)
 #endif
 //////////////////////////////
 
-int socket_config_read(const char *cfgName)
+int socket_config_read(const char* cfgName)
 {
-	char line[1024], w1[1024], w2[1024];
-	FILE *fp;
+	char  line[1024], w1[1024], w2[1024];
+	FILE* fp;
 
 	fp = fopen(cfgName, "r");
 	if (fp == NULL) {
@@ -1249,8 +1249,8 @@ void socket_final(void)
 	int i;
 
 #ifndef MINICORE
-	ConnectHistory *hist;
-	ConnectHistory *next_hist;
+	ConnectHistory* hist;
+	ConnectHistory* next_hist;
 
 	for (i = 0; i < 0x10000; ++i)
 	{
@@ -1303,7 +1303,7 @@ void do_close(int fd)
 
 /// Retrieve local ips in host byte order.
 /// Uses loopback is no address is found.
-int socket_getips(uint32 *ips, int max)
+int socket_getips(uint32* ips, int max)
 {
 	int num = 0;
 
@@ -1322,14 +1322,14 @@ int socket_getips(uint32 *ips, int max)
 			ShowError("socket_getips: No hostname defined!\n");
 			return 0;
 		} else {
-			u_long         **a;
-			struct hostent *hent;
+			u_long**        a;
+			struct hostent* hent;
 			hent = gethostbyname(fullhost);
 			if (hent == NULL) {
 				ShowError("socket_getips: Cannot resolve our own hostname to an IP address\n");
 				return 0;
 			}
-			a = (u_long **)hent->h_addr_list;
+			a = (u_long**)hent->h_addr_list;
 			for ( ; num < max && a[num] != NULL; ++num)
 				ips[num] = (uint32)ntohl(*a[num]);
 		}
@@ -1356,8 +1356,8 @@ int socket_getips(uint32 *ips, int max)
 			int pos;
 			for (pos = 0; pos < ic.ifc_len && num < max; )
 			{
-				struct ifreq       *ir = (struct ifreq *)(buf + pos);
-				struct sockaddr_in *a  = (struct sockaddr_in *)&(ir->ifr_addr);
+				struct ifreq*       ir = (struct ifreq*)(buf + pos);
+				struct sockaddr_in* a  = (struct sockaddr_in*)&(ir->ifr_addr);
 				if (a->sin_family == AF_INET) {
 					ad = ntohl(a->sin_addr.s_addr);
 					if (ad != INADDR_LOOPBACK && ad != INADDR_ANY)
@@ -1383,8 +1383,8 @@ int socket_getips(uint32 *ips, int max)
 
 void socket_init(void)
 {
-	char         *SOCKET_CONF_FILENAME = "conf/packet_athena.conf";
-	unsigned int rlim_cur              = FD_SETSIZE;
+	char*        SOCKET_CONF_FILENAME = "conf/packet_athena.conf";
+	unsigned int rlim_cur             = FD_SETSIZE;
 
 #ifdef WIN32
 	{       // Start up windows networking
@@ -1406,11 +1406,11 @@ void socket_init(void)
 		struct rlimit rlp;
 		if (0 == getrlimit(RLIMIT_NOFILE, &rlp)) {
 			rlp.rlim_cur = FD_SETSIZE;
-			if (0 != setrlimit(RLIMIT_NOFILE, &rlp)) { // failed, try setting the maximum too (permission to change system limits is required)
+			if (0 != setrlimit(RLIMIT_NOFILE, &rlp)) {         // failed, try setting the maximum too (permission to change system limits is required)
 				rlp.rlim_max = FD_SETSIZE;
 				if (0 != setrlimit(RLIMIT_NOFILE, &rlp)) { // failed
-					const char *errmsg = error_msg();
-					int        rlim_ori;
+					const char* errmsg = error_msg();
+					int         rlim_ori;
 					// set to maximum allowed
 					getrlimit(RLIMIT_NOFILE, &rlp);
 					rlim_ori     = (int)rlp.rlim_cur;
@@ -1465,16 +1465,16 @@ bool session_isActive(int fd)
 }
 
 // Resolves hostname into a numeric ip.
-uint32 host2ip(const char *hostname)
+uint32 host2ip(const char* hostname)
 {
-	struct hostent *h = gethostbyname(hostname);
+	struct hostent* h = gethostbyname(hostname);
 
-	return (h != NULL) ? ntohl(*(uint32 *)h->h_addr) : 0;
+	return (h != NULL) ? ntohl(*(uint32*)h->h_addr) : 0;
 }
 
 // Converts a numeric ip into a dot-formatted string.
 // Result is placed either into a user-provided buffer or a static system buffer.
-const char *ip2str(uint32 ip, char ip_str[16])
+const char* ip2str(uint32 ip, char ip_str[16])
 {
 	struct in_addr addr;
 
@@ -1483,7 +1483,7 @@ const char *ip2str(uint32 ip, char ip_str[16])
 }
 
 // Converts a dot-formatted ip string into a numeric ip.
-uint32 str2ip(const char *ip_str)
+uint32 str2ip(const char* ip_str)
 {
 	return ntohl(inet_addr(ip_str));
 }

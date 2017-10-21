@@ -22,15 +22,15 @@ char          map_list_file[256] = "db/map_index.txt";
 char          map_cache_file[256];
 int           rebuild = 0;
 
-FILE          *map_cache_fp;
+FILE*         map_cache_fp;
 
 unsigned long file_size;
 
 // Used internally, this structure contains the physical map cells
 struct map_data {
-	int16         xs;
-	int16         ys;
-	unsigned char *cells;
+	int16          xs;
+	int16          ys;
+	unsigned char* cells;
 };
 
 // This is the main header found at the very beginning of the file
@@ -50,22 +50,22 @@ struct map_info {
 
 
 // Reads a map from GRF's GAT and RSW files
-int read_map(char *name, struct map_data *m)
+int read_map(char* name, struct map_data* m)
 {
-	char          filename[256];
-	unsigned char *gat, *rsw;
-	int           water_height;
-	size_t        xy, off, num_cells;
+	char           filename[256];
+	unsigned char* gat, * rsw;
+	int            water_height;
+	size_t         xy, off, num_cells;
 
 	// Open map GAT
 	sprintf(filename, "data\\%s.gat", name);
-	gat = (unsigned char *)grfio_read(filename);
+	gat = (unsigned char*)grfio_read(filename);
 	if (gat == NULL)
 		return 0;
 
 	// Open map RSW
 	sprintf(filename, "data\\%s.rsw", name);
-	rsw = (unsigned char *)grfio_read(filename);
+	rsw = (unsigned char*)grfio_read(filename);
 
 	// Read water height
 	if (rsw) {
@@ -82,7 +82,7 @@ int read_map(char *name, struct map_data *m)
 		return 0;
 	}
 	num_cells = (size_t)m->xs * (size_t)m->ys;
-	m->cells  = (unsigned char *)aMalloc(num_cells);
+	m->cells  = (unsigned char*)aMalloc(num_cells);
 
 	// Set cell properties
 	off = 14;
@@ -106,15 +106,15 @@ int read_map(char *name, struct map_data *m)
 } /* read_map */
 
 // Adds a map to the cache
-void cache_map(char *name, struct map_data *m)
+void cache_map(char* name, struct map_data* m)
 {
 	struct map_info info;
 	unsigned long   len;
-	unsigned char   *write_buf;
+	unsigned char*  write_buf;
 
 	// Create an output buffer twice as big as the uncompressed map... this way we're sure it fits
 	len       = (unsigned long)m->xs * (unsigned long)m->ys * 2;
-	write_buf = (unsigned char *)aMalloc(len);
+	write_buf = (unsigned char*)aMalloc(len);
 	// Compress the cells and get the compressed length
 	encode_zip(write_buf, &len, m->cells, m->xs * m->ys);
 
@@ -138,7 +138,7 @@ void cache_map(char *name, struct map_data *m)
 }
 
 // Checks whether a map is already is the cache
-int find_map(char *name)
+int find_map(char* name)
 {
 	int             i;
 	struct map_info info;
@@ -152,16 +152,16 @@ int find_map(char *name)
 		if (strcmp(name, info.name) == 0) // Map found
 			return 1;
 		else                              // Map not found, jump to the beginning of the next map info header
-			fseek(map_cache_fp, GetLong((unsigned char *)&(info.len)), SEEK_CUR);
+			fseek(map_cache_fp, GetLong((unsigned char*)&(info.len)), SEEK_CUR);
 	}
 
 	return 0;
 }
 
 // Cuts the extension from a map name
-char *remove_extension(char *mapname)
+char* remove_extension(char* mapname)
 {
-	char *ptr, *ptr2;
+	char* ptr, * ptr2;
 
 	ptr = strchr(mapname, '.');
 	if (ptr) {                    //Check and remove extension.
@@ -174,7 +174,7 @@ char *remove_extension(char *mapname)
 }
 
 // Processes command-line arguments
-void process_args(int argc, char *argv[])
+void process_args(int argc, char* argv[])
 {
 	int i;
 
@@ -194,9 +194,9 @@ void process_args(int argc, char *argv[])
 	}
 }
 
-int do_init(int argc, char **argv)
+int do_init(int argc, char** argv)
 {
-	FILE            *list;
+	FILE*           list;
 	char            line[1024];
 	struct map_data map;
 	char            name[MAP_NAME_LENGTH_EXT];
@@ -251,8 +251,8 @@ int do_init(int argc, char **argv)
 		if (fread(&header, sizeof(struct main_header), 1, map_cache_fp) != 1) {
 			printf("An error as occured while reading map_cache_fp \n");
 		}
-		header.file_size = GetULong((unsigned char *)&(header.file_size));
-		header.map_count = GetUShort((unsigned char *)&(header.map_count));
+		header.file_size = GetULong((unsigned char*)&(header.file_size));
+		header.map_count = GetUShort((unsigned char*)&(header.map_count));
 	}
 
 	// Read and process the map list

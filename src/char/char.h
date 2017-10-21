@@ -211,7 +211,7 @@ struct auth_node {
 	unsigned changing_mapservers : 1;
 	uint8    version;
 };
-DBMap *char_get_authdb(); // uint32 account_id -> struct auth_node*
+DBMap* char_get_authdb(); // uint32 account_id -> struct auth_node*
 
 struct online_char_data {
 	uint32 account_id;
@@ -221,7 +221,7 @@ struct online_char_data {
 	short  server; // -2: unknown server, -1: not connected, 0+: id of server
 	bool   pincode_success;
 };
-DBMap *char_get_onlinedb(); // uint32 account_id -> struct online_char_data*
+DBMap* char_get_onlinedb(); // uint32 account_id -> struct online_char_data*
 
 struct char_session_data {
 	bool         auth;                  // whether the session is authed or not
@@ -251,7 +251,7 @@ struct char_session_data {
 
 
 struct mmo_charstatus;
-DBMap *char_get_chardb(); // uint32 char_id -> struct mmo_charstatus*
+DBMap* char_get_chardb(); // uint32 char_id -> struct mmo_charstatus*
 
 //Custom limits for the fame lists. [Skotlex]
 extern int              fame_list_size_chemist;
@@ -270,46 +270,46 @@ int char_lan_subnetcheck(uint32 ip);
 
 int char_count_users(void);
 DBData char_create_online_data(DBKey key, va_list args);
-int char_db_setoffline(DBKey key, DBData *data, va_list ap);
+int char_db_setoffline(DBKey key, DBData* data, va_list ap);
 void char_set_char_online(int map_id, uint32 char_id, uint32 account_id);
 void char_set_char_offline(uint32 char_id, uint32 account_id);
 void char_set_all_offline(int id);
 void char_disconnect_player(uint32 account_id);
 int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t data);
 
-int char_mmo_gender(const struct char_session_data *sd, const struct mmo_charstatus *p, char sex);
-int char_mmo_char_tobuf(uint8 *buffer, struct mmo_charstatus *p);
-int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus *p);
-int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus *p, bool load_everything);
-int char_mmo_chars_fromsql(struct char_session_data *sd, uint8 *buf);
-enum e_char_del_response char_delete(struct char_session_data *sd, uint32 char_id);
-int char_rename_char_sql(struct char_session_data *sd, uint32 char_id);
+int char_mmo_gender(const struct char_session_data* sd, const struct mmo_charstatus* p, char sex);
+int char_mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p);
+int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p);
+int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_everything);
+int char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf);
+enum e_char_del_response char_delete(struct char_session_data* sd, uint32 char_id);
+int char_rename_char_sql(struct char_session_data* sd, uint32 char_id);
 int char_divorce_char_sql(int partner_id1, int partner_id2);
 int char_memitemdata_to_sql(const struct item items[], int max, int id, enum storage_type tableswitch, uint8 stor_id);
-bool char_memitemdata_from_sql(struct s_storage *p, int max, int id, enum storage_type tableswitch, uint8 stor_id);
+bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storage_type tableswitch, uint8 stor_id);
 
 int char_married(int pl1, int pl2);
 int char_child(int parent_id, int child_id);
 int char_family(int pl1, int pl2, int pl3);
 
 //extern bool char_gm_read;
-int char_loadName(uint32 char_id, char *name);
-int char_check_char_name(char *name, char *esc_name);
+int char_loadName(uint32 char_id, char* name);
+int char_check_char_name(char* name, char* esc_name);
 
-void char_pincode_decrypt(uint32 userSeed, char *pin);
-int char_pincode_compare(int fd, struct char_session_data *sd, char *pin);
-void char_auth_ok(int fd, struct char_session_data *sd);
+void char_pincode_decrypt(uint32 userSeed, char* pin);
+int char_pincode_compare(int fd, struct char_session_data* sd, char* pin);
+void char_auth_ok(int fd, struct char_session_data* sd);
 void char_set_charselect(uint32 account_id);
 void char_read_fame_list(void);
 
 #if PACKETVER >= 20151001
-int char_make_new_char_sql(struct char_session_data *sd, char *name_, int slot, int hair_color, int hair_style, short start_job, short unknown, int sex);
+int char_make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short start_job, short unknown, int sex);
 
 #elif PACKETVER >= 20120307
-int char_make_new_char_sql(struct char_session_data *sd, char *name_, int slot, int hair_color, int hair_style);
+int char_make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style);
 
 #else
-int char_make_new_char_sql(struct char_session_data *sd, char *name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style);
+int char_make_new_char_sql(struct char_session_data* sd, char* name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style);
 
 #endif
 
@@ -326,10 +326,10 @@ void char_set_session_flag_(int account_id, int val, bool set);
 #define msg_config_read(cfgName)                    char_msg_config_read(cfgName)
 #define msg_txt(msg_number)                         char_msg_txt(msg_number)
 #define do_final_msg()                              char_do_final_msg()
-int char_msg_config_read(char *cfgName);
-const char *char_msg_txt(int msg_number);
+int char_msg_config_read(char* cfgName);
+const char* char_msg_txt(int msg_number);
 void char_do_final_msg(void);
-bool char_config_read(const char *cfgName, bool normal);
+bool char_config_read(const char* cfgName, bool normal);
 
 #ifdef __cplusplus
 }

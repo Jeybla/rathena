@@ -35,36 +35,36 @@ struct s_autotrade_entry {
 
 /// Struct of autotrader
 struct s_autotrader {
-	uint32        id;                             ///< vendor/buyer id
-	uint32        account_id;                     ///< Account ID
-	uint32        char_id;                        ///< Char ID
-	int           m;                              ///< Map location
-	uint16        x,                              ///< X location
-	              y;                              ///< Y location
-	unsigned char sex,                            ///< Autotrader's sex
-	              dir,                            ///< Body direction
-	              head_dir,                       ///< Head direction
-	              sit;                            ///< Is sitting?
-	char                     title[MESSAGE_SIZE]; ///< Store name
-	uint32                   limit;               ///< Maximum zeny to be spent (for buyingstore)
-	uint16                   count;               ///< Number of item in store
-	struct s_autotrade_entry **entries;           ///< Store details
-	struct map_session_data  *sd;
+	uint32        id;                               ///< vendor/buyer id
+	uint32        account_id;                       ///< Account ID
+	uint32        char_id;                          ///< Char ID
+	int           m;                                ///< Map location
+	uint16        x,                                ///< X location
+	              y;                                ///< Y location
+	unsigned char sex,                              ///< Autotrader's sex
+	              dir,                              ///< Body direction
+	              head_dir,                         ///< Head direction
+	              sit;                              ///< Is sitting?
+	char                       title[MESSAGE_SIZE]; ///< Store name
+	uint32                     limit;               ///< Maximum zeny to be spent (for buyingstore)
+	uint16                     count;               ///< Number of item in store
+	struct s_autotrade_entry** entries;             ///< Store details
+	struct map_session_data*   sd;
 };
 
-int8 buyingstore_setup(struct map_session_data *sd, unsigned char slots);
-int8 buyingstore_create(struct map_session_data *sd, int zenylimit, unsigned char result, const char *storename, const uint8 *itemlist, unsigned int count, struct s_autotrader *at);
-void buyingstore_close(struct map_session_data *sd);
-void buyingstore_open(struct map_session_data *sd, uint32 account_id);
-void buyingstore_trade(struct map_session_data *sd, uint32 account_id, unsigned int buyer_id, const uint8 *itemlist, unsigned int count);
-bool buyingstore_search(struct map_session_data *sd, unsigned short nameid);
-bool buyingstore_searchall(struct map_session_data *sd, const struct s_search_store_search *s);
-DBMap *buyingstore_getdb(void);
+int8 buyingstore_setup(struct map_session_data* sd, unsigned char slots);
+int8 buyingstore_create(struct map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const uint8* itemlist, unsigned int count, struct s_autotrader* at);
+void buyingstore_close(struct map_session_data* sd);
+void buyingstore_open(struct map_session_data* sd, uint32 account_id);
+void buyingstore_trade(struct map_session_data* sd, uint32 account_id, unsigned int buyer_id, const uint8* itemlist, unsigned int count);
+bool buyingstore_search(struct map_session_data* sd, unsigned short nameid);
+bool buyingstore_searchall(struct map_session_data* sd, const struct s_search_store_search* s);
+DBMap* buyingstore_getdb(void);
 void do_final_buyingstore(void);
 void do_init_buyingstore(void);
 
 void do_init_buyingstore_autotrade(void);
-void buyingstore_reopen(struct map_session_data *sd);
+void buyingstore_reopen(struct map_session_data* sd);
 
 #ifdef __cplusplus
 }

@@ -14,7 +14,7 @@ extern "C" {
 void do_init_cashshop(void);
 void do_final_cashshop(void);
 void cashshop_reloaddb(void);
-bool cashshop_buylist(struct map_session_data *sd, uint32 kafrapoints, int n, uint16 *item_list);
+bool cashshop_buylist(struct map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list);
 
 // Taken from AEGIS
 enum CASH_SHOP_TAB_CODE {
@@ -55,8 +55,8 @@ struct cash_item_data {
 };
 
 struct cash_item_db {
-	struct cash_item_data **item;
-	uint32                count;
+	struct cash_item_data** item;
+	uint32                  count;
 };
 
 extern struct cash_item_db cash_shop_items[CASHSHOP_TAB_MAX];
@@ -81,17 +81,17 @@ struct sale_item_data {
 };
 
 struct sale_item_db {
-	struct sale_item_data **item;
-	uint32                count;
+	struct sale_item_data** item;
+	uint32                  count;
 };
 
 #if PACKETVER_SUPPORTS_SALES
 extern struct sale_item_db sale_items;
 
-struct sale_item_data      *sale_find_item(uint16 nameid, bool onsale);
+struct sale_item_data*     sale_find_item(uint16 nameid, bool onsale);
 enum e_sale_add_result     sale_add_item(uint16 nameid, int32 count, time_t from, time_t to);
 bool sale_remove_item(uint16 nameid);
-void sale_notify_login(struct map_session_data *sd);
+void sale_notify_login(struct map_session_data* sd);
 
 #endif
 

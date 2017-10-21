@@ -22,21 +22,21 @@
 #include "cli.h"
 
 //map confs
-const char *MAP_CONF_NAME;
-const char *INTER_CONF_NAME;
-const char *LOG_CONF_NAME;
-const char *BATTLE_CONF_FILENAME;
-const char *ATCOMMAND_CONF_FILENAME;
-const char *SCRIPT_CONF_NAME;
-const char *GRF_PATH_FILENAME;
+const char* MAP_CONF_NAME;
+const char* INTER_CONF_NAME;
+const char* LOG_CONF_NAME;
+const char* BATTLE_CONF_FILENAME;
+const char* ATCOMMAND_CONF_FILENAME;
+const char* SCRIPT_CONF_NAME;
+const char* GRF_PATH_FILENAME;
 //char confs
-const char *CHAR_CONF_NAME;
-const char *SQL_CONF_NAME;
+const char* CHAR_CONF_NAME;
+const char* SQL_CONF_NAME;
 //login confs
-const char *LOGIN_CONF_NAME;
+const char* LOGIN_CONF_NAME;
 //common conf (used by multiple serv)
-const char *LAN_CONF_NAME;    //char-login
-const char *MSG_CONF_NAME_EN; //all
+const char* LAN_CONF_NAME;    //char-login
+const char* MSG_CONF_NAME_EN; //all
 
 /**
  * Function to check if the specified option has an argument following it.
@@ -47,7 +47,7 @@ const char *MSG_CONF_NAME_EN; //all
  *   false : no other args found, and throw a warning
  *   true : something following us
  */
-bool opt_has_next_value(const char *option, int i, int argc)
+bool opt_has_next_value(const char* option, int i, int argc)
 {
 	if (i >= argc - 1) {
 		ShowWarning("Missing value for option '%s'.\n", option);
@@ -66,12 +66,12 @@ bool opt_has_next_value(const char *option, int i, int argc)
  */
 void display_versionscreen(bool do_exit)
 {
-	const char *svn = get_svn_revision();
+	const char* svn = get_svn_revision();
 
 	if (svn[0] != UNKNOWN_VERSION)
 		ShowInfo("rAthena SVN Revision: '"CL_WHITE "%s"CL_RESET "'\n", svn);
 	else {
-		const char *git = get_git_hash();
+		const char* git = get_git_hash();
 		if (git[0] != UNKNOWN_VERSION)
 			ShowInfo("rAthena Git Hash: '"CL_WHITE "%s"CL_RESET "'\n", git);
 	}
@@ -90,13 +90,13 @@ void display_versionscreen(bool do_exit)
  * @param argv: arguments values (from main)
  * @return true or exit on failure
  */
-int cli_get_options(int argc, char **argv)
+int cli_get_options(int argc, char** argv)
 {
 	int i = 0;
 
 	for (i = 1; i < argc; i++)
 	{
-		const char *arg = argv[i];
+		const char* arg = argv[i];
 
 		if (arg[0] != '-' && (arg[0] != '/' || arg[1] == '-')) { // -, -- and /
 			ShowError("Unknown option '%s'.\n", argv[i]);
@@ -111,7 +111,7 @@ int cli_get_options(int argc, char **argv)
 			} else if (strcmp(arg, "msg-config") == 0) {
 				if (opt_has_next_value(arg, i, argc))
 					MSG_CONF_NAME_EN = argv[++i];
-			} else if (strcmp(arg, "run-once") == 0) { // close the map-server as soon as its done.. for testing [Celest]
+			} else if (strcmp(arg, "run-once") == 0) {                             // close the map-server as soon as its done.. for testing [Celest]
 				runflag = CORE_ST_STOP;
 			} else if (SERVER_TYPE & (ATHENA_SERVER_LOGIN | ATHENA_SERVER_CHAR)) { //login or char
 				if (strcmp(arg, "lan-config") == 0) {

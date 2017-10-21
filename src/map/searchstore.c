@@ -33,8 +33,8 @@ enum e_searchstore_effecttype {
 };
 
 /// Type for shop search function
-typedef bool (*searchstore_search_t)(struct map_session_data *sd, unsigned short nameid);
-typedef bool (*searchstore_searchall_t)(struct map_session_data *sd, const struct s_search_store_search *s);
+typedef bool (*searchstore_search_t)(struct map_session_data* sd, unsigned short nameid);
+typedef bool (*searchstore_searchall_t)(struct map_session_data* sd, const struct s_search_store_search* s);
 
 /**
  * Retrieves search function by type.
@@ -80,7 +80,7 @@ static searchstore_searchall_t searchstore_getsearchallfunc(unsigned char type)
  * @param type : type of search to conduct
  * @return : store type
  */
-static bool searchstore_hasstore(struct map_session_data *sd, unsigned char type)
+static bool searchstore_hasstore(struct map_session_data* sd, unsigned char type)
 {
 	switch (type)
 	{
@@ -100,7 +100,7 @@ static bool searchstore_hasstore(struct map_session_data *sd, unsigned char type
  * @param type : type of search to conduct
  * @return : store ID
  */
-static int searchstore_getstoreid(struct map_session_data *sd, unsigned char type)
+static int searchstore_getstoreid(struct map_session_data* sd, unsigned char type)
 {
 	switch (type)
 	{
@@ -121,7 +121,7 @@ static int searchstore_getstoreid(struct map_session_data *sd, unsigned char typ
  * @param effect : shop type
  * @return : true : opened, false : failed to open
  */
-bool searchstore_open(struct map_session_data *sd, unsigned int uses, unsigned short effect)
+bool searchstore_open(struct map_session_data* sd, unsigned int uses, unsigned short effect)
 {
 	if (!battle_config.feature_search_stores || sd->searchstore.open)
 		return false;
@@ -149,11 +149,11 @@ bool searchstore_open(struct map_session_data *sd, unsigned int uses, unsigned s
  * @param cardlist : list with stored cards (cards attached to items)
  * @param card_count : amount of items in cardlist
  */
-void searchstore_query(struct map_session_data *sd, unsigned char type, unsigned int min_price, unsigned int max_price, const unsigned short *itemlist, unsigned int item_count, const unsigned short *cardlist, unsigned int card_count)
+void searchstore_query(struct map_session_data* sd, unsigned char type, unsigned int min_price, unsigned int max_price, const unsigned short* itemlist, unsigned int item_count, const unsigned short* cardlist, unsigned int card_count)
 {
 	unsigned int                 i;
-	struct map_session_data      *pl_sd;
-	struct DBIterator            *iter;
+	struct map_session_data*     pl_sd;
+	struct DBIterator*           iter;
 	struct s_search_store_search s;
 	searchstore_searchall_t      store_searchall;
 	time_t                       querytime;
@@ -210,7 +210,7 @@ void searchstore_query(struct map_session_data *sd, unsigned char type, unsigned
 	searchstore_clear(sd);
 
 	// allocate max. amount of results
-	sd->searchstore.items = (struct s_search_store_info_item *)aMalloc(sizeof(struct s_search_store_info_item) * battle_config.searchstore_maxresults);
+	sd->searchstore.items = (struct s_search_store_info_item*)aMalloc(sizeof(struct s_search_store_info_item) * battle_config.searchstore_maxresults);
 
 	// search
 	s.search_sd  = sd;
@@ -222,7 +222,7 @@ void searchstore_query(struct map_session_data *sd, unsigned char type, unsigned
 	s.max_price  = max_price;
 	iter         = db_iterator((type == SEARCHTYPE_VENDING) ? vending_getdb() : buyingstore_getdb());
 
-	for (pl_sd = (struct map_session_data *)dbi_first(iter); dbi_exists(iter); pl_sd = (struct map_session_data *)dbi_next(iter))
+	for (pl_sd = (struct map_session_data*)dbi_first(iter); dbi_exists(iter); pl_sd = (struct map_session_data*)dbi_next(iter))
 	{
 		if (sd == pl_sd)  // skip own shop, if any
 			continue;
@@ -237,7 +237,7 @@ void searchstore_query(struct map_session_data *sd, unsigned char type, unsigned
 
 	if (sd->searchstore.count) {
 		// reclaim unused memory
-		sd->searchstore.items = (struct s_search_store_info_item *)aRealloc(sd->searchstore.items, sizeof(struct s_search_store_info_item) * sd->searchstore.count);
+		sd->searchstore.items = (struct s_search_store_info_item*)aRealloc(sd->searchstore.items, sizeof(struct s_search_store_info_item) * sd->searchstore.count);
 
 		// present results
 		clif_search_store_info_ack(sd);
@@ -261,7 +261,7 @@ void searchstore_query(struct map_session_data *sd, unsigned char type, unsigned
  * @param sd : player requesting
  * @return : true : more items to search, false : no more items
  */
-bool searchstore_querynext(struct map_session_data *sd)
+bool searchstore_querynext(struct map_session_data* sd)
 {
 	if (sd->searchstore.count && (sd->searchstore.count - 1) / SEARCHSTORE_RESULTS_PER_PAGE < sd->searchstore.pages)
 		return true;
@@ -273,7 +273,7 @@ bool searchstore_querynext(struct map_session_data *sd)
  * Get and display the results for the next page.
  * @param sd : player requesting
  */
-void searchstore_next(struct map_session_data *sd)
+void searchstore_next(struct map_session_data* sd)
 {
 	if (!battle_config.feature_search_stores || !sd->searchstore.open || sd->searchstore.count <= sd->searchstore.pages * SEARCHSTORE_RESULTS_PER_PAGE) // nothing (more) to display
 		return;
@@ -289,7 +289,7 @@ void searchstore_next(struct map_session_data *sd)
  * Prepare to clear information for closing of window.
  * @param sd : player requesting
  */
-void searchstore_clear(struct map_session_data *sd)
+void searchstore_clear(struct map_session_data* sd)
 {
 	searchstore_clearremote(sd);
 
@@ -306,7 +306,7 @@ void searchstore_clear(struct map_session_data *sd)
  * Close the Search Store window.
  * @param sd : player requesting
  */
-void searchstore_close(struct map_session_data *sd)
+void searchstore_close(struct map_session_data* sd)
 {
 	if (sd->searchstore.open) {
 		searchstore_clear(sd);
@@ -323,11 +323,11 @@ void searchstore_close(struct map_session_data *sd)
  * @param store_id : store ID created by client
  * @param nameid : item being searched
  */
-void searchstore_click(struct map_session_data *sd, uint32 account_id, int store_id, unsigned short nameid)
+void searchstore_click(struct map_session_data* sd, uint32 account_id, int store_id, unsigned short nameid)
 {
-	unsigned int            i;
-	struct map_session_data *pl_sd;
-	searchstore_search_t    store_search;
+	unsigned int             i;
+	struct map_session_data* pl_sd;
+	searchstore_search_t     store_search;
 
 	if (!battle_config.feature_search_stores || !sd->searchstore.open || !sd->searchstore.count)
 		return;
@@ -397,7 +397,7 @@ void searchstore_click(struct map_session_data *sd, uint32 account_id, int store
  * @param account_id : account ID of owner's shop
  * @return : true : shop opened, false : shop not opened
  */
-bool searchstore_queryremote(struct map_session_data *sd, uint32 account_id)
+bool searchstore_queryremote(struct map_session_data* sd, uint32 account_id)
 {
 	return (bool)(sd->searchstore.open && sd->searchstore.count && sd->searchstore.remote_id == account_id);
 }
@@ -406,7 +406,7 @@ bool searchstore_queryremote(struct map_session_data *sd, uint32 account_id)
  * Removes range-check bypassing for remotely opened stores.
  * @param sd : player requesting
  */
-void searchstore_clearremote(struct map_session_data *sd)
+void searchstore_clearremote(struct map_session_data* sd)
 {
 	sd->searchstore.remote_id = 0;
 }
@@ -423,9 +423,9 @@ void searchstore_clearremote(struct map_session_data *sd)
  * @param card : card in the item
  * @param refine : refine of the item
  */
-bool searchstore_result(struct map_session_data *sd, int store_id, uint32 account_id, const char *store_name, unsigned short nameid, unsigned short amount, unsigned int price, const unsigned short *card, unsigned char refine)
+bool searchstore_result(struct map_session_data* sd, int store_id, uint32 account_id, const char* store_name, unsigned short nameid, unsigned short amount, unsigned int price, const unsigned short* card, unsigned char refine)
 {
-	struct s_search_store_info_item *ssitem;
+	struct s_search_store_info_item* ssitem;
 
 	if (sd->searchstore.count >= (unsigned int)battle_config.searchstore_maxresults)  // no more
 		return false;

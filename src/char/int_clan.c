@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 //clan cache
-static DBMap *clan_db; // int clan_id -> struct clan*
+static DBMap* clan_db; // int clan_id -> struct clan*
 
 int inter_clan_removemember_tosql(uint32 account_id, uint32 char_id)
 {
@@ -27,17 +27,17 @@ int inter_clan_removemember_tosql(uint32 account_id, uint32 char_id)
 	}
 }
 
-struct clan *inter_clan_fromsql(int clan_id)
+struct clan* inter_clan_fromsql(int clan_id)
 {
-	struct clan *clan;
-	char        *data;
-	size_t      len;
-	int         i;
+	struct clan* clan;
+	char*        data;
+	size_t       len;
+	int          i;
 
 	if (clan_id <= 0)
 		return NULL;
 
-	clan = (struct clan *)idb_get(clan_db, clan_id);
+	clan = (struct clan*)idb_get(clan_db, clan_id);
 
 	if (clan) {
 		return clan;
@@ -82,7 +82,7 @@ struct clan *inter_clan_fromsql(int clan_id)
 
 	for (i = 0; i < MAX_CLANALLIANCE && SQL_SUCCESS == Sql_NextRow(sql_handle); i++)
 	{
-		struct clan_alliance *a = &clan->alliance[i];
+		struct clan_alliance* a = &clan->alliance[i];
 
 		Sql_GetData(sql_handle, 0, &data, NULL);
 		a->opposition = atoi(data);
@@ -102,10 +102,10 @@ struct clan *inter_clan_fromsql(int clan_id)
 
 int mapif_clan_info(int fd)
 {
-	DBIterator  *iter;
-	int         offset;
-	struct clan *clan;
-	int         length;
+	DBIterator*  iter;
+	int          offset;
+	struct clan* clan;
+	int          length;
 
 	length = 4 + db_size(clan_db) * sizeof(struct clan);
 
@@ -115,7 +115,7 @@ int mapif_clan_info(int fd)
 
 	offset = 4;
 	iter   = db_iterator(clan_db);
-	for (clan = (struct clan *)dbi_first(iter); dbi_exists(iter); clan = (struct clan *)dbi_next(iter))
+	for (clan = (struct clan*)dbi_first(iter); dbi_exists(iter); clan = (struct clan*)dbi_next(iter))
 	{
 		memcpy(WFIFOP(fd, offset), clan, sizeof(struct clan));
 		offset += sizeof(struct clan);
@@ -149,7 +149,7 @@ static int mapif_parse_clan_message(int fd)
 	return 0;
 }
 
-static void mapif_clan_refresh_onlinecount(int fd, struct clan *clan)
+static void mapif_clan_refresh_onlinecount(int fd, struct clan* clan)
 {
 	unsigned char buf[8];
 
@@ -162,7 +162,7 @@ static void mapif_clan_refresh_onlinecount(int fd, struct clan *clan)
 
 static void mapif_parse_clan_member_left(int fd)
 {
-	struct clan *clan = (struct clan *)idb_get(clan_db, RFIFOL(fd, 2));
+	struct clan* clan = (struct clan*)idb_get(clan_db, RFIFOL(fd, 2));
 
 	if (clan == NULL) { // Unknown clan
 		return;
@@ -177,7 +177,7 @@ static void mapif_parse_clan_member_left(int fd)
 
 static void mapif_parse_clan_member_joined(int fd)
 {
-	struct clan *clan = (struct clan *)idb_get(clan_db, RFIFOL(fd, 2));
+	struct clan* clan = (struct clan*)idb_get(clan_db, RFIFOL(fd, 2));
 
 	if (clan == NULL) { // Unknown clan
 		return;
@@ -224,9 +224,9 @@ int inter_clan_parse_frommap(int fd)
 // Initialize clan sql
 int inter_clan_init(void)
 {
-	char *data;
-	int  *clan_ids;
-	int  amount;
+	char* data;
+	int*  clan_ids;
+	int   amount;
 
 	clan_db = idb_alloc(DB_OPT_RELEASE_DATA);
 

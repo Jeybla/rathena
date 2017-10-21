@@ -25,10 +25,10 @@
 int                  instance_start = 0; // To keep the last index + 1 of normal map inserted in the map[ARRAY]
 
 struct instance_data instance_data[MAX_INSTANCE_DATA];
-struct eri           *instance_maps_ers = NULL; ///< Array of maps per instance
+struct eri*          instance_maps_ers = NULL;  ///< Array of maps per instance
 
-static DBMap         *InstanceDB;               /// Instance DB: struct instance_db, key: id
-static DBMap         *InstanceNameDB;           /// instance id, key: name
+static DBMap*        InstanceDB;                /// Instance DB: struct instance_db, key: id
+static DBMap*        InstanceNameDB;            /// instance id, key: name
 
 static struct {
 	int id[MAX_INSTANCE_DATA];
@@ -40,12 +40,12 @@ instance_wait;
 /*==========================================
  * Searches for an instance ID in the database
  *------------------------------------------*/
-struct instance_db *instance_searchtype_db(unsigned short instance_id)
+struct instance_db* instance_searchtype_db(unsigned short instance_id)
 {
-	return (struct instance_db *)uidb_get(InstanceDB, instance_id);
+	return (struct instance_db*)uidb_get(InstanceDB, instance_id);
 }
 
-static uint16 instance_name2id(const char *instance_name)
+static uint16 instance_name2id(const char* instance_name)
 {
 	return (uint16)strdb_uiget(InstanceNameDB, instance_name);
 }
@@ -53,14 +53,14 @@ static uint16 instance_name2id(const char *instance_name)
 /*==========================================
  * Searches for an instance name in the database
  *------------------------------------------*/
-struct instance_db *instance_searchname_db(const char *instance_name)
+struct instance_db* instance_searchname_db(const char* instance_name)
 {
 	uint16 id = instance_name2id(instance_name);
 
 	if (id == 0)
 		return NULL;
 
-	return (struct instance_db *)uidb_get(InstanceDB, id);
+	return (struct instance_db*)uidb_get(InstanceDB, id);
 }
 
 /**
@@ -69,7 +69,7 @@ struct instance_db *instance_searchname_db(const char *instance_name)
  * @param sd: Player data to attach
  * @param target: Target display type
  */
-void instance_getsd(unsigned short instance_id, struct map_session_data **sd, enum send_target *target)
+void instance_getsd(unsigned short instance_id, struct map_session_data** sd, enum send_target* target)
 {
 	switch (instance_data[instance_id].mode)
 	{
@@ -114,13 +114,13 @@ static int instance_delete_timer(int tid, unsigned int tick, int id, intptr_t da
  *------------------------------------------*/
 static int instance_subscription_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	int                     i, ret;
-	unsigned short          instance_id = instance_wait.id[0];
-	struct map_session_data *sd         = NULL;
-	struct party_data       *pd         = NULL;
-	struct guild            *gd         = NULL;
-	struct clan             *cd         = NULL;
-	enum instance_mode      mode;
+	int                      i, ret;
+	unsigned short           instance_id = instance_wait.id[0];
+	struct map_session_data* sd          = NULL;
+	struct party_data*       pd          = NULL;
+	struct guild*            gd          = NULL;
+	struct clan*             cd          = NULL;
+	enum instance_mode       mode;
 
 	if (instance_wait.count == 0 || instance_id == 0)
 		return 0;
@@ -182,9 +182,9 @@ static int instance_subscription_timer(int tid, unsigned int tick, int id, intpt
 /*==========================================
  * Adds timer back to members entering instance
  *------------------------------------------*/
-static int instance_startkeeptimer(struct instance_data *im, unsigned short instance_id)
+static int instance_startkeeptimer(struct instance_data* im, unsigned short instance_id)
 {
-	struct instance_db *db;
+	struct instance_db* db;
 
 	nullpo_retr(0, im);
 
@@ -235,9 +235,9 @@ static int instance_startkeeptimer(struct instance_data *im, unsigned short inst
  * Creates idle timer
  * Default before instance destroy is 5 minutes
  *------------------------------------------*/
-static int instance_startidletimer(struct instance_data *im, unsigned short instance_id)
+static int instance_startidletimer(struct instance_data* im, unsigned short instance_id)
 {
-	struct instance_db *db;
+	struct instance_db* db;
 
 	nullpo_retr(1, im);
 
@@ -287,7 +287,7 @@ static int instance_startidletimer(struct instance_data *im, unsigned short inst
 /*==========================================
  * Delete the idle timer
  *------------------------------------------*/
-static int instance_stopidletimer(struct instance_data *im, unsigned short instance_id)
+static int instance_stopidletimer(struct instance_data* im, unsigned short instance_id)
 {
 	nullpo_retr(0, im);
 
@@ -335,13 +335,13 @@ static int instance_stopidletimer(struct instance_data *im, unsigned short insta
 /*==========================================
  * Run the OnInstanceInit events for duplicated NPCs
  *------------------------------------------*/
-static int instance_npcinit(struct block_list *bl, va_list ap)
+static int instance_npcinit(struct block_list* bl, va_list ap)
 {
-	struct npc_data *nd;
+	struct npc_data* nd;
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
-	nullpo_retr(0, nd = (struct npc_data *)bl);
+	nullpo_retr(0, nd = (struct npc_data*)bl);
 
 	return npc_instanceinit(nd);
 }
@@ -349,13 +349,13 @@ static int instance_npcinit(struct block_list *bl, va_list ap)
 /*==========================================
  * Run the OnInstanceDestroy events for duplicated NPCs
  *------------------------------------------*/
-static int instance_npcdestroy(struct block_list *bl, va_list ap)
+static int instance_npcdestroy(struct block_list* bl, va_list ap)
 {
-	struct npc_data *nd;
+	struct npc_data* nd;
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
-	nullpo_retr(0, nd = (struct npc_data *)bl);
+	nullpo_retr(0, nd = (struct npc_data*)bl);
 
 	return npc_instancedestroy(nd);
 }
@@ -363,19 +363,19 @@ static int instance_npcdestroy(struct block_list *bl, va_list ap)
 /*==========================================
  * Add an NPC to an instance
  *------------------------------------------*/
-static int instance_addnpc_sub(struct block_list *bl, va_list ap)
+static int instance_addnpc_sub(struct block_list* bl, va_list ap)
 {
-	struct npc_data *nd;
+	struct npc_data* nd;
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
-	nullpo_retr(0, nd = (struct npc_data *)bl);
+	nullpo_retr(0, nd = (struct npc_data*)bl);
 
 	return npc_duplicate4instance(nd, va_arg(ap, int));
 }
 
 // Separate function used for reloading
-void instance_addnpc(struct instance_data *im)
+void instance_addnpc(struct instance_data* im)
 {
 	int i;
 
@@ -394,14 +394,14 @@ void instance_addnpc(struct instance_data *im)
  * -4 = no free instances | -3 = already exists | -2 = character/party/guild not found | -1 = invalid type
  * On success return instance_id
  *--------------------------------------*/
-int instance_create(int owner_id, const char *name, enum instance_mode mode)
+int instance_create(int owner_id, const char* name, enum instance_mode mode)
 {
-	struct instance_db      *db = instance_searchname_db(name);
-	struct map_session_data *sd = NULL;
-	struct party_data       *pd = NULL;
-	struct guild            *gd = NULL;
-	struct clan             *cd = NULL;
-	unsigned short          i;
+	struct instance_db*      db = instance_searchname_db(name);
+	struct map_session_data* sd = NULL;
+	struct party_data*       pd = NULL;
+	struct guild*            gd = NULL;
+	struct clan*             cd = NULL;
+	unsigned short           i;
 
 	nullpo_retr(-1, db);
 
@@ -508,10 +508,10 @@ int instance_create(int owner_id, const char *name, enum instance_mode mode)
  *--------------------------------------*/
 int instance_addmap(unsigned short instance_id)
 {
-	int                   i, m;
-	struct instance_data  *im;
-	struct instance_db    *db;
-	struct s_instance_map *entry;
+	int                    i, m;
+	struct instance_data*  im;
+	struct instance_db*    db;
+	struct s_instance_map* entry;
 
 	if (instance_id == 0)
 		return 0;
@@ -544,7 +544,7 @@ int instance_addmap(unsigned short instance_id)
 	entry        = ers_alloc(instance_maps_ers, struct s_instance_map);
 	entry->m     = m;
 	entry->src_m = map_mapname2mapid(StringBuf_Value(db->enter.mapname));
-	RECREATE(im->map, struct s_instance_map *, im->cnt_map + 1);
+	RECREATE(im->map, struct s_instance_map*, im->cnt_map + 1);
 	im->map[im->cnt_map++] = entry;
 
 	// Add extra maps (if any)
@@ -560,7 +560,7 @@ int instance_addmap(unsigned short instance_id)
 			entry        = ers_alloc(instance_maps_ers, struct s_instance_map);
 			entry->m     = m;
 			entry->src_m = map_mapname2mapid(StringBuf_Value(db->maplist[i]));
-			RECREATE(im->map, struct s_instance_map *, im->cnt_map + 1);
+			RECREATE(im->map, struct s_instance_map*, im->cnt_map + 1);
 			im->map[im->cnt_map++] = entry;
 		}
 	}
@@ -607,12 +607,12 @@ int instance_addmap(unsigned short instance_id)
  * instance_id : where to search
  * result : mapid of map "name" in this instance
  *------------------------------------------*/
-int16 instance_mapname2mapid(const char *name, unsigned short instance_id)
+int16 instance_mapname2mapid(const char* name, unsigned short instance_id)
 {
-	struct instance_data *im;
-	int16                m = map_mapname2mapid(name);
-	char                 iname[MAP_NAME_LENGTH];
-	int                  i;
+	struct instance_data* im;
+	int16                 m = map_mapname2mapid(name);
+	char                  iname[MAP_NAME_LENGTH];
+	int                   i;
 
 	if (m < 0) {
 		ShowError("instance_mapname2mapid: map name %s does not exist.\n", name);
@@ -640,6 +640,7 @@ int16 instance_mapname2mapid(const char *name, unsigned short instance_id)
 		}
 
 
+
 	return m;
 }
 
@@ -648,14 +649,14 @@ int16 instance_mapname2mapid(const char *name, unsigned short instance_id)
  *------------------------------------------*/
 int instance_destroy(unsigned short instance_id)
 {
-	struct instance_data    *im;
-	struct map_session_data *sd = NULL;
-	struct party_data       *pd = NULL;
-	struct guild            *gd = NULL;
-	struct clan             *cd = NULL;
-	int                     i, type = 0;
-	unsigned int            now = (unsigned int)time(NULL);
-	enum instance_mode      mode;
+	struct instance_data*    im;
+	struct map_session_data* sd = NULL;
+	struct party_data*       pd = NULL;
+	struct guild*            gd = NULL;
+	struct clan*             cd = NULL;
+	int                      i, type = 0;
+	unsigned int             now = (unsigned int)time(NULL);
+	enum instance_mode       mode;
 
 	if (instance_id == 0 || instance_id > MAX_INSTANCE_DATA)
 		return 1;
@@ -776,15 +777,15 @@ int instance_destroy(unsigned short instance_id)
 /*==========================================
  * Warp a user into instance
  *------------------------------------------*/
-enum e_instance_enter instance_enter(struct map_session_data *sd, unsigned short instance_id, const char *name, short x, short y)
+enum e_instance_enter instance_enter(struct map_session_data* sd, unsigned short instance_id, const char* name, short x, short y)
 {
-	struct instance_data *im = NULL;
-	struct instance_db   *db = NULL;
-	struct party_data    *pd = NULL;
-	struct guild         *gd = NULL;
-	struct clan          *cd = NULL;
-	enum instance_mode   mode;
-	int16                m;
+	struct instance_data* im = NULL;
+	struct instance_db*   db = NULL;
+	struct party_data*    pd = NULL;
+	struct guild*         gd = NULL;
+	struct clan*          cd = NULL;
+	enum instance_mode    mode;
+	int16                 m;
 
 	nullpo_retr(IE_OTHER, sd);
 
@@ -893,9 +894,9 @@ enum e_instance_enter instance_enter(struct map_session_data *sd, unsigned short
 /*==========================================
  * Request some info about the instance
  *------------------------------------------*/
-int instance_reqinfo(struct map_session_data *sd, unsigned short instance_id)
+int instance_reqinfo(struct map_session_data* sd, unsigned short instance_id)
 {
-	struct instance_data *im;
+	struct instance_data* im;
 
 	nullpo_retr(1, sd);
 
@@ -929,7 +930,7 @@ int instance_reqinfo(struct map_session_data *sd, unsigned short instance_id)
  *------------------------------------------*/
 int instance_addusers(unsigned short instance_id)
 {
-	struct instance_data *im;
+	struct instance_data* im;
 
 	if (instance_id == 0 || instance_id > MAX_INSTANCE_DATA)
 		return 1;
@@ -952,8 +953,8 @@ int instance_addusers(unsigned short instance_id)
  *------------------------------------------*/
 int instance_delusers(unsigned short instance_id)
 {
-	struct instance_data *im;
-	int                  i, users = 0;
+	struct instance_data* im;
+	int                   i, users = 0;
 
 	if (instance_id == 0 || instance_id > MAX_INSTANCE_DATA)
 		return 1;
@@ -974,18 +975,18 @@ int instance_delusers(unsigned short instance_id)
 	return 0;
 }
 
-static bool instance_db_free_sub(struct instance_db *db);
+static bool instance_db_free_sub(struct instance_db* db);
 
 /*==========================================
  * Read the instance_db.txt file
  *------------------------------------------*/
-static bool instance_readdb_sub(char *str[], int columns, int current)
+static bool instance_readdb_sub(char* str[], int columns, int current)
 {
-	uint8              i, j;
-	char               *ptr;
-	int                id = strtol(str[0], &ptr, 10);
-	struct instance_db *db;
-	bool               isNew = false;
+	uint8               i, j;
+	char*               ptr;
+	int                 id = strtol(str[0], &ptr, 10);
+	struct instance_db* db;
+	bool                isNew = false;
 
 	if (!id || id > USHRT_MAX || *ptr) {
 		ShowError("instance_readdb_sub: Cannot add instance with ID '%d'. Valid IDs are 1 ~ %d, skipping...\n", id, USHRT_MAX);
@@ -997,7 +998,7 @@ static bool instance_readdb_sub(char *str[], int columns, int current)
 		return false;
 	}
 
-	if (!(db = (struct instance_db *)uidb_get(InstanceDB, id))) {
+	if (!(db = (struct instance_db*)uidb_get(InstanceDB, id))) {
 		CREATE(db, struct instance_db, 1);
 		db->id            = id;
 		db->name          = StringBuf_Malloc();
@@ -1097,7 +1098,7 @@ static bool instance_readdb_sub(char *str[], int columns, int current)
  * Free InstanceDB single entry
  * @param db Instance Db entry
  **/
-static bool instance_db_free_sub(struct instance_db *db)
+static bool instance_db_free_sub(struct instance_db* db)
 {
 	if (!db)
 		return 1;
@@ -1117,9 +1118,9 @@ static bool instance_db_free_sub(struct instance_db *db)
 /**
  * Free InstanceDB entries
  **/
-static int instance_db_free(DBKey key, DBData *data, va_list ap)
+static int instance_db_free(DBKey key, DBData* data, va_list ap)
 {
-	struct instance_db *db = (struct instance_db *)db_data2ptr(data);
+	struct instance_db* db = (struct instance_db*)db_data2ptr(data);
 
 	return instance_db_free_sub(db);
 }
@@ -1129,8 +1130,8 @@ static int instance_db_free(DBKey key, DBData *data, va_list ap)
  **/
 void instance_readdb(void)
 {
-	const char *filename[] = { DBPATH "instance_db.txt", "import/instance_db.txt" };
-	int        f;
+	const char* filename[] = { DBPATH "instance_db.txt", "import/instance_db.txt" };
+	int         f;
 
 	for (f = 0; f < ARRAYLENGTH(filename); f++)
 	{
@@ -1153,11 +1154,11 @@ void instance_reload(void)
  *------------------------------------------*/
 void do_reload_instance(void)
 {
-	struct instance_data    *im;
-	struct instance_db      *db = NULL;
-	struct s_mapiterator    *iter;
-	struct map_session_data *sd;
-	unsigned short          i;
+	struct instance_data*    im;
+	struct instance_db*      db = NULL;
+	struct s_mapiterator*    iter;
+	struct map_session_data* sd;
+	unsigned short           i;
 
 	for (i = 1; i < MAX_INSTANCE_DATA; i++)
 	{
@@ -1176,12 +1177,12 @@ void do_reload_instance(void)
 
 	// Reset player to instance beginning
 	iter = mapit_getallusers();
-	for (sd = (TBL_PC *)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC *)mapit_next(iter))
+	for (sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter))
 		if (sd && map[sd->bl.m].instance_id) {
-			struct party_data *pd = NULL;
-			struct guild      *gd = NULL;
-			struct clan       *cd = NULL;
-			unsigned short    instance_id;
+			struct party_data* pd = NULL;
+			struct guild*      gd = NULL;
+			struct clan*       cd = NULL;
+			unsigned short     instance_id;
 
 			im = &instance_data[map[sd->bl.m].instance_id];
 			switch (im->mode)
@@ -1223,6 +1224,7 @@ void do_reload_instance(void)
 			} else                                                                                                                        // Something went wrong
 				ShowError("do_reload_instance: Error setting character at instance start: character_id=%d instance=%s.\n", sd->status.char_id, StringBuf_Value(db->name));
 		}
+
 
 	mapit_free(iter);
 } /* do_reload_instance */

@@ -23,8 +23,8 @@
 //
 static volatile int32 l_nEmergencyAllocations = 0; // stats.
 static sysint         l_nPools                = 0;
-static sysint         *l_poolElemSize         = NULL;
-static mempool        *l_pool                 = NULL;
+static sysint*        l_poolElemSize          = NULL;
+static mempool*       l_pool                  = NULL;
 
 
 void netbuffer_init()
@@ -75,8 +75,8 @@ void netbuffer_init()
 	}
 
 	// Allocate arrays.
-	l_poolElemSize = (sysint *)aCalloc(l_nPools, sizeof(sysint));
-	l_pool         = (mempool *)aCalloc(l_nPools, sizeof(mempool));
+	l_poolElemSize = (sysint*)aCalloc(l_nPools, sizeof(sysint));
+	l_pool         = (mempool*)aCalloc(l_nPools, sizeof(mempool));
 
 
 	for (i = 0; i < l_nPools; i++)

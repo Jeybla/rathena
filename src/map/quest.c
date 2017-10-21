@@ -19,8 +19,8 @@
 
 #include <stdlib.h>
 
-static DBMap *questdb;
-static void questdb_free_sub(struct quest_db *quest, bool free);
+static DBMap* questdb;
+static void questdb_free_sub(struct quest_db* quest, bool free);
 
 struct quest_db quest_dummy;
 
@@ -29,9 +29,9 @@ struct quest_db quest_dummy;
  * @param quest_id : ID to lookup
  * @return Quest entry (equals to &quest_dummy if the ID is invalid)
  */
-struct quest_db *quest_search(int quest_id)
+struct quest_db* quest_search(int quest_id)
 {
-	struct quest_db *quest = (struct quest_db *)idb_get(questdb, quest_id);
+	struct quest_db* quest = (struct quest_db*)idb_get(questdb, quest_id);
 
 	if (!quest)
 		return &quest_dummy;
@@ -44,7 +44,7 @@ struct quest_db *quest_search(int quest_id)
  * @param sd : Player's data
  * @return 0 in case of success, nonzero otherwise (i.e. the player has no quests)
  */
-int quest_pc_login(TBL_PC *sd)
+int quest_pc_login(TBL_PC* sd)
 {
 #if PACKETVER < 20141022
 	int i;
@@ -73,10 +73,10 @@ int quest_pc_login(TBL_PC *sd)
  * @param quest_id : ID of the quest to add.
  * @return 0 in case of success, nonzero otherwise
  */
-int quest_add(TBL_PC *sd, int quest_id)
+int quest_add(TBL_PC* sd, int quest_id)
 {
-	int             n;
-	struct quest_db *qi = quest_search(quest_id);
+	int              n;
+	struct quest_db* qi = quest_search(quest_id);
 
 	if (qi == &quest_dummy) {
 		ShowError("quest_add: quest %d not found in DB.\n", quest_id);
@@ -105,9 +105,9 @@ int quest_add(TBL_PC *sd, int quest_id)
 		if (qi->time_type == 0)
 			sd->quest_log[n].time = (unsigned int)(time(NULL) + qi->time);
 		else {  // quest time limit at HH:MM
-			int       time_today;
-			time_t    t;
-			struct tm *lt;
+			int        time_today;
+			time_t     t;
+			struct tm* lt;
 
 			t          = time(NULL);
 			lt         = localtime(&t);
@@ -138,10 +138,10 @@ int quest_add(TBL_PC *sd, int quest_id)
  * @param qid2 : New quest to add
  * @return 0 in case of success, nonzero otherwise
  */
-int quest_change(TBL_PC *sd, int qid1, int qid2)
+int quest_change(TBL_PC* sd, int qid1, int qid2)
 {
-	int             i;
-	struct quest_db *qi = quest_search(qid2);
+	int              i;
+	struct quest_db* qi = quest_search(qid2);
 
 	if (qi == &quest_dummy) {
 		ShowError("quest_change: quest %d not found in DB.\n", qid2);
@@ -171,9 +171,9 @@ int quest_change(TBL_PC *sd, int qid1, int qid2)
 		if (qi->time_type == 0)
 			sd->quest_log[i].time = (unsigned int)(time(NULL) + qi->time);
 		else {  // quest time limit at HH:MM
-			int       time_today;
-			time_t    t;
-			struct tm *lt;
+			int        time_today;
+			time_t     t;
+			struct tm* lt;
 
 			t          = time(NULL);
 			lt         = localtime(&t);
@@ -205,7 +205,7 @@ int quest_change(TBL_PC *sd, int qid1, int qid2)
  * @param quest_id : ID of the quest to remove
  * @return 0 in case of success, nonzero otherwise
  */
-int quest_delete(TBL_PC *sd, int quest_id)
+int quest_delete(TBL_PC* sd, int quest_id)
 {
 	int i;
 
@@ -245,13 +245,13 @@ int quest_delete(TBL_PC *sd, int quest_id)
  *   int Party ID
  *   int Mob ID
  */
-int quest_update_objective_sub(struct block_list *bl, va_list ap)
+int quest_update_objective_sub(struct block_list* bl, va_list ap)
 {
-	struct map_session_data *sd;
-	int                     mob_id, party_id;
+	struct map_session_data* sd;
+	int                      mob_id, party_id;
 
 	nullpo_ret(bl);
-	nullpo_ret(sd = (struct map_session_data *)bl);
+	nullpo_ret(sd = (struct map_session_data*)bl);
 
 	party_id = va_arg(ap, int);
 	mob_id   = va_arg(ap, int);
@@ -272,13 +272,13 @@ int quest_update_objective_sub(struct block_list *bl, va_list ap)
  * @param sd : Character's data
  * @param mob_id : Monster ID
  */
-void quest_update_objective(TBL_PC *sd, int mob_id)
+void quest_update_objective(TBL_PC* sd, int mob_id)
 {
 	int i, j;
 
 	for (i = 0; i < sd->avail_quests; i++)
 	{
-		struct quest_db *qi = NULL;
+		struct quest_db* qi = NULL;
 
 		if (sd->quest_log[i].state == Q_COMPLETE)  // Skip complete quests
 			continue;
@@ -297,9 +297,9 @@ void quest_update_objective(TBL_PC *sd, int mob_id)
 		// process quest-granted extra drop bonuses
 		for (j = 0; j < qi->dropitem_count; j++)
 		{
-			struct quest_dropitem *dropitem = &qi->dropitem[j];
-			struct item           item;
-			int                   temp;
+			struct quest_dropitem* dropitem = &qi->dropitem[j];
+			struct item            item;
+			int                    temp;
 
 			if (dropitem->mob_id != 0 && dropitem->mob_id != mob_id)
 				continue;
@@ -335,7 +335,7 @@ void quest_update_objective(TBL_PC *sd, int mob_id)
  * @return 0 in case of success, nonzero otherwise
  * @author [Inkfish]
  */
-int quest_update_status(TBL_PC *sd, int quest_id, enum quest_state status)
+int quest_update_status(TBL_PC* sd, int quest_id, enum quest_state status)
 {
 	int i;
 
@@ -384,7 +384,7 @@ int quest_update_status(TBL_PC *sd, int quest_id, enum quest_state status)
  *              1 if the quest's timeout has expired
  *              0 otherwise
  */
-int quest_check(TBL_PC *sd, int quest_id, enum quest_check_type type)
+int quest_check(TBL_PC* sd, int quest_id, enum quest_check_type type)
 {
 	int i;
 
@@ -405,8 +405,8 @@ int quest_check(TBL_PC *sd, int quest_id, enum quest_check_type type)
 
 	case HUNTING:
 		if (sd->quest_log[i].state == Q_INACTIVE || sd->quest_log[i].state == Q_ACTIVE) {
-			int             j;
-			struct quest_db *qi = quest_search(sd->quest_log[i].quest_id);
+			int              j;
+			struct quest_db* qi = quest_search(sd->quest_log[i].quest_id);
 
 			ARR_FIND(0, qi->objectives_count, j, sd->quest_log[i].count[j] < qi->objectives[j].count);
 			if (j == qi->objectives_count)
@@ -431,16 +431,16 @@ int quest_check(TBL_PC *sd, int quest_id, enum quest_check_type type)
  */
 void quest_read_txtdb(void)
 {
-	const char *dbsubpath[] =
+	const char* dbsubpath[] =
 	{
 		DBPATH,
 		DBIMPORT "/",
 	};
-	uint8      f;
+	uint8       f;
 
 	for (f = 0; f < ARRAYLENGTH(dbsubpath); f++)
 	{
-		FILE   *fp;
+		FILE*  fp;
 		char   line[1024];
 		uint32 ln = 0, count = 0;
 		char   filename[256];
@@ -454,10 +454,10 @@ void quest_read_txtdb(void)
 
 		while (fgets(line, sizeof(line), fp))
 		{
-			struct quest_db *quest = NULL;
-			char            *str[19], *p;
-			int             quest_id = 0;
-			uint8           i;
+			struct quest_db* quest = NULL;
+			char*            str[19], * p;
+			int              quest_id = 0;
+			uint8            i;
 
 			++ln;
 			if (line[0] == '\0' || (line[0] == '/' && line[1] == '/'))
@@ -490,7 +490,7 @@ void quest_read_txtdb(void)
 				continue;
 			}
 
-			if (!(quest = (struct quest_db *)idb_get(questdb, quest_id)))
+			if (!(quest = (struct quest_db*)idb_get(questdb, quest_id)))
 				CREATE(quest, struct quest_db, 1);
 			else {
 				if (quest->objectives) {
@@ -584,7 +584,7 @@ static void quest_read_db(void)
  * @param sd : Character's data
  * @param ap : Ignored
  */
-int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
+int quest_reload_check_sub(struct map_session_data* sd, va_list ap)
 {
 	int i, j;
 
@@ -593,7 +593,7 @@ int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
 	j = 0;
 	for (i = 0; i < sd->num_quests; i++)
 	{
-		struct quest_db *qi = quest_search(sd->quest_log[i].quest_id);
+		struct quest_db* qi = quest_search(sd->quest_log[i].quest_id);
 
 		if (qi == &quest_dummy) {                         //Remove no longer existing entries
 			if (sd->quest_log[i].state != Q_COMPLETE) //And inform the client if necessary
@@ -621,7 +621,7 @@ int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
  * @param quest
  * @param free Will free quest from memory
  **/
-static void questdb_free_sub(struct quest_db *quest, bool free)
+static void questdb_free_sub(struct quest_db* quest, bool free)
 {
 	if (quest->objectives) {
 		aFree(quest->objectives);
@@ -642,9 +642,9 @@ static void questdb_free_sub(struct quest_db *quest, bool free)
 /**
  * Clears the quest database for shutdown or reload.
  */
-static int questdb_free(DBKey key, DBData *data, va_list ap)
+static int questdb_free(DBKey key, DBData* data, va_list ap)
 {
-	struct quest_db *quest = (struct quest_db *)db_data2ptr(data);
+	struct quest_db* quest = (struct quest_db*)db_data2ptr(data);
 
 	if (!quest)
 		return 0;

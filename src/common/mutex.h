@@ -5,8 +5,8 @@
 #define _rA_MUTEX_H_
 
 
-typedef struct ramutex   *ramutex; // Mutex
-typedef struct racond    *racond;  // Condition Var
+typedef struct ramutex   * ramutex; // Mutex
+typedef struct racond    * racond;  // Condition Var
 
 /**
  * Creates a Mutex

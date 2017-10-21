@@ -290,12 +290,12 @@ typedef char   bool;
 #define SWAP(a, b)        if (a != b) \
 		((a ^= b), (b ^= a), (a ^= b))
 #define swap_ptr(a, b)    if ((a) != (b)) \
-		((a) = (void *)((intptr_t)(a) ^ (intptr_t)(b)), (b) = (void *)((intptr_t)(a) ^ (intptr_t)(b)), (a) = (void *)((intptr_t)(a) ^ (intptr_t)(b)))
+		((a) = (void*)((intptr_t)(a) ^ (intptr_t)(b)), (b) = (void*)((intptr_t)(a) ^ (intptr_t)(b)), (a) = (void*)((intptr_t)(a) ^ (intptr_t)(b)))
 
 //////////////////////////////////////////////////////////////////////////
 // should not happen
 #ifndef NULL
-#define NULL    (void *)0
+#define NULL    (void*)0
 #endif
 
 //////////////////////////////////////////////////////////////////////////

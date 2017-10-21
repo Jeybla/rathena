@@ -17,18 +17,18 @@
 #include "homunculus.h"
 #include "mercenary.h"
 
-static DBMap             *bg_team_db;         // int bg_id -> struct battleground_data*
-static unsigned int      bg_team_counter = 0; // Next bg_id
+static DBMap*             bg_team_db;               // int bg_id -> struct battleground_data*
+static unsigned int       bg_team_counter = 0;      // Next bg_id
 
-struct battleground_data *bg_team_search(int bg_id) // Search a BG Team using bg_id
+struct battleground_data* bg_team_search(int bg_id) // Search a BG Team using bg_id
 {
 	if (!bg_id)
 		return NULL;
 
-	return (struct battleground_data *)idb_get(bg_team_db, bg_id);
+	return (struct battleground_data*)idb_get(bg_team_db, bg_id);
 }
 
-struct map_session_data *bg_getavailablesd(struct battleground_data *bg)
+struct map_session_data* bg_getavailablesd(struct battleground_data* bg)
 {
 	int i;
 
@@ -41,15 +41,15 @@ struct map_session_data *bg_getavailablesd(struct battleground_data *bg)
 
 int bg_team_delete(int bg_id) // Deletes BG Team from db
 {
-	int                      i;
-	struct battleground_data *bg = bg_team_search(bg_id);
+	int                       i;
+	struct battleground_data* bg = bg_team_search(bg_id);
 
 	if (bg == NULL)
 		return 0;
 
 	for (i = 0; i < MAX_BG_MEMBERS; i++)
 	{
-		struct map_session_data *sd;
+		struct map_session_data* sd;
 
 		if ((sd = bg->members[i].sd) == NULL)
 			continue;
@@ -65,8 +65,8 @@ int bg_team_delete(int bg_id) // Deletes BG Team from db
 
 int bg_team_warp(int bg_id, unsigned short mapindex, short x, short y) // Warps a Team
 {
-	int                      i;
-	struct battleground_data *bg = bg_team_search(bg_id);
+	int                       i;
+	struct battleground_data* bg = bg_team_search(bg_id);
 
 	if (bg == NULL)
 		return 0;
@@ -77,17 +77,17 @@ int bg_team_warp(int bg_id, unsigned short mapindex, short x, short y) // Warps 
 	return 1;
 }
 
-int bg_send_dot_remove(struct map_session_data *sd)
+int bg_send_dot_remove(struct map_session_data* sd)
 {
 	if (sd && sd->bg_id)
 		clif_bg_xy_remove(sd);
 	return 0;
 }
 
-int bg_team_join(int bg_id, struct map_session_data *sd) // Player joins team
+int bg_team_join(int bg_id, struct map_session_data* sd) // Player joins team
 {
-	int                      i;
-	struct battleground_data *bg = bg_team_search(bg_id);
+	int                       i;
+	struct battleground_data* bg = bg_team_search(bg_id);
 
 	if (bg == NULL || sd == NULL || sd->bg_id)
 		return 0;
@@ -106,7 +106,7 @@ int bg_team_join(int bg_id, struct map_session_data *sd) // Player joins team
 
 	for (i = 0; i < MAX_BG_MEMBERS; i++)
 	{
-		struct map_session_data *pl_sd;
+		struct map_session_data* pl_sd;
 
 		if ((pl_sd = bg->members[i].sd) != NULL && pl_sd != sd)
 			clif_hpmeter_single(sd->fd, pl_sd->bl.id, pl_sd->battle_status.hp, pl_sd->battle_status.max_hp);
@@ -117,11 +117,11 @@ int bg_team_join(int bg_id, struct map_session_data *sd) // Player joins team
 	return 1;
 }
 
-int bg_team_leave(struct map_session_data *sd, int flag) // Single Player leaves team
+int bg_team_leave(struct map_session_data* sd, int flag) // Single Player leaves team
 {
-	int                      i, bg_id;
-	struct battleground_data *bg;
-	char                     output[128];
+	int                       i, bg_id;
+	struct battleground_data* bg;
+	char                      output[128];
 
 	if (sd == NULL || !sd->bg_id)
 		return 0;
@@ -152,9 +152,9 @@ int bg_team_leave(struct map_session_data *sd, int flag) // Single Player leaves
 	return bg->count;
 }
 
-int bg_member_respawn(struct map_session_data *sd) // Respawn after killed
+int bg_member_respawn(struct map_session_data* sd) // Respawn after killed
 {
-	struct battleground_data *bg;
+	struct battleground_data* bg;
 
 	if (sd == NULL || !pc_isdead(sd) || !sd->bg_id || (bg = bg_team_search(sd->bg_id)) == NULL)
 		return 0;
@@ -168,9 +168,9 @@ int bg_member_respawn(struct map_session_data *sd) // Respawn after killed
 	return 1; // Warped
 }
 
-int bg_create(unsigned short mapindex, short rx, short ry, const char *ev, const char *dev)
+int bg_create(unsigned short mapindex, short rx, short ry, const char* ev, const char* dev)
 {
-	struct battleground_data *bg;
+	struct battleground_data* bg;
 
 	bg_team_counter++;
 
@@ -189,24 +189,24 @@ int bg_create(unsigned short mapindex, short rx, short ry, const char *ev, const
 	return bg->bg_id;
 }
 
-int bg_team_get_id(struct block_list *bl)
+int bg_team_get_id(struct block_list* bl)
 {
 	nullpo_ret(bl);
 	switch (bl->type)
 	{
 	case BL_PC:
-		return ((TBL_PC *)bl)->bg_id;
+		return ((TBL_PC*)bl)->bg_id;
 
 	case BL_PET:
-		if (((TBL_PET *)bl)->master)
-			return ((TBL_PET *)bl)->master->bg_id;
+		if (((TBL_PET*)bl)->master)
+			return ((TBL_PET*)bl)->master->bg_id;
 
 		break;
 
 	case BL_MOB:
 	{
-		struct map_session_data *msd;
-		struct mob_data         *md = (TBL_MOB *)bl;
+		struct map_session_data* msd;
+		struct mob_data*         md = (TBL_MOB*)bl;
 
 		if (md->special_state.ai && (msd = map_id2sd(md->master_id)) != NULL)
 			return msd->bg_id;
@@ -215,27 +215,27 @@ int bg_team_get_id(struct block_list *bl)
 	}
 
 	case BL_HOM:
-		if (((TBL_HOM *)bl)->master)
-			return ((TBL_HOM *)bl)->master->bg_id;
+		if (((TBL_HOM*)bl)->master)
+			return ((TBL_HOM*)bl)->master->bg_id;
 
 		break;
 
 	case BL_MER:
-		if (((TBL_MER *)bl)->master)
-			return ((TBL_MER *)bl)->master->bg_id;
+		if (((TBL_MER*)bl)->master)
+			return ((TBL_MER*)bl)->master->bg_id;
 
 		break;
 
 	case BL_SKILL:
-		return ((TBL_SKILL *)bl)->group->bg_id;
+		return ((TBL_SKILL*)bl)->group->bg_id;
 	}
 
 	return 0;
 } /* bg_team_get_id */
 
-int bg_send_message(struct map_session_data *sd, const char *mes, int len)
+int bg_send_message(struct map_session_data* sd, const char* mes, int len)
 {
-	struct battleground_data *bg;
+	struct battleground_data* bg;
 
 	nullpo_ret(sd);
 
@@ -250,11 +250,11 @@ int bg_send_message(struct map_session_data *sd, const char *mes, int len)
 /**
  * @see DBApply
  */
-int bg_send_xy_timer_sub(DBKey key, DBData *data, va_list ap)
+int bg_send_xy_timer_sub(DBKey key, DBData* data, va_list ap)
 {
-	struct battleground_data *bg = (struct battleground_data *)db_data2ptr(data);
-	struct map_session_data  *sd;
-	int                      i;
+	struct battleground_data* bg = (struct battleground_data*)db_data2ptr(data);
+	struct map_session_data*  sd;
+	int                       i;
 
 	nullpo_ret(bg);
 

@@ -55,7 +55,7 @@ int cnslif_console_timer(int tid, unsigned int tick, int id, intptr_t data)
 }
 
 // Console Command Parser [Wizputer]
-int cnslif_parse(const char *buf)
+int cnslif_parse(const char* buf)
 {
 	char type[64];
 	char command[64];

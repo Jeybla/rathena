@@ -36,11 +36,11 @@
 #define MEMPOOLASSERT
 
 
-#define NODE_TO_DATA(x)    (((char *)x) + sizeof(struct node))
-#define DATA_TO_NODE(x)    ((struct node *)(((char *)x) - sizeof(struct node)))
+#define NODE_TO_DATA(x)    (((char*)x) + sizeof(struct node))
+#define DATA_TO_NODE(x)    ((struct node*)(((char*)x) - sizeof(struct node)))
 struct ra_align (16)node {
-	void   *next;
-	void   *segment;
+	void*  next;
+	void*  segment;
 #ifdef MEMPOOLASSERT
 	bool   used;
 	uint64 magic;
@@ -51,16 +51,16 @@ struct ra_align (16)node {
 
 // The Pointer to this struct is the base address of the segment itself.
 struct pool_segment {
-	pMempool             pool; // pool, this segment belongs to
-	struct  pool_segment *next;
-	int64                num_nodes_total;
-	int64                num_bytes;
+	pMempool              pool; // pool, this segment belongs to
+	struct  pool_segment* next;
+	int64                 num_nodes_total;
+	int64                 num_bytes;
 };
 
 
 struct mempool {
 	// Settings
-	char   *name;
+	char*  name;
 	uint64 elem_size;
 	uint64 elem_realloc_step;
 	int64  elem_realloc_thresh;
@@ -76,20 +76,20 @@ struct mempool {
 
 
 	// Internal
-	struct pool_segment *segments;
-	struct node         *free_list;
+	struct pool_segment* segments;
+	struct node*         free_list;
 
-	volatile int64      num_nodes_total;
-	volatile int64      num_nodes_free;
+	volatile int64       num_nodes_total;
+	volatile int64       num_nodes_free;
 
-	volatile int64      num_segments;
-	volatile int64      num_bytes_total;
+	volatile int64       num_segments;
+	volatile int64       num_bytes_total;
 
-	volatile int64      peak_nodes_used;    // Peak Node Usage
-	volatile int64      num_realloc_events; // Number of reallocations done. (allocate additional nodes)
+	volatile int64       peak_nodes_used;    // Peak Node Usage
+	volatile int64       num_realloc_events; // Number of reallocations done. (allocate additional nodes)
 
 	// list (used for global management such as allocator..)
-	struct mempool      *next;
+	struct mempool*      next;
 }
 ra_align(8);   // Dont touch the alignment, otherwise interlocked functions are broken ..
 
@@ -106,7 +106,7 @@ static ramutex        l_async_lock      = NULL;
 static racond         l_async_cond      = NULL;
 static volatile int32 l_async_terminate = 0;
 
-static void *mempool_async_allocator(void *x)
+static void* mempool_async_allocator(void* x)
 {
 	pMempool p;
 
@@ -217,12 +217,12 @@ static void segment_allocate_add(pMempool p, uint64 count)
 	//		ALIGN_TO_16( sz( node ) ) + p->elem_size
 	//  so the nodes usable address is  nodebase + ALIGN_TO_16(sz(node))
 	//
-	size_t              total_sz;
-	struct pool_segment *seg      = NULL;
-	struct node         *nodeList = NULL;
-	struct node         *node     = NULL;
-	char                *ptr      = NULL;
-	uint64              i;
+	size_t               total_sz;
+	struct pool_segment* seg      = NULL;
+	struct node*         nodeList = NULL;
+	struct node*         node     = NULL;
+	char*                ptr      = NULL;
+	uint64               i;
 
 	total_sz = ALIGN_TO_16(sizeof(struct pool_segment))
 	           + ((size_t)count * (sizeof(struct node) + (size_t)p->elem_size));
@@ -235,7 +235,7 @@ static void segment_allocate_add(pMempool p, uint64 count)
 	i = 0;
 	while (1)
 	{
-		ptr = (char *)aMalloc(total_sz);
+		ptr = (char*)aMalloc(total_sz);
 		if (ptr != NULL)
 			break;
 
@@ -256,7 +256,7 @@ static void segment_allocate_add(pMempool p, uint64 count)
 	memset(ptr, 0x00, total_sz);
 
 	// Initialize segment struct.
-	seg  = (struct pool_segment *)ptr;
+	seg  = (struct pool_segment*)ptr;
 	ptr += ALIGN_TO_16(sizeof(struct pool_segment));
 
 	seg->pool            = p;
@@ -268,7 +268,7 @@ static void segment_allocate_add(pMempool p, uint64 count)
 	nodeList = NULL;
 	for (i = 0; i < count; i++)
 	{
-		node = (struct node *)ptr;
+		node = (struct node*)ptr;
 		ptr += sizeof(struct node);
 		ptr += p->elem_size;
 
@@ -307,7 +307,7 @@ static void segment_allocate_add(pMempool p, uint64 count)
 } //end: segment_allocate_add()
 
 
-pMempool mempool_create(const char                    *name,
+pMempool mempool_create(const char*                   name,
                         uint64                        elem_size,
                         uint64                        initial_count,
                         uint64                        realloc_count,
@@ -377,11 +377,11 @@ pMempool mempool_create(const char                    *name,
 
 void mempool_destroy(pMempool p)
 {
-	struct  pool_segment *seg, *segnext;
-	struct  node         *niter;
-	pMempool             piter, pprev;
-	char                 *ptr;
-	int64                i;
+	struct  pool_segment* seg, * segnext;
+	struct  node*         niter;
+	pMempool              piter, pprev;
+	char*                 ptr;
+	int64                 i;
 
 #ifdef MEMPOOL_DEBUG
 	ShowDebug("Mempool [%s] Destroy\n", p->name);
@@ -439,11 +439,11 @@ void mempool_destroy(pMempool p)
 		// ..
 		if (p->ondealloc != NULL) {
 			// walk over the segment, and call dealloc callback!
-			ptr  = (char *)seg;
+			ptr  = (char*)seg;
 			ptr += ALIGN_TO_16(sizeof(struct pool_segment));
 			for (i = 0; i < seg->num_nodes_total; i++)
 			{
-				niter = (struct node *)ptr;
+				niter = (struct node*)ptr;
 				ptr  += sizeof(struct node);
 				ptr  += p->elem_size;
 #ifdef MEMPOOLASSERT
@@ -479,10 +479,10 @@ void mempool_destroy(pMempool p)
 } //end: mempool_destroy()
 
 
-void *mempool_node_get(pMempool p)
+void* mempool_node_get(pMempool p)
 {
-	struct node *node;
-	int64       num_used;
+	struct node* node;
+	int64        num_used;
 
 	if (p->num_nodes_free < p->elem_realloc_thresh)
 		racond_signal(l_async_cond);
@@ -519,9 +519,9 @@ void *mempool_node_get(pMempool p)
 } //end: mempool_node_get()
 
 
-void mempool_node_put(pMempool p, void *data)
+void mempool_node_put(pMempool p, void* data)
 {
-	struct node *node;
+	struct node* node;
 
 	node = DATA_TO_NODE(data);
 #ifdef MEMPOOLASSERT
@@ -531,7 +531,7 @@ void mempool_node_put(pMempool p, void *data)
 	}
 
 	{
-		struct pool_segment *node_seg = node->segment;
+		struct pool_segment* node_seg = node->segment;
 		if (node_seg->pool != p) {
 			ShowError("Mempool [%s] node_put faild, given node (data address %p) doesnt belongs to this pool. ( Node Origin is [%s] )\n", p->name, data, node_seg->pool);
 			return;

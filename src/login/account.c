@@ -21,7 +21,7 @@
 /// internal structure
 typedef struct AccountDB_SQL {
 	AccountDB vtable;          // public interface
-	Sql       *accounts;       // SQL handle accounts storage
+	Sql*      accounts;        // SQL handle accounts storage
 	char      db_hostname[64]; // Doubled for long hostnames (bugreport:8003)
 	uint16    db_port;
 	char      db_username[32];
@@ -39,31 +39,31 @@ typedef struct AccountDB_SQL {
 /// internal structure
 typedef struct AccountDBIterator_SQL {
 	AccountDBIterator vtable;    // public interface
-	AccountDB_SQL     *db;
+	AccountDB_SQL*    db;
 	int               last_account_id;
 } AccountDBIterator_SQL;
 
 /// internal functions
-static bool account_db_sql_init(AccountDB *self);
-static void account_db_sql_destroy(AccountDB *self);
-static bool account_db_sql_get_property(AccountDB *self, const char *key, char *buf, size_t buflen);
-static bool account_db_sql_set_property(AccountDB *self, const char *option, const char *value);
-static bool account_db_sql_create(AccountDB *self, struct mmo_account *acc);
-static bool account_db_sql_remove(AccountDB *self, const uint32 account_id);
-static bool account_db_sql_save(AccountDB *self, const struct mmo_account *acc);
-static bool account_db_sql_load_num(AccountDB *self, struct mmo_account *acc, const uint32 account_id);
-static bool account_db_sql_load_str(AccountDB *self, struct mmo_account *acc, const char *userid);
-static AccountDBIterator *account_db_sql_iterator(AccountDB *self);
-static void account_db_sql_iter_destroy(AccountDBIterator *self);
-static bool account_db_sql_iter_next(AccountDBIterator *self, struct mmo_account *acc);
+static bool account_db_sql_init(AccountDB* self);
+static void account_db_sql_destroy(AccountDB* self);
+static bool account_db_sql_get_property(AccountDB* self, const char* key, char* buf, size_t buflen);
+static bool account_db_sql_set_property(AccountDB* self, const char* option, const char* value);
+static bool account_db_sql_create(AccountDB* self, struct mmo_account* acc);
+static bool account_db_sql_remove(AccountDB* self, const uint32 account_id);
+static bool account_db_sql_save(AccountDB* self, const struct mmo_account* acc);
+static bool account_db_sql_load_num(AccountDB* self, struct mmo_account* acc, const uint32 account_id);
+static bool account_db_sql_load_str(AccountDB* self, struct mmo_account* acc, const char* userid);
+static AccountDBIterator* account_db_sql_iterator(AccountDB* self);
+static void account_db_sql_iter_destroy(AccountDBIterator* self);
+static bool account_db_sql_iter_next(AccountDBIterator* self, struct mmo_account* acc);
 
-static bool mmo_auth_fromsql(AccountDB_SQL *db, struct mmo_account *acc, uint32 account_id);
-static bool mmo_auth_tosql(AccountDB_SQL *db, const struct mmo_account *acc, bool is_new);
+static bool mmo_auth_fromsql(AccountDB_SQL* db, struct mmo_account* acc, uint32 account_id);
+static bool mmo_auth_tosql(AccountDB_SQL* db, const struct mmo_account* acc, bool is_new);
 
 /// public constructor
-AccountDB *account_db_sql(void)
+AccountDB* account_db_sql(void)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)aCalloc(1, sizeof(AccountDB_SQL));
+	AccountDB_SQL* db = (AccountDB_SQL*)aCalloc(1, sizeof(AccountDB_SQL));
 
 	// set up the vtable
 	db->vtable.init         = &account_db_sql_init;
@@ -103,16 +103,16 @@ AccountDB *account_db_sql(void)
  * Establish the database connection.
  * @param self: pointer to db
  */
-static bool account_db_sql_init(AccountDB *self)
+static bool account_db_sql_init(AccountDB* self)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)self;
-	Sql           *sql_handle;
-	const char    *username = "ragnarok";
-	const char    *password = "";
-	const char    *hostname = "127.0.0.1";
-	uint16        port      = 3306;
-	const char    *database = "ragnarok";
-	const char    *codepage = "";
+	AccountDB_SQL* db = (AccountDB_SQL*)self;
+	Sql*           sql_handle;
+	const char*    username = "ragnarok";
+	const char*    password = "";
+	const char*    hostname = "127.0.0.1";
+	uint16         port     = 3306;
+	const char*    database = "ragnarok";
+	const char*    codepage = "";
 
 	db->accounts = Sql_Malloc();
 	sql_handle   = db->accounts;
@@ -143,9 +143,9 @@ static bool account_db_sql_init(AccountDB *self)
  * Destroy the database and close the connection to it.
  * @param self: pointer to db
  */
-static void account_db_sql_destroy(AccountDB *self)
+static void account_db_sql_destroy(AccountDB* self)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)self;
+	AccountDB_SQL* db = (AccountDB_SQL*)self;
 
 	Sql_Free(db->accounts);
 	db->accounts = NULL;
@@ -161,10 +161,10 @@ static void account_db_sql_destroy(AccountDB *self)
  * @param buflen: size of buffer to avoid out of bound
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_get_property(AccountDB *self, const char *key, char *buf, size_t buflen)
+static bool account_db_sql_get_property(AccountDB* self, const char* key, char* buf, size_t buflen)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)self;
-	const char    *signature;
+	AccountDB_SQL* db = (AccountDB_SQL*)self;
+	const char*    signature;
 
 	signature = "login_server_";
 	if (strncmpi(key, signature, strlen(signature)) == 0) {
@@ -223,10 +223,10 @@ static bool account_db_sql_get_property(AccountDB *self, const char *key, char *
  * @param value: config value for keyword
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_set_property(AccountDB *self, const char *key, const char *value)
+static bool account_db_sql_set_property(AccountDB* self, const char* key, const char* value)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)self;
-	const char    *signature;
+	AccountDB_SQL* db = (AccountDB_SQL*)self;
+	const char*    signature;
 
 	signature = "login_server_";
 	if (strncmp(key, signature, strlen(signature)) == 0) {
@@ -285,18 +285,18 @@ static bool account_db_sql_set_property(AccountDB *self, const char *key, const 
  * @param acc: pointer of mmo_account to save
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_create(AccountDB *self, struct mmo_account *acc)
+static bool account_db_sql_create(AccountDB* self, struct mmo_account* acc)
 {
-	AccountDB_SQL *db         = (AccountDB_SQL *)self;
-	Sql           *sql_handle = db->accounts;
+	AccountDB_SQL* db         = (AccountDB_SQL*)self;
+	Sql*           sql_handle = db->accounts;
 
 	// decide on the account id to assign
 	uint32 account_id;
 
 	if (acc->account_id != -1) { // caller specifies it manually
 		account_id = acc->account_id;
-	} else { // ask the database
-		char   *data;
+	} else {                     // ask the database
+		char*  data;
 		size_t len;
 
 		if (SQL_SUCCESS != Sql_Query(sql_handle, "SELECT MAX(`account_id`)+1 FROM `%s`", db->account_db)) {
@@ -336,11 +336,11 @@ static bool account_db_sql_create(AccountDB *self, struct mmo_account *acc)
  * @param account_id: id of user account
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_remove(AccountDB *self, const uint32 account_id)
+static bool account_db_sql_remove(AccountDB* self, const uint32 account_id)
 {
-	AccountDB_SQL *db         = (AccountDB_SQL *)self;
-	Sql           *sql_handle = db->accounts;
-	bool          result      = false;
+	AccountDB_SQL* db         = (AccountDB_SQL*)self;
+	Sql*           sql_handle = db->accounts;
+	bool           result     = false;
 
 	if (SQL_SUCCESS != Sql_QueryStr(sql_handle, "START TRANSACTION")
 	    || SQL_SUCCESS != Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `account_id` = %d", db->account_db, account_id)
@@ -361,9 +361,9 @@ static bool account_db_sql_remove(AccountDB *self, const uint32 account_id)
  * @param acc: pointer of mmo_account to save
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_save(AccountDB *self, const struct mmo_account *acc)
+static bool account_db_sql_save(AccountDB* self, const struct mmo_account* acc)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)self;
+	AccountDB_SQL* db = (AccountDB_SQL*)self;
 
 	return mmo_auth_tosql(db, acc, false);
 }
@@ -376,9 +376,9 @@ static bool account_db_sql_save(AccountDB *self, const struct mmo_account *acc)
  * @param account_id: id of user account
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_load_num(AccountDB *self, struct mmo_account *acc, const uint32 account_id)
+static bool account_db_sql_load_num(AccountDB* self, struct mmo_account* acc, const uint32 account_id)
 {
-	AccountDB_SQL *db = (AccountDB_SQL *)self;
+	AccountDB_SQL* db = (AccountDB_SQL*)self;
 
 	return mmo_auth_fromsql(db, acc, account_id);
 }
@@ -392,13 +392,13 @@ static bool account_db_sql_load_num(AccountDB *self, struct mmo_account *acc, co
  * @param userid: name of user account
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_load_str(AccountDB *self, struct mmo_account *acc, const char *userid)
+static bool account_db_sql_load_str(AccountDB* self, struct mmo_account* acc, const char* userid)
 {
-	AccountDB_SQL *db         = (AccountDB_SQL *)self;
-	Sql           *sql_handle = db->accounts;
-	char          esc_userid[2 * NAME_LENGTH + 1];
-	uint32        account_id;
-	char          *data;
+	AccountDB_SQL* db         = (AccountDB_SQL*)self;
+	Sql*           sql_handle = db->accounts;
+	char           esc_userid[2 * NAME_LENGTH + 1];
+	uint32         account_id;
+	char*          data;
 
 	Sql_EscapeString(sql_handle, esc_userid, userid);
 
@@ -431,10 +431,10 @@ static bool account_db_sql_load_str(AccountDB *self, struct mmo_account *acc, co
  * @param self: pointer to db iterator
  * @return a new db iterator
  */
-static AccountDBIterator *account_db_sql_iterator(AccountDB *self)
+static AccountDBIterator* account_db_sql_iterator(AccountDB* self)
 {
-	AccountDB_SQL         *db   = (AccountDB_SQL *)self;
-	AccountDBIterator_SQL *iter = (AccountDBIterator_SQL *)aCalloc(1, sizeof(AccountDBIterator_SQL));
+	AccountDB_SQL*         db   = (AccountDB_SQL*)self;
+	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)aCalloc(1, sizeof(AccountDBIterator_SQL));
 
 	// set up the vtable
 	iter->vtable.destroy = &account_db_sql_iter_destroy;
@@ -451,9 +451,9 @@ static AccountDBIterator *account_db_sql_iterator(AccountDB *self)
  * Destroys this iterator, releasing all allocated memory (including itself).
  * @param self: pointer to db iterator
  */
-static void account_db_sql_iter_destroy(AccountDBIterator *self)
+static void account_db_sql_iter_destroy(AccountDBIterator* self)
 {
-	AccountDBIterator_SQL *iter = (AccountDBIterator_SQL *)self;
+	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)self;
 
 	aFree(iter);
 }
@@ -464,12 +464,12 @@ static void account_db_sql_iter_destroy(AccountDBIterator *self)
  * @param acc: pointer of mmo_account to fill
  * @return true if next account found and filled, false if something has failed
  */
-static bool account_db_sql_iter_next(AccountDBIterator *self, struct mmo_account *acc)
+static bool account_db_sql_iter_next(AccountDBIterator* self, struct mmo_account* acc)
 {
-	AccountDBIterator_SQL *iter       = (AccountDBIterator_SQL *)self;
-	AccountDB_SQL         *db         = iter->db;
-	Sql                   *sql_handle = db->accounts;
-	char                  *data;
+	AccountDBIterator_SQL* iter       = (AccountDBIterator_SQL*)self;
+	AccountDB_SQL*         db         = iter->db;
+	Sql*                   sql_handle = db->accounts;
+	char*                  data;
 
 	// get next account ID
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `account_id` FROM `%s` WHERE `account_id` > '%d' ORDER BY `account_id` ASC LIMIT 1",
@@ -500,10 +500,10 @@ static bool account_db_sql_iter_next(AccountDBIterator *self, struct mmo_account
  * @param account_id: id of user account to take data from
  * @return true if successful, false if something has failed
  */
-static bool mmo_auth_fromsql(AccountDB_SQL *db, struct mmo_account *acc, uint32 account_id)
+static bool mmo_auth_fromsql(AccountDB_SQL* db, struct mmo_account* acc, uint32 account_id)
 {
-	Sql  *sql_handle = db->accounts;
-	char *data;
+	Sql*  sql_handle = db->accounts;
+	char* data;
 
 	// retrieve login entry for the specified account
 	if (SQL_ERROR == Sql_Query(sql_handle,
@@ -573,11 +573,11 @@ static bool mmo_auth_fromsql(AccountDB_SQL *db, struct mmo_account *acc, uint32 
  * @param is_new: if it's a new entry or should we update
  * @return true if successful, false if something has failed
  */
-static bool mmo_auth_tosql(AccountDB_SQL *db, const struct mmo_account *acc, bool is_new)
+static bool mmo_auth_tosql(AccountDB_SQL* db, const struct mmo_account* acc, bool is_new)
 {
-	Sql     *sql_handle = db->accounts;
-	SqlStmt *stmt       = SqlStmt_Malloc(sql_handle);
-	bool    result      = false;
+	Sql*     sql_handle = db->accounts;
+	SqlStmt* stmt       = SqlStmt_Malloc(sql_handle);
+	bool     result     = false;
 
 	// try
 	do
@@ -595,25 +595,25 @@ static bool mmo_auth_tosql(AccountDB_SQL *db, const struct mmo_account *acc, boo
 			                                   "INSERT INTO `%s` (`account_id`, `userid`, `user_pass`, `sex`, `email`, `group_id`, `state`, `unban_time`, `expiration_time`, `logincount`, `lastlogin`, `last_ip`, `birthdate`, `character_slots`, `pincode`, `pincode_change`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 #endif
 			                                   db->account_db)
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, (void *)&acc->account_id, sizeof(acc->account_id))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)acc->userid, strlen(acc->userid))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void *)acc->pass, strlen(acc->pass))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_ENUM, (void *)&acc->sex, sizeof(acc->sex))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_STRING, (void *)&acc->email, strlen(acc->email))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_INT, (void *)&acc->group_id, sizeof(acc->group_id))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_UINT, (void *)&acc->state, sizeof(acc->state))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_LONG, (void *)&acc->unban_time, sizeof(acc->unban_time))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_INT, (void *)&acc->expiration_time, sizeof(acc->expiration_time))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, SQLDT_UINT, (void *)&acc->logincount, sizeof(acc->logincount))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, acc->lastlogin[0] ? SQLDT_STRING : SQLDT_NULL, (void *)&acc->lastlogin, strlen(acc->lastlogin))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING, (void *)&acc->last_ip, strlen(acc->last_ip))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, acc->birthdate[0] ? SQLDT_STRING : SQLDT_NULL, (void *)&acc->birthdate, strlen(acc->birthdate))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_UCHAR, (void *)&acc->char_slots, sizeof(acc->char_slots))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_STRING, (void *)&acc->pincode, strlen(acc->pincode))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG, (void *)&acc->pincode_change, sizeof(acc->pincode_change))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_INT, (void*)&acc->account_id, sizeof(acc->account_id))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)acc->userid, strlen(acc->userid))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_STRING, (void*)acc->pass, strlen(acc->pass))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_ENUM, (void*)&acc->sex, sizeof(acc->sex))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_STRING, (void*)&acc->email, strlen(acc->email))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_INT, (void*)&acc->group_id, sizeof(acc->group_id))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_UINT, (void*)&acc->state, sizeof(acc->state))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_LONG, (void*)&acc->unban_time, sizeof(acc->unban_time))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_INT, (void*)&acc->expiration_time, sizeof(acc->expiration_time))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, SQLDT_UINT, (void*)&acc->logincount, sizeof(acc->logincount))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, acc->lastlogin[0] ? SQLDT_STRING : SQLDT_NULL, (void*)&acc->lastlogin, strlen(acc->lastlogin))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING, (void*)&acc->last_ip, strlen(acc->last_ip))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, acc->birthdate[0] ? SQLDT_STRING : SQLDT_NULL, (void*)&acc->birthdate, strlen(acc->birthdate))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_UCHAR, (void*)&acc->char_slots, sizeof(acc->char_slots))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_STRING, (void*)&acc->pincode, strlen(acc->pincode))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG, (void*)&acc->pincode_change, sizeof(acc->pincode_change))
 #ifdef VIP_ENABLE
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 16, SQLDT_LONG, (void *)&acc->vip_time, sizeof(acc->vip_time))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 17, SQLDT_INT, (void *)&acc->old_group, sizeof(acc->old_group))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 16, SQLDT_LONG, (void*)&acc->vip_time, sizeof(acc->vip_time))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 17, SQLDT_INT, (void*)&acc->old_group, sizeof(acc->old_group))
 #endif
 			    || SQL_SUCCESS != SqlStmt_Execute(stmt)
 			    ) {
@@ -628,24 +628,24 @@ static bool mmo_auth_tosql(AccountDB_SQL *db, const struct mmo_account *acc, boo
 			                                   "UPDATE `%s` SET `userid`=?,`user_pass`=?,`sex`=?,`email`=?,`group_id`=?,`state`=?,`unban_time`=?,`expiration_time`=?,`logincount`=?,`lastlogin`=?,`last_ip`=?,`birthdate`=?,`character_slots`=?,`pincode`=?, `pincode_change`=? WHERE `account_id` = '%d'",
 #endif
 			                                   db->account_db, acc->account_id)
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void *)acc->userid, strlen(acc->userid))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void *)acc->pass, strlen(acc->pass))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_ENUM, (void *)&acc->sex, sizeof(acc->sex))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void *)acc->email, strlen(acc->email))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_INT, (void *)&acc->group_id, sizeof(acc->group_id))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_UINT, (void *)&acc->state, sizeof(acc->state))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_LONG, (void *)&acc->unban_time, sizeof(acc->unban_time))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_LONG, (void *)&acc->expiration_time, sizeof(acc->expiration_time))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_UINT, (void *)&acc->logincount, sizeof(acc->logincount))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, acc->lastlogin[0] ? SQLDT_STRING : SQLDT_NULL, (void *)&acc->lastlogin, strlen(acc->lastlogin))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_STRING, (void *)&acc->last_ip, strlen(acc->last_ip))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, acc->birthdate[0] ? SQLDT_STRING : SQLDT_NULL, (void *)&acc->birthdate, strlen(acc->birthdate))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, SQLDT_UCHAR, (void *)&acc->char_slots, sizeof(acc->char_slots))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_STRING, (void *)&acc->pincode, strlen(acc->pincode))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_LONG, (void *)&acc->pincode_change, sizeof(acc->pincode_change))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 0, SQLDT_STRING, (void*)acc->userid, strlen(acc->userid))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 1, SQLDT_STRING, (void*)acc->pass, strlen(acc->pass))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 2, SQLDT_ENUM, (void*)&acc->sex, sizeof(acc->sex))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 3, SQLDT_STRING, (void*)acc->email, strlen(acc->email))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 4, SQLDT_INT, (void*)&acc->group_id, sizeof(acc->group_id))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 5, SQLDT_UINT, (void*)&acc->state, sizeof(acc->state))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 6, SQLDT_LONG, (void*)&acc->unban_time, sizeof(acc->unban_time))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 7, SQLDT_LONG, (void*)&acc->expiration_time, sizeof(acc->expiration_time))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 8, SQLDT_UINT, (void*)&acc->logincount, sizeof(acc->logincount))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 9, acc->lastlogin[0] ? SQLDT_STRING : SQLDT_NULL, (void*)&acc->lastlogin, strlen(acc->lastlogin))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_STRING, (void*)&acc->last_ip, strlen(acc->last_ip))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, acc->birthdate[0] ? SQLDT_STRING : SQLDT_NULL, (void*)&acc->birthdate, strlen(acc->birthdate))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, SQLDT_UCHAR, (void*)&acc->char_slots, sizeof(acc->char_slots))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_STRING, (void*)&acc->pincode, strlen(acc->pincode))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_LONG, (void*)&acc->pincode_change, sizeof(acc->pincode_change))
 #ifdef VIP_ENABLE
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG, (void *)&acc->vip_time, sizeof(acc->vip_time))
-			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 16, SQLDT_INT, (void *)&acc->old_group, sizeof(acc->old_group))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG, (void*)&acc->vip_time, sizeof(acc->vip_time))
+			    || SQL_SUCCESS != SqlStmt_BindParam(stmt, 16, SQLDT_INT, (void*)&acc->old_group, sizeof(acc->old_group))
 #endif
 			    || SQL_SUCCESS != SqlStmt_Execute(stmt)
 			    ) {
@@ -665,11 +665,11 @@ static bool mmo_auth_tosql(AccountDB_SQL *db, const struct mmo_account *acc, boo
 	return result;
 } /* mmo_auth_tosql */
 
-void mmo_save_global_accreg(AccountDB *self, int fd, int account_id, int char_id)
+void mmo_save_global_accreg(AccountDB* self, int fd, int account_id, int char_id)
 {
-	Sql           *sql_handle = ((AccountDB_SQL *)self)->accounts;
-	AccountDB_SQL *db         = (AccountDB_SQL *)self;
-	int           count       = RFIFOW(fd, 12);
+	Sql*           sql_handle = ((AccountDB_SQL*)self)->accounts;
+	AccountDB_SQL* db         = (AccountDB_SQL*)self;
+	int            count      = RFIFOW(fd, 12);
 
 	if (count) {
 		int  cursor = 14, i;
@@ -721,13 +721,13 @@ void mmo_save_global_accreg(AccountDB *self, int fd, int account_id, int char_id
 	}
 } /* mmo_save_global_accreg */
 
-void mmo_send_global_accreg(AccountDB *self, int fd, int account_id, int char_id)
+void mmo_send_global_accreg(AccountDB* self, int fd, int account_id, int char_id)
 {
-	Sql           *sql_handle = ((AccountDB_SQL *)self)->accounts;
-	AccountDB_SQL *db         = (AccountDB_SQL *)self;
-	char          *data;
-	int           plen = 0;
-	size_t        len;
+	Sql*           sql_handle = ((AccountDB_SQL*)self)->accounts;
+	AccountDB_SQL* db         = (AccountDB_SQL*)self;
+	char*          data;
+	int            plen = 0;
+	size_t         len;
 
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `key`, `index`, `value` FROM `%s` WHERE `account_id`='%d'", db->global_acc_reg_str_table, account_id))
 		Sql_ShowDebug(sql_handle);

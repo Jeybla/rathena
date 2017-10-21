@@ -27,13 +27,13 @@ extern char         sales_table[32];
  *  0 = failure
  *  1 = success
  */
-static bool cashshop_parse_dbrow(char *fields[], int columns, int current)
+static bool cashshop_parse_dbrow(char* fields[], int columns, int current)
 {
-	uint16                tab    = atoi(fields[0]);
-	unsigned short        nameid = atoi(fields[1]);
-	uint32                price  = atoi(fields[2]);
-	int                   j;
-	struct cash_item_data *cid;
+	uint16                 tab    = atoi(fields[0]);
+	unsigned short         nameid = atoi(fields[1]);
+	uint32                 price  = atoi(fields[2]);
+	int                    j;
+	struct cash_item_data* cid;
 
 	if (!itemdb_exists(nameid)) {
 		ShowWarning("cashshop_parse_dbrow: Invalid ID %hu in line '%d', skipping...\n", nameid, current);
@@ -51,7 +51,7 @@ static bool cashshop_parse_dbrow(char *fields[], int columns, int current)
 	ARR_FIND(0, cash_shop_items[tab].count, j, nameid == cash_shop_items[tab].item[j]->nameid);
 
 	if (j == cash_shop_items[tab].count) {
-		RECREATE(cash_shop_items[tab].item, struct cash_item_data *, ++cash_shop_items[tab].count);
+		RECREATE(cash_shop_items[tab].item, struct cash_item_data*, ++cash_shop_items[tab].count);
 		CREATE(cash_shop_items[tab].item[cash_shop_items[tab].count - 1], struct cash_item_data, 1);
 		cid = cash_shop_items[tab].item[cash_shop_items[tab].count - 1];
 	} else {
@@ -71,19 +71,19 @@ static bool cashshop_parse_dbrow(char *fields[], int columns, int current)
  */
 static void cashshop_read_db_txt(void)
 {
-	const char *dbsubpath[] =
+	const char* dbsubpath[] =
 	{
 		"",
 		"/"DBIMPORT,
 	};
-	int        fi;
+	int         fi;
 
 	for (fi = 0; fi < ARRAYLENGTH(dbsubpath); ++fi)
 	{
-		uint8 n1          = (uint8)(strlen(db_path) + strlen(dbsubpath[fi]) + 1);
-		uint8 n2          = (uint8)(strlen(db_path) + strlen(DBPATH) + strlen(dbsubpath[fi]) + 1);
-		char  *dbsubpath1 = (char *)aMalloc(n1 + 1);
-		char  *dbsubpath2 = (char *)aMalloc(n2 + 1);
+		uint8 n1         = (uint8)(strlen(db_path) + strlen(dbsubpath[fi]) + 1);
+		uint8 n2         = (uint8)(strlen(db_path) + strlen(DBPATH) + strlen(dbsubpath[fi]) + 1);
+		char* dbsubpath1 = (char*)aMalloc(n1 + 1);
+		char* dbsubpath2 = (char*)aMalloc(n2 + 1);
 
 		if (fi == 0) {
 			safesnprintf(dbsubpath1, n1, "%s%s", db_path, dbsubpath[fi]);
@@ -106,8 +106,8 @@ static void cashshop_read_db_txt(void)
  */
 static int cashshop_read_db_sql(void)
 {
-	const char *cash_db_name[] = { item_cash_table, item_cash2_table };
-	int        fi;
+	const char* cash_db_name[] = { item_cash_table, item_cash2_table };
+	int         fi;
 
 	for (fi = 0; fi < ARRAYLENGTH(cash_db_name); ++fi)
 	{
@@ -120,8 +120,8 @@ static int cashshop_read_db_sql(void)
 
 		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle))
 		{
-			char *str[3];
-			int  i;
+			char* str[3];
+			int   i;
 
 			++lines;
 
@@ -151,12 +151,12 @@ static int cashshop_read_db_sql(void)
 } /* cashshop_read_db_sql */
 
 #if PACKETVER_SUPPORTS_SALES
-static bool sale_parse_dbrow(char *fields[], int columns, int current)
+static bool sale_parse_dbrow(char* fields[], int columns, int current)
 {
-	unsigned short        nameid     = atoi(fields[0]);
-	int                   start      = atoi(fields[1]), end = atoi(fields[2]), amount = atoi(fields[3]), i;
-	time_t                now        = time(NULL);
-	struct sale_item_data *sale_item = NULL;
+	unsigned short         nameid    = atoi(fields[0]);
+	int                    start     = atoi(fields[1]), end = atoi(fields[2]), amount = atoi(fields[3]), i;
+	time_t                 now       = time(NULL);
+	struct sale_item_data* sale_item = NULL;
 
 	if (!itemdb_exists(nameid)) {
 		ShowWarning("sale_parse_dbrow: Invalid ID %hu in line '%d', skipping...\n", nameid, current);
@@ -186,7 +186,7 @@ static bool sale_parse_dbrow(char *fields[], int columns, int current)
 	sale_item = sale_find_item(nameid, false);
 
 	if (sale_item == NULL) {
-		RECREATE(sale_items.item, struct sale_item_data *, ++sale_items.count);
+		RECREATE(sale_items.item, struct sale_item_data*, ++sale_items.count);
 		CREATE(sale_items.item[sale_items.count - 1], struct sale_item_data, 1);
 		sale_item = sale_items.item[sale_items.count - 1];
 	}
@@ -212,8 +212,8 @@ static void sale_read_db_sql(void)
 
 	while (SQL_SUCCESS == Sql_NextRow(mmysql_handle))
 	{
-		char *str[4];
-		int  i;
+		char* str[4];
+		int   i;
 
 		lines++;
 
@@ -241,7 +241,7 @@ static void sale_read_db_sql(void)
 
 static int sale_end_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct sale_item_data *sale_item = (struct sale_item_data *)data;
+	struct sale_item_data* sale_item = (struct sale_item_data*)data;
 
 	// Remove the timer so the sale end is not sent out again
 	delete_timer(sale_item->timer_end, sale_end_timer);
@@ -256,7 +256,7 @@ static int sale_end_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 static int sale_start_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct sale_item_data *sale_item = (struct sale_item_data *)data;
+	struct sale_item_data* sale_item = (struct sale_item_data*)data;
 
 	clif_sale_start(sale_item, NULL, ALL_CLIENT);
 	clif_sale_amount(sale_item, NULL, ALL_CLIENT);
@@ -275,8 +275,8 @@ static int sale_start_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 enum e_sale_add_result sale_add_item(uint16 nameid, int32 count, time_t from, time_t to)
 {
-	int                   i;
-	struct sale_item_data *sale_item;
+	int                    i;
+	struct sale_item_data* sale_item;
 
 	// Check if the item exists in the sales tab
 	ARR_FIND(0, cash_shop_items[CASHSHOP_TAB_SALE].count, i, cash_shop_items[CASHSHOP_TAB_SALE].item[i]->nameid == nameid);
@@ -311,7 +311,7 @@ enum e_sale_add_result sale_add_item(uint16 nameid, int32 count, time_t from, ti
 		return SALE_ADD_FAILED;
 	}
 
-	RECREATE(sale_items.item, struct sale_item_data *, ++sale_items.count);
+	RECREATE(sale_items.item, struct sale_item_data*, ++sale_items.count);
 	CREATE(sale_items.item[sale_items.count - 1], struct sale_item_data, 1);
 	sale_item = sale_items.item[sale_items.count - 1];
 
@@ -327,8 +327,8 @@ enum e_sale_add_result sale_add_item(uint16 nameid, int32 count, time_t from, ti
 
 bool sale_remove_item(uint16 nameid)
 {
-	struct sale_item_data *sale_item;
-	int                   i;
+	struct sale_item_data* sale_item;
+	int                    i;
 
 	// Check if there is an entry for this item id
 	sale_item = sale_find_item(nameid, false);
@@ -370,7 +370,7 @@ bool sale_remove_item(uint16 nameid)
 
 		aFree(sale_items.item[i]);
 
-		RECREATE(sale_items.item, struct sale_item_data *, sale_items.count);
+		RECREATE(sale_items.item, struct sale_item_data*, sale_items.count);
 	} else {
 		aFree(sale_items.item[0]);
 		aFree(sale_items.item);
@@ -380,11 +380,11 @@ bool sale_remove_item(uint16 nameid)
 	return true;
 } /* sale_remove_item */
 
-struct sale_item_data *sale_find_item(uint16 nameid, bool onsale)
+struct sale_item_data* sale_find_item(uint16 nameid, bool onsale)
 {
-	int                   i;
-	struct sale_item_data *sale_item;
-	time_t                now = time(NULL);
+	int                    i;
+	struct sale_item_data* sale_item;
+	time_t                 now = time(NULL);
 
 	ARR_FIND(0, sale_items.count, i, sale_items.item[i]->nameid == nameid);
 
@@ -419,7 +419,7 @@ struct sale_item_data *sale_find_item(uint16 nameid, bool onsale)
 	return sale_items.item[i];
 }
 
-void sale_notify_login(struct map_session_data *sd)
+void sale_notify_login(struct map_session_data* sd)
 {
 	int i;
 
@@ -461,7 +461,7 @@ static void cashshop_read_db(void)
 	// Init next sale start, if there is any
 	for (i = 0; i < sale_items.count; i++)
 	{
-		struct sale_item_data *it = sale_items.item[i];
+		struct sale_item_data* it = sale_items.item[i];
 
 		if (it->start > now) {
 			it->timer_start = add_timer(gettick() + (unsigned int)(it->start - time(NULL)) * 1000, sale_start_timer, 0, (intptr_t)it);
@@ -481,14 +481,14 @@ static void cashshop_read_db(void)
  * @param item_list Array of item ID
  * @return true: success, false: fail
  */
-bool cashshop_buylist(struct map_session_data *sd, uint32 kafrapoints, int n, uint16 *item_list)
+bool cashshop_buylist(struct map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list)
 {
 	uint32 totalcash   = 0;
 	uint32 totalweight = 0;
 	int    i, new_;
 
 #if PACKETVER_SUPPORTS_SALES
-	struct sale_item_data *sale = NULL;
+	struct sale_item_data* sale = NULL;
 #endif
 
 	if (sd == NULL || item_list == NULL || !cash_shop_defined) {
@@ -589,12 +589,12 @@ bool cashshop_buylist(struct map_session_data *sd, uint32 kafrapoints, int n, ui
 
 	for (i = 0; i < n; ++i)
 	{
-		unsigned short   nameid   = *(item_list + i * 5);
-		uint32           quantity = *(item_list + i * 5 + 2);
+		unsigned short    nameid   = *(item_list + i * 5);
+		uint32            quantity = *(item_list + i * 5 + 2);
 #if PACKETVER_SUPPORTS_SALES
-		uint16           tab = *(item_list + i * 5 + 4);
+		uint16            tab = *(item_list + i * 5 + 4);
 #endif
-		struct item_data *id = itemdb_search(nameid);
+		struct item_data* id = itemdb_search(nameid);
 
 		if (!id)
 			continue;
@@ -690,7 +690,7 @@ void do_final_cashshop(void)
 	if (sale_items.count > 0) {
 		for (i = 0; i < sale_items.count; i++)
 		{
-			struct sale_item_data *it = sale_items.item[i];
+			struct sale_item_data* it = sale_items.item[i];
 
 			if (it->timer_start != INVALID_TIMER) {
 				delete_timer(it->timer_start, sale_start_timer);

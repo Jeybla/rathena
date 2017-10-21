@@ -11,7 +11,7 @@
 
 #include <stdlib.h>
 
-bool mapif_elemental_save(struct s_elemental *ele)
+bool mapif_elemental_save(struct s_elemental* ele)
 {
 	bool flag = true;
 
@@ -36,9 +36,9 @@ bool mapif_elemental_save(struct s_elemental *ele)
 	return flag;
 }
 
-bool mapif_elemental_load(int ele_id, uint32 char_id, struct s_elemental *ele)
+bool mapif_elemental_load(int ele_id, uint32 char_id, struct s_elemental* ele)
 {
-	char *data;
+	char* data;
 
 	memset(ele, 0, sizeof(struct s_elemental));
 	ele->elemental_id = ele_id;
@@ -103,7 +103,7 @@ bool mapif_elemental_delete(int ele_id)
 	return true;
 }
 
-static void mapif_elemental_send(int fd, struct s_elemental *ele, unsigned char flag)
+static void mapif_elemental_send(int fd, struct s_elemental* ele, unsigned char flag)
 {
 	int size = sizeof(struct s_elemental) + 5;
 
@@ -115,7 +115,7 @@ static void mapif_elemental_send(int fd, struct s_elemental *ele, unsigned char 
 	WFIFOSET(fd, size);
 }
 
-static void mapif_parse_elemental_create(int fd, struct s_elemental *ele)
+static void mapif_parse_elemental_create(int fd, struct s_elemental* ele)
 {
 	bool result = mapif_elemental_save(ele);
 
@@ -153,7 +153,7 @@ static void mapif_elemental_saved(int fd, unsigned char flag)
 	WFIFOSET(fd, 3);
 }
 
-static void mapif_parse_elemental_save(int fd, struct s_elemental *ele)
+static void mapif_parse_elemental_save(int fd, struct s_elemental* ele)
 {
 	bool result = mapif_elemental_save(ele);
 
@@ -177,7 +177,7 @@ int inter_elemental_parse_frommap(int fd)
 	switch (cmd)
 	{
 	case 0x307c:
-		mapif_parse_elemental_create(fd, (struct s_elemental *)RFIFOP(fd, 4));
+		mapif_parse_elemental_create(fd, (struct s_elemental*)RFIFOP(fd, 4));
 		break;
 
 	case 0x307d:
@@ -189,7 +189,7 @@ int inter_elemental_parse_frommap(int fd)
 		break;
 
 	case 0x307f:
-		mapif_parse_elemental_save(fd, (struct s_elemental *)RFIFOP(fd, 4));
+		mapif_parse_elemental_save(fd, (struct s_elemental*)RFIFOP(fd, 4));
 		break;
 
 	default:

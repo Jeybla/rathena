@@ -26,17 +26,17 @@
 
 
 /// Called when a terminate signal is received.
-void (*shutdown_callback)(void) = NULL;
+void (* shutdown_callback)(void) = NULL;
 
 #if defined (BUILDBOT)
 int buildbotflag = 0;
 #endif
 
-int  runflag     = CORE_ST_RUN;
-char db_path[12] = "db"; /// relative path for db from server
+int   runflag     = CORE_ST_RUN;
+char  db_path[12] = "db"; /// relative path for db from server
 
-char *SERVER_NAME = NULL;
-char SERVER_TYPE  = ATHENA_SERVER_NONE;
+char* SERVER_NAME = NULL;
+char  SERVER_TYPE = ATHENA_SERVER_NONE;
 
 #ifndef MINICORE        // minimalist Core
 // Added by Gabuzomeu
@@ -52,7 +52,7 @@ char SERVER_TYPE  = ATHENA_SERVER_NONE;
 #ifndef POSIX
 #define compat_signal(signo, func)    signal(signo, func)
 #else
-sigfunc *compat_signal(int signo, sigfunc *func)
+sigfunc* compat_signal(int signo, sigfunc* func)
 {
 	struct sigaction sact, oact;
 
@@ -159,14 +159,14 @@ void signals_init(void)
 }
 #endif
 
-const char *get_svn_revision(void)
+const char* get_svn_revision(void)
 {
 #ifdef SVNVERSION
 	return EXPAND_AND_QUOTE(SVNVERSION);
 
 #else   // not SVNVERSION
 	static char svn_version_buffer[16] = "";
-	FILE        *fp;
+	FILE*       fp;
 
 	if (svn_version_buffer[0] != '\0')
 		return svn_version_buffer;
@@ -181,17 +181,17 @@ const char *get_svn_revision(void)
 		//not sure how to handle branches, so i'll leave this overridable define until a better solution comes up
 		#define SVNNODEPATH    trunk
 	#endif
-		const char *prefix     = "!svn/ver/";
-		const char *postfix    = "/" EXPAND_AND_QUOTE(SVNNODEPATH) ")"; // there should exist only 1 entry like this
-		size_t     prefix_len  = strlen(prefix);
-		size_t     postfix_len = strlen(postfix);
-		size_t     i, j, len;
-		char       *buffer;
+		const char* prefix      = "!svn/ver/";
+		const char* postfix     = "/" EXPAND_AND_QUOTE(SVNNODEPATH) ")"; // there should exist only 1 entry like this
+		size_t      prefix_len  = strlen(prefix);
+		size_t      postfix_len = strlen(postfix);
+		size_t      i, j, len;
+		char*       buffer;
 
 		// read file to buffer
 		fseek(fp, 0, SEEK_END);
 		len    = ftell(fp);
-		buffer = (char *)aMalloc(len + 1);
+		buffer = (char*)aMalloc(len + 1);
 		fseek(fp, 0, SEEK_SET);
 		len         = fread(buffer, 1, len, fp);
 		buffer[len] = '\0';
@@ -240,7 +240,7 @@ const char *get_svn_revision(void)
 				}                                                                                // Get the name
 				if (fgets(line, sizeof(line), fp) == NULL) {
 					printf("Can't get entries kind\n");
-				}                                                                                    // Get the entries kind
+				}                                    // Get the entries kind
 				if (fgets(line, sizeof(line), fp)) { // Get the rev numver
 					snprintf(svn_version_buffer, sizeof(svn_version_buffer), "%d", atoi(line));
 				}
@@ -259,18 +259,18 @@ const char *get_svn_revision(void)
 } // get_svn_revision
 
 // Grabs the hash from the last time the user updated their working copy (last pull)
-const char *get_git_hash(void)
+const char* get_git_hash(void)
 {
 	static char GitHash[41] = ""; //Sha(40) + 1
-	FILE        *fp;
+	FILE*       fp;
 
 	if (GitHash[0] != '\0')
 		return GitHash;
 
 	if ((fp = fopen(".git/refs/remotes/origin/master", "r")) != NULL // Already pulled once
 	    || (fp = fopen(".git/refs/heads/master", "r")) != NULL) {    // Cloned only
-		char line[64];
-		char *rev = (char *)malloc(sizeof(char) * 50);
+		char  line[64];
+		char* rev = (char*)malloc(sizeof(char) * 50);
 
 		if (fgets(line, sizeof(line), fp) && sscanf(line, "%40s", rev))
 			snprintf(GitHash, sizeof(GitHash), "%s", rev);
@@ -294,8 +294,8 @@ const char *get_git_hash(void)
  *--------------------------------------*/
 static void display_title(void)
 {
-	const char *svn = get_svn_revision();
-	const char *git = get_git_hash();
+	const char* svn = get_svn_revision();
+	const char* git = get_git_hash();
 
 	ShowMessage("\n");
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
@@ -328,16 +328,16 @@ void usercheck(void)
 /*======================================
  *	CORE : MAINROUTINE
  *--------------------------------------*/
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	{       // initialize program arguments
-		char *p1;
+		char* p1;
 		if ((p1 = strrchr(argv[0], '/')) != NULL || (p1 = strrchr(argv[0], '\\')) != NULL) {
-			char *pwd = NULL; //path working directory
-			int  n    = 0;
+			char* pwd = NULL; //path working directory
+			int   n   = 0;
 			SERVER_NAME = ++p1;
 			n           = p1 - argv[0]; //calc dir name len
-			pwd         = safestrncpy((char *)malloc(n + 1), argv[0], n);
+			pwd         = safestrncpy((char*)malloc(n + 1), argv[0], n);
 			if (chdir(pwd) != 0)
 				ShowError("Couldn't change working directory to %s for %s, runtime will probably fail", pwd, SERVER_NAME);
 			free(pwd);

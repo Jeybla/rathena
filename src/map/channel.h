@@ -46,10 +46,10 @@ struct Channel {
 	unsigned int      char_id;                 ///< If CHAN_TYPE_PRIVATE, owner is char_id of channel creator
 	uint16            m;                       ///< If CHAN_TYPE_MAP, owner is map id
 	int               gid;                     ///< If CHAN_TYPE_ALLY, owner is first logged guild_id
-	DBMap             *users;                  ///< List of users
-	DBMap             *banned;                 ///< List of banned chars -> char_id
+	DBMap*            users;                   ///< List of users
+	DBMap*            banned;                  ///< List of banned chars -> char_id
 	unsigned short    group_count;             ///< Number of group id
-	unsigned short    *groups;                 ///< List of group id, only these groups can join the channel
+	unsigned short*   groups;                  ///< List of group id, only these groups can join the channel
 };
 
 extern struct chan_banentry {
@@ -59,9 +59,9 @@ extern struct chan_banentry {
 chan_banentry;
 
 struct Channel_Config {
-	unsigned long *colors;          ///< List of available colors
-	char          **colors_name;    ///< Name list of available colors
-	unsigned char colors_count;     ///< Number of available colors
+	unsigned long* colors;          ///< List of available colors
+	char**         colors_name;     ///< Name list of available colors
+	unsigned char  colors_count;    ///< Number of available colors
 
 	/// Private channel default configs
 	struct {
@@ -84,44 +84,44 @@ struct Channel_Config {
 };
 extern struct Channel_Config channel_config;
 
-DBMap *channel_get_db(void);
+DBMap* channel_get_db(void);
 
-struct Channel *channel_create(struct Channel *tmp_chan);
-struct Channel *channel_create_simple(char *name, char *pass, enum Channel_Type chantype, unsigned int owner);
-int channel_delete(struct Channel *channel, bool force);
+struct Channel* channel_create(struct Channel* tmp_chan);
+struct Channel* channel_create_simple(char* name, char* pass, enum Channel_Type chantype, unsigned int owner);
+int channel_delete(struct Channel* channel, bool force);
 
-int channel_join(struct Channel *channel, struct map_session_data *sd);
-int channel_mjoin(struct map_session_data *sd);
-int channel_gjoin(struct map_session_data *sd, int flag);
-int channel_ajoin(struct guild *g);
-int channel_clean(struct Channel *channel, struct map_session_data *sd, int flag);
-int channel_pcquit(struct map_session_data *sd, int type);
+int channel_join(struct Channel* channel, struct map_session_data* sd);
+int channel_mjoin(struct map_session_data* sd);
+int channel_gjoin(struct map_session_data* sd, int flag);
+int channel_ajoin(struct guild* g);
+int channel_clean(struct Channel* channel, struct map_session_data* sd, int flag);
+int channel_pcquit(struct map_session_data* sd, int type);
 
-unsigned long channel_getColor(const char *color_str);
+unsigned long channel_getColor(const char* color_str);
 
-int channel_send(struct Channel *channel, struct map_session_data *sd, const char *msg);
+int channel_send(struct Channel* channel, struct map_session_data* sd, const char* msg);
 void channel_read_config(void);
 
-int channel_chk(char *name, char *pass, int type);
-struct Channel *channel_name2channel(char *chname, struct map_session_data *sd, int flag);
-int channel_haspc(struct Channel *channel, struct map_session_data *sd);
-int channel_haspcbanned(struct Channel *channel, struct map_session_data *sd);
-int channel_pc_haschan(struct map_session_data *sd, struct Channel *channel);
-int channel_display_list(struct map_session_data *sd, char *option);
+int channel_chk(char* name, char* pass, int type);
+struct Channel* channel_name2channel(char* chname, struct map_session_data* sd, int flag);
+int channel_haspc(struct Channel* channel, struct map_session_data* sd);
+int channel_haspcbanned(struct Channel* channel, struct map_session_data* sd);
+int channel_pc_haschan(struct map_session_data* sd, struct Channel* channel);
+int channel_display_list(struct map_session_data* sd, char* option);
 
-void channel_autojoin(struct map_session_data *sd);
-bool channel_pccheckgroup(struct Channel *channel, int group_id);
+void channel_autojoin(struct map_session_data* sd);
+bool channel_pccheckgroup(struct Channel* channel, int group_id);
 
-int channel_pccreate(struct map_session_data *sd, char *chname, char *pass);
-int channel_pcdelete(struct map_session_data *sd, char *chname);
-int channel_pcjoin(struct map_session_data *sd, char *chname, char *pass);
-int channel_pcleave(struct map_session_data *sd, char *chname);
-int channel_pccolor(struct map_session_data *sd, char *chname, char *color);
-int channel_pcbind(struct map_session_data *sd, char *chname);
-int channel_pcunbind(struct map_session_data *sd);
-int channel_pcban(struct map_session_data *sd, char *chname, char *pname, int flag);
-int channel_pckick(struct map_session_data *sd, char *chname, char *pname);
-int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *option, const char *val);
+int channel_pccreate(struct map_session_data* sd, char* chname, char* pass);
+int channel_pcdelete(struct map_session_data* sd, char* chname);
+int channel_pcjoin(struct map_session_data* sd, char* chname, char* pass);
+int channel_pcleave(struct map_session_data* sd, char* chname);
+int channel_pccolor(struct map_session_data* sd, char* chname, char* color);
+int channel_pcbind(struct map_session_data* sd, char* chname);
+int channel_pcunbind(struct map_session_data* sd);
+int channel_pcban(struct map_session_data* sd, char* chname, char* pname, int flag);
+int channel_pckick(struct map_session_data* sd, char* chname, char* pname);
+int channel_pcsetopt(struct map_session_data* sd, char* chname, const char* option, const char* val);
 
 void do_init_channel(void);
 void do_final_channel(void);

@@ -12,14 +12,14 @@
 
 #include <stdlib.h>
 
-static bool mail_loadmessage(int mail_id, struct mail_message *msg);
+static bool mail_loadmessage(int mail_id, struct mail_message* msg);
 static void mapif_Mail_return(int fd, uint32 char_id, int mail_id);
 static void mapif_Mail_delete(int fd, uint32 char_id, int mail_id, bool deleted);
 
-static int mail_fromsql(uint32 char_id, struct mail_data *md)
+static int mail_fromsql(uint32 char_id, struct mail_data* md)
 {
-	int  i;
-	char *data;
+	int   i;
+	char* data;
 
 	memset(md, 0, sizeof(struct mail_data));
 	md->amount = 0;
@@ -54,7 +54,7 @@ static int mail_fromsql(uint32 char_id, struct mail_data *md)
 	md->unread    = 0;
 	for (i = 0; i < md->amount; i++)
 	{
-		struct mail_message *msg = &md->msg[i];
+		struct mail_message* msg = &md->msg[i];
 
 		if (msg->status == MAIL_NEW) {
 			if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `status` = '%d' WHERE `id` = '%d'", schema_config.mail_db, MAIL_UNREAD, msg->id))
@@ -72,10 +72,10 @@ static int mail_fromsql(uint32 char_id, struct mail_data *md)
 
 /// Stores a single message in the database.
 /// Returns the message's ID if successful (or 0 if it fails).
-int mail_savemessage(struct mail_message *msg)
+int mail_savemessage(struct mail_message* msg)
 {
 	StringBuf buf;
-	SqlStmt   *stmt;
+	SqlStmt*  stmt;
 	int       i, j;
 	bool      found = false;
 
@@ -148,11 +148,11 @@ int mail_savemessage(struct mail_message *msg)
 
 /// Retrieves a single message from the database.
 /// Returns true if the operation succeeds (or false if it fails).
-static bool mail_loadmessage(int mail_id, struct mail_message *msg)
+static bool mail_loadmessage(int mail_id, struct mail_message* msg)
 {
 	int       i, j;
 	StringBuf buf;
-	char      *data;
+	char*     data;
 
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `id`,`send_name`,`send_id`,`dest_name`,`dest_id`,`title`,`message`,`time`,`status`,`zeny`,`type` FROM `%s` WHERE `id` = '%d'", schema_config.mail_db, mail_id)
 	    || SQL_SUCCESS != Sql_NextRow(sql_handle)) {
@@ -266,10 +266,10 @@ static int mail_timer_sub(int limit, enum mail_inbox_type type)
 		int char_id;
 		int account_id;
 	}
-	                        mails[MAIL_MAX_INBOX];
-	int                     i, map_fd;
-	char                    *data;
-	struct online_char_data *character;
+	                         mails[MAIL_MAX_INBOX];
+	int                      i, map_fd;
+	char*                    data;
+	struct online_char_data* character;
 
 	if (limit <= 0) {
 		return 0;
@@ -305,7 +305,7 @@ static int mail_timer_sub(int limit, enum mail_inbox_type type)
 		}
 
 		// Check for online players
-		if ((character = (struct online_char_data *)idb_get(char_get_onlinedb(), mails[i].account_id)) != NULL && character->server >= 0) {
+		if ((character = (struct online_char_data*)idb_get(char_get_onlinedb(), mails[i].account_id)) != NULL && character->server >= 0) {
 			map_fd = map_server[character->server].fd;
 		} else {
 			map_fd = 0;
@@ -489,7 +489,7 @@ static void mapif_parse_Mail_delete(int fd)
 /*==========================================
  * Report New Mail to Map Server
  *------------------------------------------*/
-void mapif_Mail_new(struct mail_message *msg)
+void mapif_Mail_new(struct mail_message* msg)
 {
 	unsigned char buf[75];
 
@@ -562,7 +562,7 @@ static void mapif_parse_Mail_return(int fd)
 /*==========================================
  * Send Mail
  *------------------------------------------*/
-static void mapif_Mail_send(int fd, struct mail_message *msg)
+static void mapif_Mail_send(int fd, struct mail_message* msg)
 {
 	int len = sizeof(struct mail_message) + 4;
 
@@ -589,7 +589,7 @@ static void mapif_parse_Mail_send(int fd)
 		Sql_ShowDebug(sql_handle);
 	else
 	if (SQL_SUCCESS == Sql_NextRow(sql_handle)) {
-		char   *data;
+		char*  data;
 #if PACKETVER < 20150513
 		uint32 account_id = RFIFOL(fd, 4);
 
@@ -614,7 +614,7 @@ static void mapif_parse_Mail_send(int fd)
 	mapif_Mail_new(&msg);      // notify recipient
 }
 
-bool mail_sendmail(int send_id, const char *send_name, int dest_id, const char *dest_name, const char *title, const char *body, int zeny, struct item *item, int amount)
+bool mail_sendmail(int send_id, const char* send_name, int dest_id, const char* dest_name, const char* title, const char* body, int zeny, struct item* item, int amount)
 {
 	struct mail_message msg;
 
@@ -647,7 +647,7 @@ bool mail_sendmail(int send_id, const char *send_name, int dest_id, const char *
 	return true;
 }
 
-static void mapif_Mail_receiver_send(int fd, int requesting_char_id, int char_id, int class_, int base_level, const char *name)
+static void mapif_Mail_receiver_send(int fd, int requesting_char_id, int char_id, int class_, int base_level, const char* name)
 {
 	WFIFOHEAD(fd, 38);
 	WFIFOW(fd, 0)  = 0x384e;
@@ -673,7 +673,7 @@ static void mapif_parse_Mail_receiver_check(int fd)
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`,`class`,`base_level` FROM `%s` WHERE `name` = '%s'", schema_config.char_db, esc_name)) {
 		Sql_ShowDebug(sql_handle);
 	} else if (SQL_SUCCESS == Sql_NextRow(sql_handle)) {
-		char *data;
+		char* data;
 
 		Sql_GetData(sql_handle, 0, &data, NULL);
 		char_id = atoi(data);

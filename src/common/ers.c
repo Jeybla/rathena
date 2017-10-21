@@ -55,76 +55,76 @@
 #define ERS_BLOCK_ENTRIES    2048
 
 struct ers_list {
-	struct ers_list *Next;
+	struct ers_list* Next;
 };
 
 struct ers_instance_t;
 
 typedef struct ers_cache {
 	// Allocated object size, including ers_list size
-	unsigned int     ObjectSize;
+	unsigned int      ObjectSize;
 
 	// Number of ers_instances referencing this
-	int              ReferenceCount;
+	int               ReferenceCount;
 
 	// Reuse linked list
-	struct ers_list  *ReuseList;
+	struct ers_list*  ReuseList;
 
 	// Memory blocks array
-	unsigned char    **Blocks;
+	unsigned char**   Blocks;
 
 	// Max number of blocks
-	unsigned int     Max;
+	unsigned int      Max;
 
 	// Free objects count
-	unsigned int     Free;
+	unsigned int      Free;
 
 	// Used blocks count
-	unsigned int     Used;
+	unsigned int      Used;
 
 	// Objects in-use count
-	unsigned int     UsedObjs;
+	unsigned int      UsedObjs;
 
 	// Default = ERS_BLOCK_ENTRIES, can be adjusted for performance for individual cache sizes.
-	unsigned int     ChunkSize;
+	unsigned int      ChunkSize;
 
 	// Misc options, some options are shared from the instance
-	enum ERSOptions  Options;
+	enum ERSOptions   Options;
 
 	// Linked list
-	struct ers_cache *Next, *Prev;
+	struct ers_cache* Next, * Prev;
 } ers_cache_t;
 
 struct ers_instance_t {
 	// Interface to ERS
-	struct eri            VTable;
+	struct eri             VTable;
 
 	// Name, used for debugging purposes
-	char                  *Name;
+	char*                  Name;
 
 	// Misc options
-	enum ERSOptions       Options;
+	enum ERSOptions        Options;
 
 	// Our cache
-	ers_cache_t           *Cache;
+	ers_cache_t*           Cache;
 
 	// Count of objects in use, used for detecting memory leaks
-	unsigned int          Count;
+	unsigned int           Count;
 
-	struct ers_instance_t *Next, *Prev;
+	struct ers_instance_t* Next, * Prev;
 };
 
 
 // Array containing a pointer for all ers_cache structures
-static ers_cache_t           *CacheList    = NULL;
-static struct ers_instance_t *InstanceList = NULL;
+static ers_cache_t*           CacheList    = NULL;
+static struct ers_instance_t* InstanceList = NULL;
 
 /**
  * @param Options the options from the instance seeking a cache, we use it to give it a cache with matching configuration
  **/
-static ers_cache_t *ers_find_cache(unsigned int size, enum ERSOptions Options)
+static ers_cache_t* ers_find_cache(unsigned int size, enum ERSOptions Options)
 {
-	ers_cache_t *cache;
+	ers_cache_t* cache;
 
 	for (cache = CacheList; cache; cache = cache->Next)
 		if (cache->ObjectSize == size && cache->Options == (Options & ERS_CACHE_OPTIONS))
@@ -154,7 +154,7 @@ static ers_cache_t *ers_find_cache(unsigned int size, enum ERSOptions Options)
 	return cache;
 }
 
-static void ers_free_cache(ers_cache_t *cache, bool remove)
+static void ers_free_cache(ers_cache_t* cache, bool remove)
 {
 	unsigned int i;
 
@@ -174,10 +174,10 @@ static void ers_free_cache(ers_cache_t *cache, bool remove)
 	aFree(cache);
 }
 
-static void *ers_obj_alloc_entry(ERS *self)
+static void* ers_obj_alloc_entry(ERS* self)
 {
-	struct ers_instance_t *instance = (struct ers_instance_t *)self;
-	void                  *ret;
+	struct ers_instance_t* instance = (struct ers_instance_t*)self;
+	void*                  ret;
 
 	if (instance == NULL) {
 		ShowError("ers_obj_alloc_entry: NULL object, aborting entry freeing.\n");
@@ -185,7 +185,7 @@ static void *ers_obj_alloc_entry(ERS *self)
 	}
 
 	if (instance->Cache->ReuseList != NULL) {
-		ret                        = (void *)((unsigned char *)instance->Cache->ReuseList + sizeof(struct ers_list));
+		ret                        = (void*)((unsigned char*)instance->Cache->ReuseList + sizeof(struct ers_list));
 		instance->Cache->ReuseList = instance->Cache->ReuseList->Next;
 	} else if (instance->Cache->Free > 0) {
 		instance->Cache->Free--;
@@ -193,7 +193,7 @@ static void *ers_obj_alloc_entry(ERS *self)
 	} else {
 		if (instance->Cache->Used == instance->Cache->Max) {
 			instance->Cache->Max = (instance->Cache->Max * 4) + 3;
-			RECREATE(instance->Cache->Blocks, unsigned char *, instance->Cache->Max);
+			RECREATE(instance->Cache->Blocks, unsigned char*, instance->Cache->Max);
 		}
 
 		CREATE(instance->Cache->Blocks[instance->Cache->Used], unsigned char, instance->Cache->ObjectSize * instance->Cache->ChunkSize);
@@ -209,10 +209,10 @@ static void *ers_obj_alloc_entry(ERS *self)
 	return ret;
 }
 
-static void ers_obj_free_entry(ERS *self, void *entry)
+static void ers_obj_free_entry(ERS* self, void* entry)
 {
-	struct ers_instance_t *instance = (struct ers_instance_t *)self;
-	struct ers_list       *reuse    = (struct ers_list *)((unsigned char *)entry - sizeof(struct ers_list));
+	struct ers_instance_t* instance = (struct ers_instance_t*)self;
+	struct ers_list*       reuse    = (struct ers_list*)((unsigned char*)entry - sizeof(struct ers_list));
 
 	if (instance == NULL) {
 		ShowError("ers_obj_free_entry: NULL object, aborting entry freeing.\n");
@@ -223,7 +223,7 @@ static void ers_obj_free_entry(ERS *self, void *entry)
 	}
 
 	if (instance->Cache->Options & ERS_OPT_CLEAN)
-		memset((unsigned char *)reuse + sizeof(struct ers_list), 0, instance->Cache->ObjectSize - sizeof(struct ers_list));
+		memset((unsigned char*)reuse + sizeof(struct ers_list), 0, instance->Cache->ObjectSize - sizeof(struct ers_list));
 
 	reuse->Next                = instance->Cache->ReuseList;
 	instance->Cache->ReuseList = reuse;
@@ -231,9 +231,9 @@ static void ers_obj_free_entry(ERS *self, void *entry)
 	instance->Cache->UsedObjs--;
 }
 
-static size_t ers_obj_entry_size(ERS *self)
+static size_t ers_obj_entry_size(ERS* self)
 {
-	struct ers_instance_t *instance = (struct ers_instance_t *)self;
+	struct ers_instance_t* instance = (struct ers_instance_t*)self;
 
 	if (instance == NULL) {
 		ShowError("ers_obj_entry_size: NULL object, aborting entry freeing.\n");
@@ -243,9 +243,9 @@ static size_t ers_obj_entry_size(ERS *self)
 	return instance->Cache->ObjectSize;
 }
 
-static void ers_obj_destroy(ERS *self)
+static void ers_obj_destroy(ERS* self)
 {
-	struct ers_instance_t *instance = (struct ers_instance_t *)self;
+	struct ers_instance_t* instance = (struct ers_instance_t*)self;
 
 	if (instance == NULL) {
 		ShowError("ers_obj_destroy: NULL object, aborting entry freeing.\n");
@@ -273,9 +273,9 @@ static void ers_obj_destroy(ERS *self)
 	aFree(instance);
 }
 
-void ers_cache_size(ERS *self, unsigned int new_size)
+void ers_cache_size(ERS* self, unsigned int new_size)
 {
-	struct ers_instance_t *instance = (struct ers_instance_t *)self;
+	struct ers_instance_t* instance = (struct ers_instance_t*)self;
 
 	nullpo_retv(instance);
 
@@ -287,9 +287,9 @@ void ers_cache_size(ERS *self, unsigned int new_size)
 }
 
 
-ERS *ers_new(uint32 size, const char *name, enum ERSOptions options)
+ERS* ers_new(uint32 size, const char* name, enum ERSOptions options)
 {
-	struct ers_instance_t *instance;
+	struct ers_instance_t* instance;
 
 	CREATE(instance, struct ers_instance_t, 1);
 
@@ -306,7 +306,7 @@ ERS *ers_new(uint32 size, const char *name, enum ERSOptions options)
 	instance->VTable.destroy    = ers_obj_destroy;
 	instance->VTable.chunk_size = ers_cache_size;
 
-	instance->Name    = (options & ERS_OPT_FREE_NAME) ? (char *)aStrdup(name) : (char *)name;
+	instance->Name    = (options & ERS_OPT_FREE_NAME) ? (char*)aStrdup(name) : (char*)name;
 	instance->Options = options;
 
 	instance->Cache = ers_find_cache(size, instance->Options);
@@ -329,7 +329,7 @@ ERS *ers_new(uint32 size, const char *name, enum ERSOptions options)
 
 void ers_report(void)
 {
-	ers_cache_t  *cache;
+	ers_cache_t* cache;
 	unsigned int cache_c = 0, blocks_u = 0, blocks_a = 0, memory_b = 0, memory_t = 0;
 
 	for (cache = CacheList; cache; cache = cache->Next)
@@ -356,12 +356,12 @@ void ers_report(void)
  **/
 void ers_final(void)
 {
-	struct ers_instance_t *instance = InstanceList, *next;
+	struct ers_instance_t* instance = InstanceList, * next;
 
 	while (instance)
 	{
 		next = instance->Next;
-		ers_obj_destroy((ERS *)instance);
+		ers_obj_destroy((ERS*)instance);
 		instance = next;
 	}
 }

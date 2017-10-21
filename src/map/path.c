@@ -29,16 +29,16 @@
 
 /// Path node
 struct path_node {
-	struct path_node *parent; ///< pointer to parent (for path reconstruction)
-	short            x;       ///< X-coordinate
-	short            y;       ///< Y-coordinate
-	short            g_cost;  ///< Actual cost from start to this node
-	short            f_cost;  ///< g_cost + heuristic(this, goal)
-	short            flag;    ///< SET_OPEN / SET_CLOSED
+	struct path_node* parent; ///< pointer to parent (for path reconstruction)
+	short             x;      ///< X-coordinate
+	short             y;      ///< Y-coordinate
+	short             g_cost; ///< Actual cost from start to this node
+	short             f_cost; ///< g_cost + heuristic(this, goal)
+	short             flag;   ///< SET_OPEN / SET_CLOSED
 };
 
 /// Binary heap of path nodes
-BHEAP_STRUCT_DECL(node_heap, struct path_node *);
+BHEAP_STRUCT_DECL(node_heap, struct path_node*);
 static BHEAP_STRUCT_VAR(node_heap, g_open_set); // use static heap for all path calculations
 // it get's initialized in do_init_path, freed in do_final_path.
 
@@ -79,7 +79,7 @@ void do_final_path()
  *------------------------------------------*/
 int path_blownpos(int16 m, int16 x0, int16 y0, int16 dx, int16 dy, int count)
 {
-	struct map_data *md;
+	struct map_data* md;
 
 	if (!map[m].cell)
 		return -1;
@@ -101,7 +101,7 @@ int path_blownpos(int16 m, int16 x0, int16 y0, int16 dx, int16 dy, int count)
 		if (!map_getcellp(md, x0 + dx, y0 + dy, CELL_CHKPASS)) {
 			if (battle_config.path_blown_halt)
 				break;
-			else { // attempt partial movement
+			else {  // attempt partial movement
 				int fx = (dx != 0 && map_getcellp(md, x0 + dx, y0, CELL_CHKPASS));
 				int fy = (dy != 0 && map_getcellp(md, x0, y0 + dy, CELL_CHKPASS));
 				if (fx && fy) {
@@ -128,12 +128,12 @@ int path_blownpos(int16 m, int16 x0, int16 y0, int16 dx, int16 dy, int count)
 /*==========================================
  * is ranged attack from (x0,y0) to (x1,y1) possible?
  *------------------------------------------*/
-bool path_search_long(struct shootpath_data *spd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, cell_chk cell)
+bool path_search_long(struct shootpath_data* spd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, cell_chk cell)
 {
 	int                   dx, dy;
 	int                   wx = 0, wy = 0;
 	int                   weight;
-	struct map_data       *md;
+	struct map_data*      md;
 	struct shootpath_data s_spd;
 
 	if (spd == NULL)
@@ -197,7 +197,7 @@ bool path_search_long(struct shootpath_data *spd, int16 m, int16 x0, int16 y0, i
 
 /// Pushes path_node to the binary node_heap.
 /// Ensures there is enough space in array to store new element.
-static void heap_push_node(struct node_heap *heap, struct path_node *node)
+static void heap_push_node(struct node_heap* heap, struct path_node* node)
 {
 #ifndef __clang_analyzer__ // TODO: Figure out why clang's static analyzer doesn't like this
 	BHEAP_ENSURE(*heap, 1, 256);
@@ -206,7 +206,7 @@ static void heap_push_node(struct node_heap *heap, struct path_node *node)
 }
 
 /// Updates path_node in the binary node_heap.
-static int heap_update_node(struct node_heap *heap, struct path_node *node)
+static int heap_update_node(struct node_heap* heap, struct path_node* node)
 {
 	int i;
 
@@ -221,7 +221,7 @@ static int heap_update_node(struct node_heap *heap, struct path_node *node)
 
 /// Path_node processing in A* pathfinding.
 /// Adds new node to heap and updates/re-adds old ones if necessary.
-static int add_path(struct node_heap *heap, struct path_node *tp, int16 x, int16 y, int g_cost, struct path_node *parent, int h_cost)
+static int add_path(struct node_heap* heap, struct path_node* tp, int16 x, int16 y, int g_cost, struct path_node* parent, int h_cost)
 {
 	int i = calc_index(x, y);
 
@@ -265,10 +265,10 @@ static int add_path(struct node_heap *heap, struct path_node *tp, int16 x, int16
  *
  * Note: uses global g_open_set, therefore this method can't be called in parallel or recursivly.
  *------------------------------------------*/
-bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell)
+bool path_search(struct walkpath_data* wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell)
 {
 	register int         i, x, y, dx = 0, dy = 0;
-	struct map_data      *md;
+	struct map_data*     md;
 	struct walkpath_data s_wpd;
 
 	if (flag & 2)
@@ -328,15 +328,15 @@ bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x
 
 		return false; // easy path unsuccessful
 	} else {              // !(flag&1)
-		 // FIXME: This array is too small to ensure all paths shorter than MAX_WALKPATH
-		 // can be found without node collision: calc_index(node1) = calc_index(node2).
-		 // Figure out more proper size or another way to keep track of known nodes.
-		struct path_node tp[MAX_WALKPATH * MAX_WALKPATH];
-		struct path_node *current, *it;
-		int              xs  = md->xs - 1;
-		int              ys  = md->ys - 1;
-		int              len = 0;
-		int              j;
+		// FIXME: This array is too small to ensure all paths shorter than MAX_WALKPATH
+		// can be found without node collision: calc_index(node1) = calc_index(node2).
+		// Figure out more proper size or another way to keep track of known nodes.
+		struct path_node  tp[MAX_WALKPATH * MAX_WALKPATH];
+		struct path_node* current, * it;
+		int               xs  = md->xs - 1;
+		int               ys  = md->ys - 1;
+		int               len = 0;
+		int               j;
 
 		// A* (A-star) pathfinding
 		// We always use A* for finding walkpaths because it is what game client uses.

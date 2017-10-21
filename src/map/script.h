@@ -42,7 +42,7 @@ extern "C" {
 /// Pushes a copy of a string into the stack
 #define script_pushstrcopy(st, val)     push_str((st)->stack, C_STR, aStrdup(val))
 /// Pushes a constant string into the stack (must never change or be freed)
-#define script_pushconststr(st, val)    push_str((st)->stack, C_CONSTSTR, const_cast<char *>(val))
+#define script_pushconststr(st, val)    push_str((st)->stack, C_CONSTSTR, const_cast<char*>(val))
 /// Pushes a nil into the stack
 #define script_pushnil(st)              push_val((st)->stack, C_NOP, 0)
 /// Pushes a copy of the data in the target index
@@ -138,75 +138,75 @@ enum { LABEL_NEXTLINE = 1, LABEL_START };
 struct map_session_data;
 struct eri;
 
-extern int          potion_flag; //For use on Alchemist improved potions/Potion Pitcher. [Skotlex]
-extern int          potion_hp, potion_per_hp, potion_sp, potion_per_sp;
-extern int          potion_target;
-extern unsigned int *generic_ui_array;
-extern unsigned int generic_ui_array_size;
+extern int           potion_flag; //For use on Alchemist improved potions/Potion Pitcher. [Skotlex]
+extern int           potion_hp, potion_per_hp, potion_sp, potion_per_sp;
+extern int           potion_target;
+extern unsigned int* generic_ui_array;
+extern unsigned int  generic_ui_array_size;
 
 extern struct Script_Config {
-	unsigned   warn_func_mismatch_argtypes : 1;
-	unsigned   warn_func_mismatch_paramnum : 1;
-	int        check_cmdcount;
-	int        check_gotocount;
-	int        input_min_value;
-	int        input_max_value;
+	unsigned    warn_func_mismatch_argtypes : 1;
+	unsigned    warn_func_mismatch_paramnum : 1;
+	int         check_cmdcount;
+	int         check_gotocount;
+	int         input_min_value;
+	int         input_max_value;
 
 	// PC related
-	const char *die_event_name;
-	const char *kill_pc_event_name;
-	const char *kill_mob_event_name;
-	const char *login_event_name;
-	const char *logout_event_name;
-	const char *loadmap_event_name;
-	const char *baselvup_event_name;
-	const char *joblvup_event_name;
-	const char *stat_calc_event_name;
+	const char* die_event_name;
+	const char* kill_pc_event_name;
+	const char* kill_mob_event_name;
+	const char* login_event_name;
+	const char* logout_event_name;
+	const char* loadmap_event_name;
+	const char* baselvup_event_name;
+	const char* joblvup_event_name;
+	const char* stat_calc_event_name;
 
 	// NPC related
-	const char *ontouch_event_name;
-	const char *ontouch2_event_name;
-	const char *ontouchnpc_event_name;
-	const char *onwhisper_event_name;
-	const char *oncommand_event_name;
-	const char *onbuy_event_name;
-	const char *onsell_event_name;
+	const char* ontouch_event_name;
+	const char* ontouch2_event_name;
+	const char* ontouchnpc_event_name;
+	const char* onwhisper_event_name;
+	const char* oncommand_event_name;
+	const char* onbuy_event_name;
+	const char* onsell_event_name;
 
 	// Init related
-	const char *init_event_name;
-	const char *inter_init_event_name;
-	const char *inter_init_once_event_name;
+	const char* init_event_name;
+	const char* inter_init_event_name;
+	const char* inter_init_once_event_name;
 
 	// Guild related
-	const char *guild_break_event_name;
-	const char *agit_start_event_name;
-	const char *agit_init_event_name;
-	const char *agit_end_event_name;
-	const char *agit_start2_event_name;
-	const char *agit_init2_event_name;
-	const char *agit_end2_event_name;
-	const char *agit_start3_event_name;
-	const char *agit_init3_event_name;
-	const char *agit_end3_event_name;
+	const char* guild_break_event_name;
+	const char* agit_start_event_name;
+	const char* agit_init_event_name;
+	const char* agit_end_event_name;
+	const char* agit_start2_event_name;
+	const char* agit_init2_event_name;
+	const char* agit_end2_event_name;
+	const char* agit_start3_event_name;
+	const char* agit_init3_event_name;
+	const char* agit_end3_event_name;
 
 	// Timer related
-	const char *timer_event_name;
-	const char *timer_quit_event_name;
-	const char *timer_minute_event_name;
-	const char *timer_hour_event_name;
-	const char *timer_clock_event_name;
-	const char *timer_day_event_name;
-	const char *timer_sunday_event_name;
-	const char *timer_monday_event_name;
-	const char *timer_tuesday_event_name;
-	const char *timer_wednesday_event_name;
-	const char *timer_thursday_event_name;
-	const char *timer_friday_event_name;
-	const char *timer_saturday_event_name;
+	const char* timer_event_name;
+	const char* timer_quit_event_name;
+	const char* timer_minute_event_name;
+	const char* timer_hour_event_name;
+	const char* timer_clock_event_name;
+	const char* timer_day_event_name;
+	const char* timer_sunday_event_name;
+	const char* timer_monday_event_name;
+	const char* timer_tuesday_event_name;
+	const char* timer_wednesday_event_name;
+	const char* timer_thursday_event_name;
+	const char* timer_friday_event_name;
+	const char* timer_saturday_event_name;
 
 	// Instance related
-	const char *instance_init_event_name;
-	const char *instance_destroy_event_name;
+	const char* instance_init_event_name;
+	const char* instance_destroy_event_name;
 }
 script_config;
 
@@ -259,44 +259,44 @@ typedef enum c_op {
  * Generic reg database abstraction to be used with various types of regs/script variables.
  */
 struct reg_db {
-	struct DBMap *vars;
-	struct DBMap *arrays;
+	struct DBMap* vars;
+	struct DBMap* arrays;
 };
 
 struct script_retinfo {
-	struct reg_db      scope;   ///< scope variables
-	struct script_code *script; ///< script code
-	int                pos;     ///< script location
-	int                nargs;   ///< argument count
-	int                defsp;   ///< default stack pointer
+	struct reg_db       scope;  ///< scope variables
+	struct script_code* script; ///< script code
+	int                 pos;    ///< script location
+	int                 nargs;  ///< argument count
+	int                 defsp;  ///< default stack pointer
 };
 
 struct script_data {
 	enum c_op type;
 	union script_data_val {
-		int64                 num;
-		char                  *str;
-		struct script_retinfo *ri;
+		int64                  num;
+		char*                  str;
+		struct script_retinfo* ri;
 	}
-	              u;
-	struct reg_db *ref;
+	               u;
+	struct reg_db* ref;
 };
 
 // Moved defsp from script_state to script_stack since
 // it must be saved when script state is RERUNLINE. [Eoe / jA 1094]
 struct script_code {
 	int            script_size;
-	unsigned char  *script_buf;
+	unsigned char* script_buf;
 	struct reg_db  local;
 	unsigned short instances;
 };
 
 struct script_stack {
-	int                sp;          ///< number of entries in the stack
-	int                sp_max;      ///< capacity of the stack
-	int                defsp;
-	struct script_data *stack_data; ///< stack
-	struct reg_db      scope;       ///< scope variables
+	int                 sp;         ///< number of entries in the stack
+	int                 sp_max;     ///< capacity of the stack
+	int                 defsp;
+	struct script_data* stack_data; ///< stack
+	struct reg_db       scope;      ///< scope variables
 };
 
 
@@ -306,25 +306,25 @@ struct script_stack {
 enum e_script_state { RUN, STOP, END, RERUNLINE, GOTO, RETFUNC, CLOSE };
 
 struct script_state {
-	struct script_stack *stack;
-	int                 start, end;
-	int                 pos;
-	enum e_script_state state;
-	int                 rid, oid;
-	struct script_code  *script;
+	struct script_stack* stack;
+	int                  start, end;
+	int                  pos;
+	enum e_script_state  state;
+	int                  rid, oid;
+	struct script_code*  script;
 	struct sleep_data {
 		int tick, timer, charid;
 	}
 	sleep;
 	//For backing up purposes
-	struct script_state *bk_st;
-	int                 bk_npcid;
-	unsigned            freeloop      : 1; // used by buildin_freeloop
-	unsigned            op2ref        : 1; // used by op_2
-	unsigned            npc_item_flag : 1;
-	unsigned            mes_active    : 1; // Store if invoking character has a NPC dialog box open.
-	char                *funcname;         // Stores the current running function name
-	unsigned int        id;
+	struct script_state* bk_st;
+	int                  bk_npcid;
+	unsigned             freeloop      : 1; // used by buildin_freeloop
+	unsigned             op2ref        : 1; // used by op_2
+	unsigned             npc_item_flag : 1;
+	unsigned             mes_active    : 1; // Store if invoking character has a NPC dialog box open.
+	char*                funcname;          // Stores the current running function name
+	unsigned int         id;
 };
 
 struct script_reg {
@@ -334,13 +334,13 @@ struct script_reg {
 
 struct script_regstr {
 	int64 index;
-	char  *data;
+	char* data;
 };
 
 struct script_array {
-	unsigned int id;       ///< the first 32b of the 64b uid, aka the id
-	unsigned int size;     ///< how many members
-	unsigned int *members; ///< member list
+	unsigned int  id;      ///< the first 32b of the 64b uid, aka the id
+	unsigned int  size;    ///< how many members
+	unsigned int* members; ///< member list
 };
 
 enum script_parse_options {
@@ -1874,82 +1874,82 @@ enum e_hat_effects {
 /**
  * used to generate quick script_array entries
  **/
-extern struct eri   *array_ers;
-extern DBMap        *st_db;
+extern struct eri*  array_ers;
+extern DBMap*       st_db;
 extern unsigned int active_scripts;
 extern unsigned int next_id;
-extern struct eri   *st_ers;
-extern struct eri   *stack_ers;
+extern struct eri*  st_ers;
+extern struct eri*  stack_ers;
 
-const char *skip_space(const char *p);
-void script_error(const char *src, const char *file, int start_line, const char *error_msg, const char *error_pos);
-void script_warning(const char *src, const char *file, int start_line, const char *error_msg, const char *error_pos);
+const char* skip_space(const char* p);
+void script_error(const char* src, const char* file, int start_line, const char* error_msg, const char* error_pos);
+void script_warning(const char* src, const char* file, int start_line, const char* error_msg, const char* error_pos);
 
-bool is_number(const char *p);
-struct script_code *parse_script(const char *src, const char *file, int line, int options);
-void run_script(struct script_code *rootscript, int pos, int rid, int oid);
+bool is_number(const char* p);
+struct script_code* parse_script(const char* src, const char* file, int line, int options);
+void run_script(struct script_code* rootscript, int pos, int rid, int oid);
 
-int set_reg(struct script_state *st, TBL_PC *sd, int64 num, const char *name, const void *value, struct reg_db *ref);
-int set_var(struct map_session_data *sd, char *name, void *val);
-int conv_num(struct script_state *st, struct script_data *data);
-const char *conv_str(struct script_state *st, struct script_data *data);
-void pop_stack(struct script_state *st, int start, int end);
+int set_reg(struct script_state* st, TBL_PC* sd, int64 num, const char* name, const void* value, struct reg_db* ref);
+int set_var(struct map_session_data* sd, char* name, void* val);
+int conv_num(struct script_state* st, struct script_data* data);
+const char* conv_str(struct script_state* st, struct script_data* data);
+void pop_stack(struct script_state* st, int start, int end);
 int run_script_timer(int tid, unsigned int tick, int id, intptr_t data);
 void script_stop_sleeptimers(int id);
-struct linkdb_node *script_erase_sleepdb(struct linkdb_node *n);
-void run_script_main(struct script_state *st);
+struct linkdb_node* script_erase_sleepdb(struct linkdb_node* n);
+void run_script_main(struct script_state* st);
 
-void script_stop_scriptinstances(struct script_code *code);
-void script_free_code(struct script_code *code);
-void script_free_vars(struct DBMap *storage);
-struct script_state *script_alloc_state(struct script_code *rootscript, int pos, int rid, int oid);
-void script_free_state(struct script_state *st);
+void script_stop_scriptinstances(struct script_code* code);
+void script_free_code(struct script_code* code);
+void script_free_vars(struct DBMap* storage);
+struct script_state* script_alloc_state(struct script_code* rootscript, int pos, int rid, int oid);
+void script_free_state(struct script_state* st);
 
-struct DBMap *script_get_label_db(void);
-struct DBMap *script_get_userfunc_db(void);
-void script_run_autobonus(const char *autobonus, struct map_session_data *sd, unsigned int pos);
+struct DBMap* script_get_label_db(void);
+struct DBMap* script_get_userfunc_db(void);
+void script_run_autobonus(const char* autobonus, struct map_session_data* sd, unsigned int pos);
 
-bool script_get_parameter(const char *name, int *value);
-bool script_get_constant(const char *name, int *value);
-void script_set_constant(const char *name, int value, bool isparameter, bool deprecated);
+bool script_get_parameter(const char* name, int* value);
+bool script_get_constant(const char* name, int* value);
+void script_set_constant(const char* name, int value, bool isparameter, bool deprecated);
 void script_hardcoded_constants(void);
 
-void script_cleararray_pc(struct map_session_data *sd, const char *varname, void *value);
-void script_setarray_pc(struct map_session_data *sd, const char *varname, uint32 idx, void *value, int *refcache);
+void script_cleararray_pc(struct map_session_data* sd, const char* varname, void* value);
+void script_setarray_pc(struct map_session_data* sd, const char* varname, uint32 idx, void* value, int* refcache);
 
-int script_config_read(const char *cfgName);
+int script_config_read(const char* cfgName);
 void do_init_script(void);
 void do_final_script(void);
-int add_str(const char *p);
-const char *get_str(int id);
+int add_str(const char* p);
+const char* get_str(int id);
 void script_reload(void);
 
 // @commands (script based)
-void setd_sub(struct script_state *st, TBL_PC *sd, const char *varname, int elem, void *value, struct reg_db *ref);
+void setd_sub(struct script_state* st, TBL_PC* sd, const char* varname, int elem, void* value, struct reg_db* ref);
 
 /**
  * Array Handling
  **/
-struct reg_db *script_array_src(struct script_state *st, struct map_session_data *sd, const char *name, struct reg_db *ref);
-void script_array_update(struct reg_db *src, int64 num, bool empty);
-void script_array_delete(struct reg_db *src, struct script_array *sa);
-void script_array_remove_member(struct reg_db *src, struct script_array *sa, unsigned int idx);
-void script_array_add_member(struct script_array *sa, unsigned int idx);
-unsigned int script_array_size(struct script_state *st, struct map_session_data *sd, const char *name, struct reg_db *ref);
-unsigned int script_array_highest_key(struct script_state *st, struct map_session_data *sd, const char *name, struct reg_db *ref);
-void script_array_ensure_zero(struct script_state *st, struct map_session_data *sd, int64 uid, struct reg_db *ref);
-int script_free_array_db(DBKey key, DBData *data, va_list ap);
+struct reg_db* script_array_src(struct script_state* st, struct map_session_data* sd, const char* name, struct reg_db* ref);
+void script_array_update(struct reg_db* src, int64 num, bool empty);
+void script_array_delete(struct reg_db* src, struct script_array* sa);
+void script_array_remove_member(struct reg_db* src, struct script_array* sa, unsigned int idx);
+void script_array_add_member(struct script_array* sa, unsigned int idx);
+unsigned int script_array_size(struct script_state* st, struct map_session_data* sd, const char* name, struct reg_db* ref);
+unsigned int script_array_highest_key(struct script_state* st, struct map_session_data* sd, const char* name, struct reg_db* ref);
+void script_array_ensure_zero(struct script_state* st, struct map_session_data* sd, int64 uid, struct reg_db* ref);
+int script_free_array_db(DBKey key, DBData* data, va_list ap);
 
 /* */
-void script_reg_destroy_single(struct map_session_data *sd, int64 reg, struct script_reg_state *data);
-int script_reg_destroy(DBKey key, DBData *data, va_list ap);
+void script_reg_destroy_single(struct map_session_data* sd, int64 reg, struct script_reg_state* data);
+int script_reg_destroy(DBKey key, DBData* data, va_list ap);
 
 /* */
 void script_generic_ui_array_expand(unsigned int plus);
-unsigned int *script_array_cpy_list(struct script_array *sa);
+unsigned int* script_array_cpy_list(struct script_array* sa);
 
 #ifdef BETA_THREAD_TEST
-void queryThread_log(char *entry, int length);
+void queryThread_log(char* entry, int length);
 
 #endif
 

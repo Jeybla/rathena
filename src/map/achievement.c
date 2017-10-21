@@ -24,14 +24,14 @@
 #include <string.h>
 #include <setjmp.h>
 
-static jmp_buf    av_error_jump;
-static char       *av_error_msg;
-static const char *av_error_pos;
-static int        av_error_report;
+static jmp_buf     av_error_jump;
+static char*       av_error_msg;
+static const char* av_error_pos;
+static int         av_error_report;
 
-static DBMap      *achievement_db     = NULL; // int achievement_id -> struct achievement_db *
-static DBMap      *achievementmobs_db = NULL; // Avoids checking achievements on every mob killed
-static void achievement_db_free_sub(struct achievement_db *achievement, bool free);
+static DBMap*      achievement_db     = NULL; // int achievement_id -> struct achievement_db *
+static DBMap*      achievementmobs_db = NULL; // Avoids checking achievements on every mob killed
+static void achievement_db_free_sub(struct achievement_db* achievement, bool free);
 
 struct achievement_db achievement_dummy;
 
@@ -40,9 +40,9 @@ struct achievement_db achievement_dummy;
  * @param achievement_id: ID to lookup
  * @return Achievement entry (equals to &achievement_dummy if the ID is invalid)
  */
-struct achievement_db *achievement_search(int achievement_id)
+struct achievement_db* achievement_search(int achievement_id)
 {
-	struct achievement_db *achievement = (struct achievement_db *)idb_get(achievement_db, achievement_id);
+	struct achievement_db* achievement = (struct achievement_db*)idb_get(achievement_db, achievement_id);
 
 	if (!achievement)
 		return &achievement_dummy;
@@ -69,10 +69,10 @@ bool achievement_mobexists(int mob_id)
  * @param achievement_id: Achievement to add
  * @return NULL on failure, achievement data on success
  */
-struct achievement *achievement_add(struct map_session_data *sd, int achievement_id)
+struct achievement* achievement_add(struct map_session_data* sd, int achievement_id)
 {
-	struct achievement_db *adb = &achievement_dummy;
-	int                   i, index;
+	struct achievement_db* adb = &achievement_dummy;
+	int                    i, index;
 
 	nullpo_retr(NULL, sd);
 
@@ -114,7 +114,7 @@ struct achievement *achievement_add(struct map_session_data *sd, int achievement
  * @param achievement_id: Achievement to remove
  * @return True on success, false on failure
  */
-bool achievement_remove(struct map_session_data *sd, int achievement_id)
+bool achievement_remove(struct map_session_data* sd, int achievement_id)
 {
 	struct achievement dummy;
 	int                i;
@@ -161,9 +161,9 @@ bool achievement_remove(struct map_session_data *sd, int achievement_id)
  * @param achievement_id: Achievement to check if it has a dependent
  * @return False on failure or not complete, true on complete or no dependents
  */
-bool achievement_check_dependent(struct map_session_data *sd, int achievement_id)
+bool achievement_check_dependent(struct map_session_data* sd, int achievement_id)
 {
-	struct achievement_db *adb = &achievement_dummy;
+	struct achievement_db* adb = &achievement_dummy;
 
 	nullpo_retr(false, sd);
 
@@ -179,8 +179,8 @@ bool achievement_check_dependent(struct map_session_data *sd, int achievement_id
 
 		for (i = 0; i < adb->dependent_count; i++)
 		{
-			struct achievement_db *adb_dep = achievement_search(adb->dependents[i].achievement_id);
-			int                   j;
+			struct achievement_db* adb_dep = achievement_search(adb->dependents[i].achievement_id);
+			int                    j;
 
 			if (adb_dep == &achievement_dummy)
 				return false;
@@ -198,14 +198,14 @@ bool achievement_check_dependent(struct map_session_data *sd, int achievement_id
  * Check achievements that only have dependents and no other requirements
  * @return True if successful, false if not
  */
-static int achievement_check_groups(DBKey key, DBData *data, va_list ap)
+static int achievement_check_groups(DBKey key, DBData* data, va_list ap)
 {
-	struct achievement_db   *ad;
-	struct map_session_data *sd;
-	int                     i;
+	struct achievement_db*   ad;
+	struct map_session_data* sd;
+	int                      i;
 
-	ad = (struct achievement_db *)db_data2ptr(data);
-	sd = va_arg(ap, struct map_session_data *);
+	ad = (struct achievement_db*)db_data2ptr(data);
+	sd = va_arg(ap, struct map_session_data*);
 
 	if (ad == &achievement_dummy || sd == NULL)
 		return 0;
@@ -234,10 +234,10 @@ static int achievement_check_groups(DBKey key, DBData *data, va_list ap)
  * @param complete: Complete state of an achievement
  * @return True if successful, false if not
  */
-bool achievement_update_achievement(struct map_session_data *sd, int achievement_id, bool complete)
+bool achievement_update_achievement(struct map_session_data* sd, int achievement_id, bool complete)
 {
-	struct achievement_db *adb = &achievement_dummy;
-	int                   i;
+	struct achievement_db* adb = &achievement_dummy;
+	int                    i;
 
 	nullpo_retr(false, sd);
 
@@ -299,10 +299,10 @@ bool achievement_update_achievement(struct map_session_data *sd, int achievement
  * @param sd: Player getting the reward
  * @param achievement_id: Achievement to get reward data
  */
-void achievement_get_reward(struct map_session_data *sd, int achievement_id, time_t rewarded)
+void achievement_get_reward(struct map_session_data* sd, int achievement_id, time_t rewarded)
 {
-	struct achievement_db *adb = achievement_search(achievement_id);
-	int                   i;
+	struct achievement_db* adb = achievement_search(achievement_id);
+	int                    i;
 
 	nullpo_retv(sd);
 
@@ -342,10 +342,10 @@ void achievement_get_reward(struct map_session_data *sd, int achievement_id, tim
  * @param sd: Player to get reward
  * @param achievement_id: Achievement to get reward data
  */
-void achievement_check_reward(struct map_session_data *sd, int achievement_id)
+void achievement_check_reward(struct map_session_data* sd, int achievement_id)
 {
-	int                   i;
-	struct achievement_db *adb = achievement_search(achievement_id);
+	int                    i;
+	struct achievement_db* adb = achievement_search(achievement_id);
 
 	nullpo_retv(sd);
 
@@ -377,7 +377,7 @@ void achievement_check_reward(struct map_session_data *sd, int achievement_id)
  */
 void achievement_get_titles(uint32 char_id)
 {
-	struct map_session_data *sd = map_charid2sd(char_id);
+	struct map_session_data* sd = map_charid2sd(char_id);
 
 	if (sd) {
 		sd->titles     = NULL;
@@ -388,7 +388,7 @@ void achievement_get_titles(uint32 char_id)
 
 			for (i = 0; i < sd->achievement_data.count; i++)
 			{
-				struct achievement_db *adb = achievement_search(sd->achievement_data.achievements[i].achievement_id);
+				struct achievement_db* adb = achievement_search(sd->achievement_data.achievements[i].achievement_id);
 
 				if (adb && adb->rewards.title_id && sd->achievement_data.achievements[i].completed > 0) { // If the achievement has a title and is complete, give it to the player
 					RECREATE(sd->titles, int, sd->titleCount + 1);
@@ -404,7 +404,7 @@ void achievement_get_titles(uint32 char_id)
  * Frees the player's data for achievements and titles
  * @param sd: Player's session
  */
-void achievement_free(struct map_session_data *sd)
+void achievement_free(struct map_session_data* sd)
 {
 	nullpo_retv(sd);
 
@@ -428,7 +428,7 @@ void achievement_free(struct map_session_data *sd)
  * @param type: Type to return
  * @return The type's data, -1 if player doesn't have achievement, -2 on failure/incorrect type
  */
-int achievement_check_progress(struct map_session_data *sd, int achievement_id, int type)
+int achievement_check_progress(struct map_session_data* sd, int achievement_id, int type)
 {
 	int i;
 
@@ -461,7 +461,7 @@ int achievement_check_progress(struct map_session_data *sd, int achievement_id, 
  * @param sd: Player to check achievement level
  * @param flag: If the call should attempt to give the AG_GOAL_ACHIEVE achievement
  */
-int *achievement_level(struct map_session_data *sd, bool flag)
+int* achievement_level(struct map_session_data* sd, bool flag)
 {
 	static int info[2];
 	int        i, old_level;
@@ -518,19 +518,19 @@ int *achievement_level(struct map_session_data *sd, bool flag)
  * Update achievement objectives.
  * @see DBApply
  */
-static int achievement_update_objectives(DBKey key, DBData *data, va_list ap)
+static int achievement_update_objectives(DBKey key, DBData* data, va_list ap)
 {
-	struct achievement_db    *ad;
-	struct map_session_data  *sd;
+	struct achievement_db*   ad;
+	struct map_session_data* sd;
 	enum e_achievement_group group;
-	struct achievement       *entry = NULL;
-	bool                     isNew  = false, changed = false, complete = false;
+	struct achievement*      entry = NULL;
+	bool                     isNew = false, changed = false, complete = false;
 	int                      i, k = 0, objective_count[MAX_ACHIEVEMENT_OBJECTIVES], update_count[MAX_ACHIEVEMENT_OBJECTIVES];
 
-	ad    = (struct achievement_db *)db_data2ptr(data);
-	sd    = va_arg(ap, struct map_session_data *);
+	ad    = (struct achievement_db*)db_data2ptr(data);
+	sd    = va_arg(ap, struct map_session_data*);
 	group = (enum e_achievement_group)va_arg(ap, int);
-	memcpy(update_count, (int *)va_arg(ap, int *), sizeof(update_count));
+	memcpy(update_count, (int*)va_arg(ap, int*), sizeof(update_count));
 
 	if (ad == NULL || sd == NULL)
 		return 0;
@@ -662,7 +662,7 @@ static int achievement_update_objectives(DBKey key, DBData *data, va_list ap)
  * @param sp_value: SP parameter value
  * @param arg_count: va_arg count
  */
-void achievement_update_objective(struct map_session_data *sd, enum e_achievement_group group, uint8 arg_count, ...)
+void achievement_update_objective(struct map_session_data* sd, enum e_achievement_group group, uint8 arg_count, ...)
 {
 	if (sd) {
 		va_list ap;
@@ -695,7 +695,7 @@ void achievement_update_objective(struct map_session_data *sd, enum e_achievemen
 /*==========================================
  * Achievement condition parsing section
  *------------------------------------------*/
-static void disp_error_message2(const char *mes, const char *pos, int report)
+static void disp_error_message2(const char* mes, const char* pos, int report)
 {
 	av_error_msg    = aStrdup(mes);
 	av_error_pos    = pos;
@@ -711,7 +711,7 @@ static void disp_error_message2(const char *mes, const char *pos, int report)
  * @param count: Script arguments
  * @return The result of the condition.
  */
-long long achievement_check_condition(struct av_condition *condition, struct map_session_data *sd, int *count)
+long long achievement_check_condition(struct av_condition* condition, struct map_session_data* sd, int* count)
 {
 	long long left  = 0;
 	long long right = 0;
@@ -828,7 +828,7 @@ long long achievement_check_condition(struct av_condition *condition, struct map
 	return false;
 } /* achievement_check_condition */
 
-static const char *skip_word(const char *p)
+static const char* skip_word(const char* p)
 {
 	while (ISALNUM(*p) || *p == '_')
 		++p;
@@ -839,7 +839,7 @@ static const char *skip_word(const char *p)
 	return p;
 }
 
-const char *av_parse_simpleexpr(const char *p, struct av_condition *parent)
+const char* av_parse_simpleexpr(const char* p, struct av_condition* parent)
 {
 	long long i;
 
@@ -855,7 +855,7 @@ const char *av_parse_simpleexpr(const char *p, struct av_condition *parent)
 			disp_error_message("av_parse_simpleexpr: unmatched ')'", p);
 		++p;
 	} else if (is_number(p)) {
-		char *np;
+		char* np;
 
 		while (*p == '0' && ISDIGIT(p[1]))
 			p++;
@@ -873,8 +873,8 @@ const char *av_parse_simpleexpr(const char *p, struct av_condition *parent)
 		parent->value = i;
 		p             = np;
 	} else {
-		int  v, len;
-		char *word;
+		int   v, len;
+		char* word;
 
 		if (skip_word(p) == p)
 			disp_error_message("av_parse_simpleexpr: unexpected character.", p);
@@ -884,7 +884,7 @@ const char *av_parse_simpleexpr(const char *p, struct av_condition *parent)
 		if (len == 0)
 			disp_error_message("av_parse_simpleexpr: invalid word. A word consists of undercores and/or alphanumeric characters.", p);
 
-		word = (char *)aMalloc(len + 1);
+		word = (char*)aMalloc(len + 1);
 		memcpy(word, p, len);
 		word[len] = 0;
 
@@ -913,7 +913,7 @@ const char *av_parse_simpleexpr(const char *p, struct av_condition *parent)
 	return p;
 } /* av_parse_simpleexpr */
 
-const char *av_parse_subexpr(const char *p, int limit, struct av_condition *parent)
+const char* av_parse_subexpr(const char* p, int limit, struct av_condition* parent)
 {
 	int op, opl, len;
 
@@ -952,7 +952,7 @@ const char *av_parse_subexpr(const char *p, int limit, struct av_condition *pare
 		p += len;
 
 		if (parent->right) { // Chain conditions
-			struct av_condition *condition = NULL;
+			struct av_condition* condition = NULL;
 			CREATE(condition, struct av_condition, 1);
 			condition->op    = parent->op;
 			condition->left  = parent->left;
@@ -968,7 +968,7 @@ const char *av_parse_subexpr(const char *p, int limit, struct av_condition *pare
 	}
 
 	if (parent->op == C_NOP && parent->right == NULL) { // Move the node up
-		struct av_condition *temp = parent->left;
+		struct av_condition* temp = parent->left;
 
 		parent->right = parent->left->right;
 		parent->op    = parent->left->op;
@@ -988,9 +988,9 @@ const char *av_parse_subexpr(const char *p, int limit, struct av_condition *pare
  * @param line: The current achievement line number.
  * @return The parsed achievement condition.
  */
-struct av_condition *parse_condition(const char *p, const char *file, int line)
+struct av_condition* parse_condition(const char* p, const char* file, int line)
 {
-	struct av_condition *condition = NULL;
+	struct av_condition* condition = NULL;
 
 	if (setjmp(av_error_jump) != 0) {
 		if (av_error_report)
@@ -1012,7 +1012,7 @@ struct av_condition *parse_condition(const char *p, const char *file, int line)
 		disp_error_message("parse_condition: unexpected character.", p);
 	}
 
-	condition = (struct av_condition *)aCalloc(1, sizeof(struct av_condition));
+	condition = (struct av_condition*)aCalloc(1, sizeof(struct av_condition));
 	av_parse_subexpr(p, -1, condition);
 
 	return condition;
@@ -1025,14 +1025,14 @@ struct av_condition *parse_condition(const char *p, const char *file, int line)
  * @param source: The source YAML file.
  * @return The parsed achievement entry or NULL in case of error.
  */
-struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, const char *source)
+struct achievement_db* achievement_read_db_sub(yamlwrapper* wrapper, int n, const char* source)
 {
-	struct achievement_db    *entry = NULL;
-	yamlwrapper              *t     = NULL;
-	yamliterator             *it;
-	enum e_achievement_group group       = AG_NONE;
-	int                      score       = 0, achievement_id = 0;
-	char                     *group_char = NULL, *name = NULL, *condition = NULL, *mapname = NULL;
+	struct achievement_db*   entry = NULL;
+	yamlwrapper*             t     = NULL;
+	yamliterator*            it;
+	enum e_achievement_group group      = AG_NONE;
+	int                      score      = 0, achievement_id = 0;
+	char*                    group_char = NULL, * name = NULL, * condition = NULL, * mapname = NULL;
 
 	if (!yaml_node_is_defined(wrapper, "ID")) {
 		ShowWarning("achievement_read_db_sub: Missing ID in \"%s\", entry #%d, skipping.\n", source, n);
@@ -1049,7 +1049,7 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
 		return NULL;
 	} else
 		group_char = yaml_get_c_string(wrapper, "Group");
-	if (!script_get_constant(group_char, (int *)&group)) {
+	if (!script_get_constant(group_char, (int*)&group)) {
 		ShowWarning("achievement_read_db_sub: Invalid group %s for achievement %d in \"%s\", skipping.\n", group_char, achievement_id, source);
 		return NULL;
 	}
@@ -1069,7 +1069,7 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
 	entry->mapindex = -1;
 
 	if (yaml_node_is_defined(wrapper, "Target") && (t = yaml_get_subnode(wrapper, "Target")) && (it = yaml_get_iterator(t)) && yaml_iterator_is_valid(it)) {
-		yamlwrapper *tt = NULL;
+		yamlwrapper* tt = NULL;
 
 		for (tt = yaml_iterator_first(it); yaml_iterator_has_next(it) && entry->target_count < MAX_ACHIEVEMENT_OBJECTIVES; tt = yaml_iterator_next(it))
 		{
@@ -1084,7 +1084,7 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
 				continue;
 			}
 			if (mobid && group == AG_BATTLE && !idb_exists(achievementmobs_db, mobid)) {
-				struct achievement_mob *entrymob = NULL;
+				struct achievement_mob* entrymob = NULL;
 
 				CREATE(entrymob, struct achievement_mob, 1);
 				idb_put(achievementmobs_db, mobid, entrymob);
@@ -1118,7 +1118,7 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
 
 	if (yaml_node_is_defined(wrapper, "Dependent") && (t = yaml_get_subnode(wrapper, "Dependent")) && (it = yaml_get_iterator(t))) {
 		if (yaml_iterator_is_valid(it)) {
-			yamlwrapper *tt = NULL;
+			yamlwrapper* tt = NULL;
 
 			for (tt = yaml_iterator_first(it); yaml_iterator_has_next(it) && entry->dependent_count < MAX_ACHIEVEMENT_DEPENDENTS; tt = yaml_iterator_next(it))
 			{
@@ -1133,8 +1133,8 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
 	}
 
 	if (yaml_node_is_defined(wrapper, "Reward") && (t = yaml_get_subnode(wrapper, "Reward"))) {
-		char *script_char = NULL;
-		int  nameid       = 0, amount = 0, titleid = 0;
+		char* script_char = NULL;
+		int   nameid      = 0, amount = 0, titleid = 0;
 
 		if (yaml_node_is_defined(t, "ItemID") && (nameid = yaml_get_int(t, "ItemID"))) {
 			if (itemdb_exists(nameid)) {
@@ -1167,10 +1167,10 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
  */
 void achievement_read_db(void)
 {
-	yamlwrapper  *adb = NULL, *adb_sub = NULL;
-	yamliterator *it;
-	int          i            = 0;
-	const char   *dbsubpath[] =
+	yamlwrapper*  adb = NULL, * adb_sub = NULL;
+	yamliterator* it;
+	int           i           = 0;
+	const char*   dbsubpath[] =
 	{
 		"",
 		"/"DBIMPORT "/",
@@ -1197,11 +1197,11 @@ void achievement_read_db(void)
 		adb_sub = yaml_get_subnode(adb, "Achievements");
 		it      = yaml_get_iterator(adb_sub);
 		if (yaml_iterator_is_valid(it)) {
-			yamlwrapper *id = NULL;
+			yamlwrapper* id = NULL;
 
 			for (id = yaml_iterator_first(it); yaml_iterator_has_next(it); id = yaml_iterator_next(it))
 			{
-				struct achievement_db *duplicate = &achievement_dummy, *entry = achievement_read_db_sub(id, count, filepath);
+				struct achievement_db* duplicate = &achievement_dummy, * entry = achievement_read_db_sub(id, count, filepath);
 
 				if (!entry) {
 					ShowWarning("achievement_read_db: Failed to parse achievement entry %d.\n", count);
@@ -1231,7 +1231,7 @@ void achievement_read_db(void)
  * Recursive method to free an achievement condition
  * @param condition: Condition to clear
  */
-void achievement_script_free(struct av_condition *condition)
+void achievement_script_free(struct av_condition* condition)
 {
 	if (condition->left) {
 		achievement_script_free(condition->left);
@@ -1251,7 +1251,7 @@ void achievement_script_free(struct av_condition *condition)
  * @param achievement: Achievement to clear
  * @param free: Will free achievement from memory
  */
-void achievement_db_free_sub(struct achievement_db *achievement, bool free)
+void achievement_db_free_sub(struct achievement_db* achievement, bool free)
 {
 	if (achievement->targets) {
 		aFree(achievement->targets);
@@ -1278,9 +1278,9 @@ void achievement_db_free_sub(struct achievement_db *achievement, bool free)
 /**
  * Clears the achievement database for shutdown or reload.
  */
-static int achievement_db_free(DBKey key, DBData *data, va_list ap)
+static int achievement_db_free(DBKey key, DBData* data, va_list ap)
 {
-	struct achievement_db *achievement = (struct achievement_db *)db_data2ptr(data);
+	struct achievement_db* achievement = (struct achievement_db*)db_data2ptr(data);
 
 	if (!achievement)
 		return 0;
@@ -1289,9 +1289,9 @@ static int achievement_db_free(DBKey key, DBData *data, va_list ap)
 	return 1;
 }
 
-static int achievementmobs_db_free(DBKey key, DBData *data, va_list ap)
+static int achievementmobs_db_free(DBKey key, DBData* data, va_list ap)
 {
-	struct achievementmobs_db *achievement = (struct achievementmobs_db *)db_data2ptr(data);
+	struct achievementmobs_db* achievement = (struct achievementmobs_db*)db_data2ptr(data);
 
 	if (!achievement)
 		return 0;

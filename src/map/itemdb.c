@@ -14,13 +14,13 @@
 
 #include <stdlib.h>
 
-static DBMap         *itemdb;                 /// Item DB
-static DBMap         *itemdb_combo;           /// Item Combo DB
-static DBMap         *itemdb_group;           /// Item Group DB
-static DBMap         *itemdb_randomopt;       /// Random option DB
-static DBMap         *itemdb_randomopt_group; /// Random option group DB
+static DBMap*        itemdb;                  /// Item DB
+static DBMap*        itemdb_combo;            /// Item Combo DB
+static DBMap*        itemdb_group;            /// Item Group DB
+static DBMap*        itemdb_randomopt;        /// Random option DB
+static DBMap*        itemdb_randomopt_group;  /// Random option group DB
 
-struct item_data     *dummy_item;             /// This is the default dummy item used for non-existant items. [Skotlex]
+struct item_data*    dummy_item;              /// This is the default dummy item used for non-existant items. [Skotlex]
 
 struct s_roulette_db rd;
 
@@ -29,9 +29,9 @@ struct s_roulette_db rd;
  * @param combo_id
  * @return NULL if not exist, or struct item_combo*
  */
-struct item_combo *itemdb_combo_exists(unsigned short combo_id)
+struct item_combo* itemdb_combo_exists(unsigned short combo_id)
 {
-	return (struct item_combo *)uidb_get(itemdb_combo, combo_id);
+	return (struct item_combo*)uidb_get(itemdb_combo, combo_id);
 }
 
 /**
@@ -39,9 +39,9 @@ struct item_combo *itemdb_combo_exists(unsigned short combo_id)
  * @param group_id
  * @return NULL if not exist, or s_item_group_db *
  */
-struct s_item_group_db *itemdb_group_exists(unsigned short group_id)
+struct s_item_group_db* itemdb_group_exists(unsigned short group_id)
 {
-	return (struct s_item_group_db *)uidb_get(itemdb_group, group_id);
+	return (struct s_item_group_db*)uidb_get(itemdb_group, group_id);
 }
 
 /**
@@ -51,8 +51,8 @@ struct s_item_group_db *itemdb_group_exists(unsigned short group_id)
  */
 bool itemdb_group_item_exists(unsigned short group_id, unsigned short nameid)
 {
-	struct s_item_group_db *group = (struct s_item_group_db *)uidb_get(itemdb_group, group_id);
-	unsigned short         i, j;
+	struct s_item_group_db* group = (struct s_item_group_db*)uidb_get(itemdb_group, group_id);
+	unsigned short          i, j;
 
 	if (!group)
 		return false;
@@ -71,14 +71,14 @@ bool itemdb_group_item_exists(unsigned short group_id, unsigned short nameid)
  * name = item alias, so we should find items aliases first. if not found then look for "jname" (full name)
  * @see DBApply
  */
-static int itemdb_searchname_sub(DBKey key, DBData *data, va_list ap)
+static int itemdb_searchname_sub(DBKey key, DBData* data, va_list ap)
 {
-	struct item_data *item = (struct item_data *)db_data2ptr(data), **dst, **dst2;
-	char             *str;
+	struct item_data* item = (struct item_data*)db_data2ptr(data), ** dst, ** dst2;
+	char*             str;
 
-	str  = va_arg(ap, char *);
-	dst  = va_arg(ap, struct item_data **);
-	dst2 = va_arg(ap, struct item_data **);
+	str  = va_arg(ap, char*);
+	dst  = va_arg(ap, struct item_data**);
+	dst2 = va_arg(ap, struct item_data**);
 
 	//Absolute priority to Aegis code name.
 	if (dst != NULL && strcmpi(item->name, str) == 0)
@@ -96,9 +96,9 @@ static int itemdb_searchname_sub(DBKey key, DBData *data, va_list ap)
  * @param aegis_only
  * @return item data
  *------------------------------------------*/
-static struct item_data *itemdb_searchname1(const char *str, bool aegis_only)
+static struct item_data* itemdb_searchname1(const char* str, bool aegis_only)
 {
-	struct item_data *item = NULL, *item2 = NULL;
+	struct item_data* item = NULL, * item2 = NULL;
 
 	if (!aegis_only)
 		itemdb->foreach(itemdb, itemdb_searchname_sub, str, &item, &item2);
@@ -108,7 +108,7 @@ static struct item_data *itemdb_searchname1(const char *str, bool aegis_only)
 	return((item) ? item : item2);
 }
 
-struct item_data *itemdb_searchname(const char *str)
+struct item_data* itemdb_searchname(const char* str)
 {
 	return itemdb_searchname1(str, false);
 }
@@ -118,8 +118,8 @@ struct item_data *itemdb_searchname(const char *str)
  */
 static int itemdb_searchname_array_sub(DBKey key, DBData data, va_list ap)
 {
-	struct item_data *item = (struct item_data *)db_data2ptr(&data);
-	char             *str  = va_arg(ap, char *);
+	struct item_data* item = (struct item_data*)db_data2ptr(&data);
+	char*             str  = va_arg(ap, char*);
 
 	if (stristr(item->jname, str))
 		return 0;
@@ -137,14 +137,14 @@ static int itemdb_searchname_array_sub(DBKey key, DBData data, va_list ap)
  * @param str
  * @return Number of matches item
  *------------------------------------------*/
-int itemdb_searchname_array(struct item_data **data, int size, const char *str)
+int itemdb_searchname_array(struct item_data** data, int size, const char* str)
 {
-	DBData *db_data[MAX_SEARCH];
-	int    i, count = 0, db_count;
+	DBData* db_data[MAX_SEARCH];
+	int     i, count = 0, db_count;
 
-	db_count = itemdb->getall(itemdb, (DBData **)&db_data, size, itemdb_searchname_array_sub, str);
+	db_count = itemdb->getall(itemdb, (DBData**)&db_data, size, itemdb_searchname_array_sub, str);
 	for (i = 0; i < db_count && count < size; i++)
-		data[count++] = (struct item_data *)db_data2ptr(db_data[i]);
+		data[count++] = (struct item_data*)db_data2ptr(db_data[i]);
 
 	return count;
 }
@@ -155,11 +155,11 @@ int itemdb_searchname_array(struct item_data **data, int size, const char *str)
  * @param sub_group: 0 is 'must' item group, random groups start from 1 to MAX_ITEMGROUP_RANDGROUP+1
  * @return Item group entry or NULL on fail
  */
-struct s_item_group_entry *itemdb_get_randgroupitem(uint16 group_id, uint8 sub_group)
+struct s_item_group_entry* itemdb_get_randgroupitem(uint16 group_id, uint8 sub_group)
 {
-	struct s_item_group_db    *group = (struct s_item_group_db *)uidb_get(itemdb_group, group_id);
-	struct s_item_group_entry *list  = NULL;
-	uint16                    qty    = 0;
+	struct s_item_group_db*    group = (struct s_item_group_db*)uidb_get(itemdb_group, group_id);
+	struct s_item_group_entry* list  = NULL;
+	uint16                     qty   = 0;
 
 	if (!group) {
 		ShowError("itemdb_get_randgroupitem: Invalid group id %d\n", group_id);
@@ -191,7 +191,7 @@ struct s_item_group_entry *itemdb_get_randgroupitem(uint16 group_id, uint8 sub_g
  */
 unsigned short itemdb_searchrandomid(uint16 group_id, uint8 sub_group)
 {
-	struct s_item_group_entry *entry = itemdb_get_randgroupitem(group_id, sub_group);
+	struct s_item_group_entry* entry = itemdb_get_randgroupitem(group_id, sub_group);
 
 	return entry ? entry->nameid : UNKNOWN_ITEM_ID;
 }
@@ -202,7 +202,7 @@ unsigned short itemdb_searchrandomid(uint16 group_id, uint8 sub_group)
  * @param group_id: The group ID of item that obtained by player
  * @param *group: struct s_item_group from itemgroup_db[group_id].random[idx] or itemgroup_db[group_id].must[sub_group][idx]
  */
-static void itemdb_pc_get_itemgroup_sub(struct map_session_data *sd, struct s_item_group_entry *data)
+static void itemdb_pc_get_itemgroup_sub(struct map_session_data* sd, struct s_item_group_entry* data)
 {
 	uint16      i, get_amt = 0;
 	struct item tmp;
@@ -247,14 +247,14 @@ static void itemdb_pc_get_itemgroup_sub(struct map_session_data *sd, struct s_it
  * @param nameid: The item that trigger this item group
  * @return val: 0:success, 1:no sd, 2:invalid item group
  */
-char itemdb_pc_get_itemgroup(uint16 group_id, struct map_session_data *sd)
+char itemdb_pc_get_itemgroup(uint16 group_id, struct map_session_data* sd)
 {
-	uint16                 i = 0;
-	struct s_item_group_db *group;
+	uint16                  i = 0;
+	struct s_item_group_db* group;
 
 	nullpo_retr(1, sd);
 
-	if (!(group = (struct s_item_group_db *)uidb_get(itemdb_group, group_id))) {
+	if (!(group = (struct s_item_group_db*)uidb_get(itemdb_group, group_id))) {
 		ShowError("itemdb_pc_get_itemgroup: Invalid group id '%d' specified.\n", group_id);
 		return 2;
 	}
@@ -285,13 +285,13 @@ char itemdb_pc_get_itemgroup(uint16 group_id, struct map_session_data *sd)
  * @param nameid
  * @return *item_data if item is exist, or NULL if not
  */
-struct item_data *itemdb_exists(unsigned short nameid)
+struct item_data* itemdb_exists(unsigned short nameid)
 {
-	return((struct item_data *)uidb_get(itemdb, nameid));
+	return((struct item_data*)uidb_get(itemdb, nameid));
 }
 
 /// Returns name type of ammunition [Cydh]
-const char *itemdb_typename_ammo(enum e_item_ammo ammo)
+const char* itemdb_typename_ammo(enum e_item_ammo ammo)
 {
 	switch (ammo)
 	{
@@ -327,7 +327,7 @@ const char *itemdb_typename_ammo(enum e_item_ammo ammo)
 
 /// Returns human readable name for given item type.
 /// @param type Type id to retrieve name for ( IT_* ).
-const char *itemdb_typename(enum item_types type)
+const char* itemdb_typename(enum item_types type)
 {
 	switch (type)
 	{
@@ -376,7 +376,7 @@ const char *itemdb_typename(enum item_types type)
  * @param jobmask: Job Mask to convert
  * @author: Skotlex
  */
-static void itemdb_jobid2mapid(uint64 *bclass, uint64 jobmask)
+static void itemdb_jobid2mapid(uint64* bclass, uint64 jobmask)
 {
 	int i;
 
@@ -472,9 +472,9 @@ static void itemdb_create_dummy(void)
  * Create new item data
  * @param nameid
  */
-static struct item_data *itemdb_create_item(unsigned short nameid)
+static struct item_data* itemdb_create_item(unsigned short nameid)
 {
-	struct item_data *id;
+	struct item_data* id;
 
 	CREATE(id, struct item_data, 1);
 	memset(id, 0, sizeof(struct item_data));
@@ -489,13 +489,13 @@ static struct item_data *itemdb_create_item(unsigned short nameid)
  * @param nameid
  * @return *item_data or *dummy_item if item not found
  *------------------------------------------*/
-struct item_data *itemdb_search(unsigned short nameid)
+struct item_data* itemdb_search(unsigned short nameid)
 {
-	struct item_data *id = NULL;
+	struct item_data* id = NULL;
 
 	if (nameid == dummy_item->nameid)
 		id = dummy_item;
-	else if (!(id = (struct item_data *)uidb_get(itemdb, nameid))) {
+	else if (!(id = (struct item_data*)uidb_get(itemdb, nameid))) {
 		ShowWarning("itemdb_search: Item ID %hu does not exists in the item_db. Using dummy data.\n", nameid);
 		id = dummy_item;
 	}
@@ -506,7 +506,7 @@ struct item_data *itemdb_search(unsigned short nameid)
  * @param id Item data
  * @return True if item is equip, false otherwise
  */
-bool itemdb_isequip2(struct item_data *id)
+bool itemdb_isequip2(struct item_data* id)
 {
 	nullpo_ret(id);
 	switch (id->type)
@@ -526,7 +526,7 @@ bool itemdb_isequip2(struct item_data *id)
  * @param id Item data
  * @return True if item is stackable, false otherwise
  */
-bool itemdb_isstackable2(struct item_data *id)
+bool itemdb_isstackable2(struct item_data* id)
 {
 	nullpo_ret(id);
 	switch (id->type)
@@ -547,55 +547,55 @@ bool itemdb_isstackable2(struct item_data *id)
 /*==========================================
  * Trade Restriction functions [Skotlex]
  *------------------------------------------*/
-bool itemdb_isdropable_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_isdropable_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 1) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_cantrade_sub(struct item_data *item, int gmlv, int gmlv2)
+bool itemdb_cantrade_sub(struct item_data* item, int gmlv, int gmlv2)
 {
 	return(item && (!(item->flag.trade_restriction & 2) || gmlv >= item->gm_lv_trade_override || gmlv2 >= item->gm_lv_trade_override));
 }
 
-bool itemdb_canpartnertrade_sub(struct item_data *item, int gmlv, int gmlv2)
+bool itemdb_canpartnertrade_sub(struct item_data* item, int gmlv, int gmlv2)
 {
 	return(item && (item->flag.trade_restriction & 4 || gmlv >= item->gm_lv_trade_override || gmlv2 >= item->gm_lv_trade_override));
 }
 
-bool itemdb_cansell_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_cansell_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 8) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_cancartstore_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_cancartstore_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 16) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_canstore_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_canstore_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 32) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_canguildstore_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_canguildstore_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 64) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_canmail_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_canmail_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 128) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_canauction_sub(struct item_data *item, int gmlv, int unused)
+bool itemdb_canauction_sub(struct item_data* item, int gmlv, int unused)
 {
 	return(item && (!(item->flag.trade_restriction & 256) || gmlv >= item->gm_lv_trade_override));
 }
 
-bool itemdb_isrestricted(struct item *item, int gmlv, int gmlv2, bool (*func)(struct item_data *, int, int))
+bool itemdb_isrestricted(struct item* item, int gmlv, int gmlv2, bool (* func)(struct item_data*, int, int))
 {
-	struct item_data *item_data = itemdb_search(item->nameid);
-	int              i;
+	struct item_data* item_data = itemdb_search(item->nameid);
+	int               i;
 
 	if (!func(item_data, gmlv, gmlv2))
 		return false;
@@ -636,10 +636,10 @@ char itemdb_isidentified(unsigned short nameid)
 /** Search by name for the override flags available items (Give item another sprite)
  * Structure: <nameid>,<sprite>
  */
-static bool itemdb_read_itemavail(char *str[], int columns, int current)
+static bool itemdb_read_itemavail(char* str[], int columns, int current)
 {
-	unsigned short   nameid, sprite;
-	struct item_data *id;
+	unsigned short    nameid, sprite;
+	struct item_data* id;
 
 	nameid = atoi(str[0]);
 
@@ -660,17 +660,17 @@ static bool itemdb_read_itemavail(char *str[], int columns, int current)
 	return true;
 }
 
-static int itemdb_group_free(DBKey key, DBData *data, va_list ap);
-static int itemdb_group_free2(DBKey key, DBData *data);
+static int itemdb_group_free(DBKey key, DBData* data, va_list ap);
+static int itemdb_group_free2(DBKey key, DBData* data);
 
-static bool itemdb_read_group(char *str[], int columns, int current)
+static bool itemdb_read_group(char* str[], int columns, int current)
 {
-	int                        group_id = -1;
-	unsigned int               j, prob = 1;
-	uint8                      rand_group = 1;
-	struct s_item_group_random *random    = NULL;
-	struct s_item_group_db     *group     = NULL;
-	struct s_item_group_entry  entry;
+	int                         group_id = -1;
+	unsigned int                j, prob = 1;
+	uint8                       rand_group = 1;
+	struct s_item_group_random* random     = NULL;
+	struct s_item_group_db*     group      = NULL;
+	struct s_item_group_entry   entry;
 
 	memset(&entry, 0, sizeof(entry));
 	entry.amount = 1;
@@ -729,7 +729,7 @@ static bool itemdb_read_group(char *str[], int columns, int current)
 	// Check if the item can be found by id
 	if ((entry.nameid = atoi(str[1])) <= 0 || !itemdb_exists(entry.nameid)) {
 		// Otherwise look it up by name
-		struct item_data *id = itemdb_searchname(str[1]);
+		struct item_data* id = itemdb_searchname(str[1]);
 
 		if (id) {
 			// Found the item with a name lookup
@@ -753,7 +753,7 @@ static bool itemdb_read_group(char *str[], int columns, int current)
 	if (columns > 9)
 		entry.isNamed = atoi(str[9]);
 
-	if (!(group = (struct s_item_group_db *)uidb_get(itemdb_group, group_id))) {
+	if (!(group = (struct s_item_group_db*)uidb_get(itemdb_group, group_id))) {
 		CREATE(group, struct s_item_group_db, 1);
 		group->id = group_id;
 		uidb_put(itemdb_group, group->id, group);
@@ -787,11 +787,11 @@ static bool itemdb_read_group(char *str[], int columns, int current)
 /** Read item forbidden by mapflag (can't equip item)
  * Structure: <nameid>,<mode>
  */
-static bool itemdb_read_noequip(char *str[], int columns, int current)
+static bool itemdb_read_noequip(char* str[], int columns, int current)
 {
-	unsigned short   nameid;
-	int              flag;
-	struct item_data *id;
+	unsigned short    nameid;
+	int               flag;
+	struct item_data* id;
 
 	nameid = atoi(str[0]);
 	flag   = atoi(str[1]);
@@ -812,10 +812,10 @@ static bool itemdb_read_noequip(char *str[], int columns, int current)
 /** Reads item trade restrictions [Skotlex]
  * Structure: <nameid>,<mask>,<gm level>
  */
-static bool itemdb_read_itemtrade(char *str[], int columns, int current)
+static bool itemdb_read_itemtrade(char* str[], int columns, int current)
 {
-	unsigned short   nameid, flag, gmlv;
-	struct item_data *id;
+	unsigned short    nameid, flag, gmlv;
+	struct item_data* id;
 
 	nameid = atoi(str[0]);
 
@@ -847,11 +847,11 @@ static bool itemdb_read_itemtrade(char *str[], int columns, int current)
 /** Reads item delay amounts [Paradox924X]
  * Structure: <nameid>,<delay>{,<delay sc group>}
  */
-static bool itemdb_read_itemdelay(char *str[], int columns, int current)
+static bool itemdb_read_itemdelay(char* str[], int columns, int current)
 {
-	unsigned short   nameid;
-	int              delay;
-	struct item_data *id;
+	unsigned short    nameid;
+	int               delay;
+	struct item_data* id;
 
 	nameid = atoi(str[0]);
 
@@ -890,11 +890,11 @@ static bool itemdb_read_itemdelay(char *str[], int columns, int current)
 /** Reads item stacking restrictions
  * Structure: <item id>,<stack limit amount>,<type>
  */
-static bool itemdb_read_stack(char *fields[], int columns, int current)
+static bool itemdb_read_stack(char* fields[], int columns, int current)
 {
-	unsigned short   nameid, amount;
-	unsigned int     type;
-	struct item_data *id;
+	unsigned short    nameid, amount;
+	unsigned int      type;
+	struct item_data* id;
 
 	nameid = (unsigned short)strtoul(fields[0], NULL, 10);
 
@@ -927,10 +927,10 @@ static bool itemdb_read_stack(char *fields[], int columns, int current)
 /** Reads items allowed to be sold in buying stores
  * <nameid>
  */
-static bool itemdb_read_buyingstore(char *fields[], int columns, int current)
+static bool itemdb_read_buyingstore(char* fields[], int columns, int current)
 {
-	unsigned short   nameid;
-	struct item_data *id;
+	unsigned short    nameid;
+	struct item_data* id;
 
 	nameid = atoi(fields[0]);
 
@@ -952,10 +952,10 @@ static bool itemdb_read_buyingstore(char *fields[], int columns, int current)
 /** Item usage restriction (item_nouse.txt)
  * <nameid>,<flag>,<override>
  */
-static bool itemdb_read_nouse(char *fields[], int columns, int current)
+static bool itemdb_read_nouse(char* fields[], int columns, int current)
 {
-	unsigned short   nameid, flag, override;
-	struct item_data *id;
+	unsigned short    nameid, flag, override;
+	struct item_data* id;
 
 	nameid = atoi(fields[0]);
 
@@ -979,12 +979,12 @@ static bool itemdb_read_nouse(char *fields[], int columns, int current)
  * &2 - As item container
  * &4 - GUID item, cannot be stacked even same or stackable item
  */
-static bool itemdb_read_flag(char *fields[], int columns, int current)
+static bool itemdb_read_flag(char* fields[], int columns, int current)
 {
-	unsigned short   nameid = atoi(fields[0]);
-	uint8            flag;
-	bool             set;
-	struct item_data *id;
+	unsigned short    nameid = atoi(fields[0]);
+	uint8             flag;
+	bool              set;
+	struct item_data* id;
 
 	if (!(id = itemdb_exists(nameid))) {
 		ShowError("itemdb_read_flag: Invalid item item with id %hu\n", nameid);
@@ -1013,7 +1013,7 @@ static bool itemdb_read_flag(char *fields[], int columns, int current)
 /**
  * @return: amount of retrieved entries.
  **/
-static int itemdb_combo_split_atoi(char *str, int *val)
+static int itemdb_combo_split_atoi(char* str, int* val)
 {
 	int i;
 
@@ -1039,13 +1039,13 @@ static int itemdb_combo_split_atoi(char *str, int *val)
 /**
  * <combo{:combo{:combo:{..}}}>,<{ script }>
  **/
-static void itemdb_read_combos(const char *basedir, bool silent)
+static void itemdb_read_combos(const char* basedir, bool silent)
 {
 	uint32 lines = 0, count = 0;
 	char   line[1024];
 
 	char   path[256];
-	FILE   *fp;
+	FILE*  fp;
 
 	sprintf(path, "%s/%s", basedir, "item_combo_db.txt");
 
@@ -1058,7 +1058,7 @@ static void itemdb_read_combos(const char *basedir, bool silent)
 	// process rows one by one
 	while (fgets(line, sizeof(line), fp))
 	{
-		char *str[2], *p;
+		char* str[2], * p;
 
 		lines++;
 
@@ -1098,10 +1098,10 @@ static void itemdb_read_combos(const char *basedir, bool silent)
 			ShowError("itemdb_read_combos(#2): Invalid format (Script column) in line %d of \"%s\", skipping.\n", lines, path);
 			continue;
 		} else {
-			int              items[MAX_ITEMS_PER_COMBO];
-			int              v   = 0, retcount = 0;
-			struct item_data *id = NULL;
-			int              idx = 0;
+			int               items[MAX_ITEMS_PER_COMBO];
+			int               v   = 0, retcount = 0;
+			struct item_data* id  = NULL;
+			int               idx = 0;
 			if ((retcount = itemdb_combo_split_atoi(str[0], items)) < 2) {
 				ShowError("itemdb_read_combos: line %d of \"%s\" doesn't have enough items to make for a combo (min:2), skipping.\n", lines, path);
 				continue;
@@ -1121,13 +1121,13 @@ static void itemdb_read_combos(const char *basedir, bool silent)
 			idx = id->combos_count;
 			/* first entry, create */
 			if (id->combos == NULL) {
-				CREATE(id->combos, struct item_combo *, 1);
+				CREATE(id->combos, struct item_combo*, 1);
 				id->combos_count = 1;
 			} else {
-				RECREATE(id->combos, struct item_combo *, ++id->combos_count);
+				RECREATE(id->combos, struct item_combo*, ++id->combos_count);
 			}
 			CREATE(id->combos[idx], struct item_combo, 1);
-			id->combos[idx]->nameid = (unsigned short *)aMalloc(retcount * sizeof(unsigned short));
+			id->combos[idx]->nameid = (unsigned short*)aMalloc(retcount * sizeof(unsigned short));
 			id->combos[idx]->count  = retcount;
 			id->combos[idx]->script = parse_script(str[1], path, lines, 0);
 			id->combos[idx]->id     = count;
@@ -1141,15 +1141,15 @@ static void itemdb_read_combos(const char *basedir, bool silent)
 			/* populate the children to refer to this combo */
 			for (v = 1; v < retcount; v++)
 			{
-				struct item_data *it;
-				int              index;
+				struct item_data* it;
+				int               index;
 				it    = itemdb_exists(items[v]);
 				index = it->combos_count;
 				if (it->combos == NULL) {
-					CREATE(it->combos, struct item_combo *, 1);
+					CREATE(it->combos, struct item_combo*, 1);
 					it->combos_count = 1;
 				} else {
-					RECREATE(it->combos, struct item_combo *, ++it->combos_count);
+					RECREATE(it->combos, struct item_combo*, ++it->combos_count);
 				}
 				CREATE(it->combos[index], struct item_combo, 1);
 				/* we copy previously alloc'd pointers and just set it to reference */
@@ -1189,7 +1189,7 @@ bool itemdb_parse_roulette_db(void)
 
 		for (k = 0; k < limit && SQL_SUCCESS == Sql_NextRow(mmysql_handle); k++)
 		{
-			char           *data;
+			char*          data;
 			unsigned short item_id, amount;
 			int            level, flag;
 
@@ -1293,7 +1293,7 @@ static void itemdb_roulette_free(void)
 /*======================================
  * Applies gender restrictions according to settings. [Skotlex]
  *======================================*/
-static char itemdb_gendercheck(struct item_data *id)
+static char itemdb_gendercheck(struct item_data* id)
 {
 	if (id->nameid == WEDDING_RING_M) //Grom Ring
 		return 1;
@@ -1315,7 +1315,7 @@ static char itemdb_gendercheck(struct item_data *id)
  * For backwards compatibility, in Renewal mode, MATK from weapons comes from the atk slot
  * We use a ':' delimiter which, if not found, assumes the weapon does not provide any matk.
  **/
-static void itemdb_re_split_atoi(char *str, int *val1, int *val2)
+static void itemdb_re_split_atoi(char* str, int* val1, int* val2)
 {
 	int i, val[2];
 
@@ -1345,17 +1345,17 @@ static void itemdb_re_split_atoi(char *str, int *val1, int *val2)
 /**
  * Processes one itemdb entry
  */
-static bool itemdb_parse_dbrow(char **str, const char *source, int line, int scriptopt)
+static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scriptopt)
 {
 	/*
 	 * +----+--------------+---------------+------+-----------+------------+--------+--------+---------+-------+-------+------------+-------------+---------------+-----------------+--------------+-------------+------------+------+--------+--------------+----------------+
 	 | 00 |      01      |       02      |  03  |     04    |     05     |   06   |   07   |    08   |   09  |   10  |     11     |      12     |       13      |        14       |      15      |      16     |     17     |  18  |   19   |      20      |        21      |
-	 |+----+--------------+---------------+------+-----------+------------+--------+--------+---------+-------+-------+------------+-------------+---------------+-----------------+--------------+-------------+------------+------+--------+--------------+----------------+
+	 ||+----+--------------+---------------+------+-----------+------------+--------+--------+---------+-------+-------+------------+-------------+---------------+-----------------+--------------+-------------+------------+------+--------+--------------+----------------+
 	 | id | name_english | name_japanese | type | price_buy | price_sell | weight | attack | defence | range | slots | equip_jobs | equip_upper | equip_genders | equip_locations | weapon_level | equip_level | refineable | view | script | equip_script | unequip_script |
-	 |+----+--------------+---------------+------+-----------+------------+--------+--------+---------+-------+-------+------------+-------------+---------------+-----------------+--------------+-------------+------------+------+--------+--------------+----------------+
+	 ||+----+--------------+---------------+------+-----------+------------+--------+--------+---------+-------+-------+------------+-------------+---------------+-----------------+--------------+-------------+------------+------+--------+--------------+----------------+
 	 */
-	unsigned short   nameid;
-	struct item_data *id;
+	unsigned short    nameid;
+	struct item_data* id;
 
 	if (atoi(str[0]) <= 0 || atoi(str[0]) >= MAX_ITEMID || atoi(str[0]) == dummy_item->nameid) {
 		ShowWarning("itemdb_parse_dbrow: Invalid id %d in line %d of \"%s\", skipping.\n", atoi(str[0]), line, source);
@@ -1484,7 +1484,7 @@ static bool itemdb_parse_dbrow(char **str, const char *source, int line, int scr
  */
 static int itemdb_readdb(void)
 {
-	const char *filename[] =
+	const char* filename[] =
 	{
 		DBPATH "item_db.txt",
 		DBIMPORT "/item_db.txt"
@@ -1498,7 +1498,7 @@ static int itemdb_readdb(void)
 		char   line[1024];
 
 		char   path[256];
-		FILE   *fp;
+		FILE*  fp;
 
 		sprintf(path, "%s/%s", db_path, filename[fi]);
 		fp = fopen(path, "r");
@@ -1510,8 +1510,8 @@ static int itemdb_readdb(void)
 		// process rows one by one
 		while (fgets(line, sizeof(line), fp))
 		{
-			char *str[32], *p;
-			int  i;
+			char* str[32], * p;
+			int   i;
 			lines++;
 			if (line[0] == '/' && line[1] == '/')
 				continue;
@@ -1609,12 +1609,12 @@ static int itemdb_readdb(void)
  */
 static int itemdb_read_sqldb(void)
 {
-	const char *item_db_name[] =
+	const char* item_db_name[] =
 	{
 		item_table,
 		item2_table
 	};
-	int        fi;
+	int         fi;
 
 	for (fi = 0; fi < ARRAYLENGTH(item_db_name); ++fi)
 	{
@@ -1629,9 +1629,9 @@ static int itemdb_read_sqldb(void)
 		// process rows one by one
 		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle))   // wrap the result into a TXT-compatible format
 		{
-			char *str[22];
-			char *dummy = "";
-			int  i;
+			char* str[22];
+			char* dummy = "";
+			int   i;
 			++lines;
 			for (i = 0; i < 22; ++i)
 			{
@@ -1659,7 +1659,7 @@ static int itemdb_read_sqldb(void)
  * @param m Map ID
  * @return true: can't be used; false: can be used
  */
-bool itemdb_isNoEquip(struct item_data *id, uint16 m)
+bool itemdb_isNoEquip(struct item_data* id, uint16 m)
 {
 	if (!id->flag.no_equip)
 		return false;
@@ -1695,21 +1695,21 @@ bool itemdb_is_spellbook2(unsigned short nameid)
 /**
  * Retrieves random option data
  */
-struct s_random_opt_data *itemdb_randomopt_exists(short id)
+struct s_random_opt_data* itemdb_randomopt_exists(short id)
 {
-	return((struct s_random_opt_data *)uidb_get(itemdb_randomopt, id));
+	return((struct s_random_opt_data*)uidb_get(itemdb_randomopt, id));
 }
 
 /** Random option
  * <ID>,<{Script}>
  */
-static bool itemdb_read_randomopt(const char *basedir, bool silent)
+static bool itemdb_read_randomopt(const char* basedir, bool silent)
 {
 	uint32 lines = 0, count = 0;
 	char   line[1024];
 
 	char   path[256];
-	FILE   *fp;
+	FILE*  fp;
 
 	sprintf(path, "%s/%s", basedir, "item_randomopt_db.txt");
 
@@ -1721,7 +1721,7 @@ static bool itemdb_read_randomopt(const char *basedir, bool silent)
 
 	while (fgets(line, sizeof(line), fp))
 	{
-		char *str[2], *p;
+		char* str[2], * p;
 
 		lines++;
 
@@ -1758,9 +1758,9 @@ static bool itemdb_read_randomopt(const char *basedir, bool silent)
 			ShowError("itemdb_read_randomopt(#2): Invalid format (Script column) in line %d of \"%s\", skipping.\n", lines, path);
 			continue;
 		} else {
-			int                      id = -1;
-			struct s_random_opt_data *data;
-			struct script_code       *code;
+			int                       id = -1;
+			struct s_random_opt_data* data;
+			struct script_code*       code;
 
 			str[0] = trim(str[0]);
 			if (ISDIGIT(str[0][0])) {
@@ -1802,9 +1802,9 @@ static bool itemdb_read_randomopt(const char *basedir, bool silent)
  * Clear Item Random Option Group from memory
  * @author [Cydh]
  **/
-static int itemdb_randomopt_group_free(DBKey key, DBData *data, va_list ap)
+static int itemdb_randomopt_group_free(DBKey key, DBData* data, va_list ap)
 {
-	struct s_random_opt_group *g = (struct s_random_opt_group *)db_data2ptr(data);
+	struct s_random_opt_group* g = (struct s_random_opt_group*)db_data2ptr(data);
 
 	if (!g)
 		return 0;
@@ -1822,20 +1822,20 @@ static int itemdb_randomopt_group_free(DBKey key, DBData *data, va_list ap)
  * @return Random Option Group data or NULL if not found
  * @author [Cydh]
  **/
-struct s_random_opt_group *itemdb_randomopt_group_exists(int id)
+struct s_random_opt_group* itemdb_randomopt_group_exists(int id)
 {
-	return (struct s_random_opt_group *)uidb_get(itemdb_randomopt_group, id);
+	return (struct s_random_opt_group*)uidb_get(itemdb_randomopt_group, id);
 }
 
 /**
  * Read Item Random Option Group from db file
  * @author [Cydh]
  **/
-static bool itemdb_read_randomopt_group(char *str[], int columns, int current)
+static bool itemdb_read_randomopt_group(char* str[], int columns, int current)
 {
-	int                       id   = 0, i;
-	unsigned short            rate = (unsigned short)strtoul(str[1], NULL, 10);
-	struct s_random_opt_group *g   = NULL;
+	int                        id   = 0, i;
+	unsigned short             rate = (unsigned short)strtoul(str[1], NULL, 10);
+	struct s_random_opt_group* g    = NULL;
 
 	if (!script_get_constant(str[0], &id)) {
 		ShowError("itemdb_read_randomopt_group: Invalid ID for Random Option Group '%s'.\n", str[0]);
@@ -1847,7 +1847,7 @@ static bool itemdb_read_randomopt_group(char *str[], int columns, int current)
 		return false;
 	}
 
-	if (!(g = (struct s_random_opt_group *)uidb_get(itemdb_randomopt_group, id))) {
+	if (!(g = (struct s_random_opt_group*)uidb_get(itemdb_randomopt_group, id))) {
 		CREATE(g, struct s_random_opt_group, 1);
 		g->id      = id;
 		g->total   = 0;
@@ -1883,8 +1883,8 @@ static bool itemdb_read_randomopt_group(char *str[], int columns, int current)
  */
 static void itemdb_read(void)
 {
-	int        i;
-	const char *dbsubpath[] =
+	int         i;
+	const char* dbsubpath[] =
 	{
 		"",
 		"/"DBIMPORT,
@@ -1897,10 +1897,10 @@ static void itemdb_read(void)
 
 	for (i = 0; i < ARRAYLENGTH(dbsubpath); i++)
 	{
-		uint8 n1          = (uint8)(strlen(db_path) + strlen(dbsubpath[i]) + 1);
-		uint8 n2          = (uint8)(strlen(db_path) + strlen(DBPATH) + strlen(dbsubpath[i]) + 1);
-		char  *dbsubpath1 = (char *)aMalloc(n1 + 1);
-		char  *dbsubpath2 = (char *)aMalloc(n2 + 1);
+		uint8 n1         = (uint8)(strlen(db_path) + strlen(dbsubpath[i]) + 1);
+		uint8 n2         = (uint8)(strlen(db_path) + strlen(DBPATH) + strlen(dbsubpath[i]) + 1);
+		char* dbsubpath1 = (char*)aMalloc(n1 + 1);
+		char* dbsubpath2 = (char*)aMalloc(n2 + 1);
 
 
 		if (i == 0) {
@@ -1944,7 +1944,7 @@ static void itemdb_read(void)
 /**
  * Destroys the item_data.
  */
-static void destroy_item_data(struct item_data *self)
+static void destroy_item_data(struct item_data* self)
 {
 	if (self == NULL)
 		return;
@@ -1980,9 +1980,9 @@ static void destroy_item_data(struct item_data *self)
 /**
  * @see DBApply
  */
-static int itemdb_final_sub(DBKey key, DBData *data, va_list ap)
+static int itemdb_final_sub(DBKey key, DBData* data, va_list ap)
 {
-	struct item_data *id = (struct item_data *)db_data2ptr(data);
+	struct item_data* id = (struct item_data*)db_data2ptr(data);
 
 	destroy_item_data(id);
 	return 0;
@@ -1993,7 +1993,7 @@ static int itemdb_final_sub(DBKey key, DBData *data, va_list ap)
  * So, itemdb_group_free2 is useful in some cases.
  * NB : We keeping that funciton cause that signature is needed for some iterator..
  */
-static int itemdb_group_free(DBKey key, DBData *data, va_list ap)
+static int itemdb_group_free(DBKey key, DBData* data, va_list ap)
 {
 	return itemdb_group_free2(key, data);
 }
@@ -2001,10 +2001,10 @@ static int itemdb_group_free(DBKey key, DBData *data, va_list ap)
 /** (ARM)
  * Adaptation of itemdb_group_free. This function enables to compile rAthena on Raspbian OS.
  */
-static inline int itemdb_group_free2(DBKey key, DBData *data)
+static inline int itemdb_group_free2(DBKey key, DBData* data)
 {
-	struct s_item_group_db *group = (struct s_item_group_db *)db_data2ptr(data);
-	uint8                  j;
+	struct s_item_group_db* group = (struct s_item_group_db*)db_data2ptr(data);
+	uint8                   j;
 
 	if (!group)
 		return 0;
@@ -2023,9 +2023,9 @@ static inline int itemdb_group_free2(DBKey key, DBData *data)
 	return 0;
 }
 
-static int itemdb_randomopt_free(DBKey key, DBData *data, va_list ap)
+static int itemdb_randomopt_free(DBKey key, DBData* data, va_list ap)
 {
-	struct s_random_opt_data *opt = (struct s_random_opt_data *)db_data2ptr(data);
+	struct s_random_opt_data* opt = (struct s_random_opt_data*)db_data2ptr(data);
 
 	if (!opt)
 		return 0;
@@ -2048,12 +2048,12 @@ void itemdb_reload_itemmob_data(void)
 
 	for (i = 0; i < MAX_MOB_DB; i++)
 	{
-		struct mob_db *entry = mob_db(i);
-		int           d, k;
+		struct mob_db* entry = mob_db(i);
+		int            d, k;
 
 		for (d = 0; d < MAX_MOB_DROP_TOTAL; d++)
 		{
-			struct item_data *id;
+			struct item_data* id;
 			if (!entry->dropitem[d].nameid)
 				continue;
 			id = itemdb_search(entry->dropitem[d].nameid);
@@ -2080,8 +2080,8 @@ void itemdb_reload_itemmob_data(void)
  */
 void itemdb_reload(void)
 {
-	struct s_mapiterator    *iter;
-	struct map_session_data *sd;
+	struct s_mapiterator*    iter;
+	struct map_session_data* sd;
 
 	itemdb_group->clear(itemdb_group, itemdb_group_free);
 	itemdb_randomopt->clear(itemdb_randomopt, itemdb_randomopt_free);
@@ -2102,7 +2102,7 @@ void itemdb_reload(void)
 
 	// readjust itemdb pointer cache for each player
 	iter = mapit_geteachpc();
-	for (sd = (struct map_session_data *)mapit_first(iter); mapit_exists(iter); sd = (struct map_session_data *)mapit_next(iter))
+	for (sd = (struct map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (struct map_session_data*)mapit_next(iter))
 	{
 		memset(sd->item_delay, 0, sizeof(sd->item_delay)); // reset item delays
 		pc_setinventorydata(sd);

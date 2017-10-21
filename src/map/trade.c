@@ -22,7 +22,7 @@
  * @param sd : player requesting the trade
  * @param target_sd : player requested
  */
-void trade_traderequest(struct map_session_data *sd, struct map_session_data *target_sd)
+void trade_traderequest(struct map_session_data* sd, struct map_session_data* target_sd)
 {
 	nullpo_retv(sd);
 
@@ -49,7 +49,7 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
 	}
 
 	if (sd->trade_partner != 0) {   // If a character tries to trade to another one then cancel the previous one
-		struct map_session_data *previous_sd = map_id2sd(sd->trade_partner);
+		struct map_session_data* previous_sd = map_id2sd(sd->trade_partner);
 
 		if (previous_sd) {
 			previous_sd->trade_partner = 0;
@@ -95,9 +95,9 @@ void trade_traderequest(struct map_session_data *sd, struct map_session_data *ta
  * Weird enough, the client should only send 3/4
  * and the server is the one that can reply 0~2
  */
-void trade_tradeack(struct map_session_data *sd, int type)
+void trade_tradeack(struct map_session_data* sd, int type)
 {
-	struct map_session_data *tsd;
+	struct map_session_data* tsd;
 
 	nullpo_retv(sd);
 
@@ -168,7 +168,7 @@ void trade_tradeack(struct map_session_data *sd, int type)
  * @param sd : player to check
  * @return -1:zeny hack, 0:all fine, 1:item hack
  */
-int impossible_trade_check(struct map_session_data *sd)
+int impossible_trade_check(struct map_session_data* sd)
 {
 	struct item inventory[MAX_INVENTORY];
 	char        message_to_gm[200];
@@ -235,12 +235,12 @@ int impossible_trade_check(struct map_session_data *sd)
  * @param tsd : player 2 trading
  * @return 0:error, 1:success
  */
-int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
+int trade_check(struct map_session_data* sd, struct map_session_data* tsd)
 {
-	struct item      inventory[MAX_INVENTORY];
-	struct item      inventory2[MAX_INVENTORY];
-	struct item_data *data;
-	int              trade_i, i, n;
+	struct item       inventory[MAX_INVENTORY];
+	struct item       inventory2[MAX_INVENTORY];
+	struct item_data* data;
+	int               trade_i, i, n;
 
 	// check zeny value against hackers (Zeny was already checked on time of adding, but you never know when you lost some zeny since then.
 	if (sd->deal.zeny > sd->status.zeny || (tsd->status.zeny > MAX_ZENY - sd->deal.zeny))
@@ -345,12 +345,12 @@ int trade_check(struct map_session_data *sd, struct map_session_data *tsd)
  * @param index : index of item in inventory
  * @param amount : amount of item to add from index
  */
-void trade_tradeadditem(struct map_session_data *sd, short index, short amount)
+void trade_tradeadditem(struct map_session_data* sd, short index, short amount)
 {
-	struct map_session_data *target_sd;
-	struct item             *item;
-	int                     trade_i, trade_weight;
-	int                     src_lv, dst_lv;
+	struct map_session_data* target_sd;
+	struct item*             item;
+	int                      trade_i, trade_weight;
+	int                      src_lv, dst_lv;
 
 	nullpo_retv(sd);
 
@@ -440,9 +440,9 @@ void trade_tradeadditem(struct map_session_data *sd, short index, short amount)
  * @param sd : Player who's adding zeny
  * @param amount : zeny amount
  */
-void trade_tradeaddzeny(struct map_session_data *sd, int amount)
+void trade_tradeaddzeny(struct map_session_data* sd, int amount)
 {
-	struct map_session_data *target_sd;
+	struct map_session_data* target_sd;
 
 	nullpo_retv(sd);
 
@@ -467,9 +467,9 @@ void trade_tradeaddzeny(struct map_session_data *sd, int amount)
  * 'Ok' button on the trade window is pressed.
  * @param sd : Player that pressed the button
  */
-void trade_tradeok(struct map_session_data *sd)
+void trade_tradeok(struct map_session_data* sd)
 {
-	struct map_session_data *target_sd;
+	struct map_session_data* target_sd;
 
 	if (sd->state.deal_locked || !sd->state.trading)
 		return;
@@ -489,10 +489,10 @@ void trade_tradeok(struct map_session_data *sd)
  * 'Cancel' is pressed. (or trade was force-cancelled by the code)
  * @param sd : Player that pressed the button
  */
-void trade_tradecancel(struct map_session_data *sd)
+void trade_tradecancel(struct map_session_data* sd)
 {
-	struct map_session_data *target_sd;
-	int                     trade_i;
+	struct map_session_data* target_sd;
+	int                      trade_i;
 
 	nullpo_retv(sd);
 
@@ -557,10 +557,10 @@ void trade_tradecancel(struct map_session_data *sd)
  * lock sd and tsd trade data, execute the trade, clear, then save players
  * @param sd : Player that has click on trade button
  */
-void trade_tradecommit(struct map_session_data *sd)
+void trade_tradecommit(struct map_session_data* sd)
 {
-	struct map_session_data *tsd;
-	int                     trade_i;
+	struct map_session_data* tsd;
+	int                      trade_i;
 
 	nullpo_retv(sd);
 

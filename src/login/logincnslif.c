@@ -46,13 +46,13 @@ void display_helpscreen(bool do_exit)
  * @param argv:
  * @return true or Exit on failure.
  */
-int logcnslif_get_options(int argc, char **argv)
+int logcnslif_get_options(int argc, char** argv)
 {
 	int i = 0;
 
 	for (i = 1; i < argc; i++)
 	{
-		const char *arg = argv[i];
+		const char* arg = argv[i];
 
 		if (arg[0] != '-' && (arg[0] != '/' || arg[1] == '-')) { // -, -- and /
 			ShowError("Unknown option '%s'.\n", argv[i]);
@@ -112,7 +112,7 @@ int logcnslif_get_options(int argc, char **argv)
  * @param buf: buffer to parse, (from console)
  * @return 1=success
  */
-int cnslif_parse(const char *buf)
+int cnslif_parse(const char* buf)
 {
 	char type[64];
 	char command[64];

@@ -34,8 +34,8 @@ struct s_pet_db {
 	int            defence_attack_rate; ///< Rate of which the pet will retaliate when master is being attacked (requires at least pet_support_min_friendly intimacy).
 	int            change_target_rate;  ///< Rate of which the pet will change its attack target.
 	struct script_code
-	               *pet_script,         ///< Script since pet hatched
-	*pet_loyal_script;                  ///< Script when pet is loyal
+	*              pet_script,          ///< Script since pet hatched
+	* pet_loyal_script;                 ///< Script when pet is loyal
 };
 extern struct s_pet_db pet_db[MAX_PET_DB];
 
@@ -74,7 +74,7 @@ struct pet_skill_support { //Support Skill
 };
 
 struct pet_loot {
-	struct item    *item;
+	struct item*   item;
 	unsigned short count;
 	unsigned short weight;
 	unsigned short max;
@@ -86,50 +86,50 @@ struct pet_data {
 	struct view_data   vd;
 	struct s_pet       pet;
 	struct status_data status;
-	struct mob_db      *db;
-	struct s_pet_db    *petDB;
+	struct mob_db*     db;
+	struct s_pet_db*   petDB;
 	int                pet_hungry_timer;
 	int                target_id;
 	struct {
 		unsigned skillbonus : 1;
 	}
-	                         state;
-	int                      move_fail_count;
-	unsigned int             next_walktime, last_thinktime;
-	unsigned short           rate_fix; //Support rate as modified by intimacy (1000 = 100%) [Skotlex]
+	                          state;
+	int                       move_fail_count;
+	unsigned int              next_walktime, last_thinktime;
+	unsigned short            rate_fix; //Support rate as modified by intimacy (1000 = 100%) [Skotlex]
 
-	struct pet_recovery      *recovery;
-	struct pet_bonus         *bonus;
-	struct pet_skill_attack  *a_skill;
-	struct pet_skill_support *s_skill;
-	struct pet_loot          *loot;
+	struct pet_recovery*      recovery;
+	struct pet_bonus*         bonus;
+	struct pet_skill_attack*  a_skill;
+	struct pet_skill_support* s_skill;
+	struct pet_loot*          loot;
 
-	int                      masterteleport_timer;
-	struct map_session_data  *master;
+	int                       masterteleport_timer;
+	struct map_session_data*  master;
 };
 
 
-int pet_create_egg(struct map_session_data *sd, unsigned short item_id);
-int pet_hungry_val(struct pet_data *pd);
-void pet_set_intimate(struct pet_data *pd, int value);
-int pet_target_check(struct pet_data *pd, struct block_list *bl, int type);
-int pet_unlocktarget(struct pet_data *pd);
-int pet_sc_check(struct map_session_data *sd, int type); //Skotlex
+int pet_create_egg(struct map_session_data* sd, unsigned short item_id);
+int pet_hungry_val(struct pet_data* pd);
+void pet_set_intimate(struct pet_data* pd, int value);
+int pet_target_check(struct pet_data* pd, struct block_list* bl, int type);
+int pet_unlocktarget(struct pet_data* pd);
+int pet_sc_check(struct map_session_data* sd, int type); //Skotlex
 int search_petDB_index(int key, int type);
-int pet_hungry_timer_delete(struct pet_data *pd);
-int pet_data_init(struct map_session_data *sd, struct s_pet *pet);
-int pet_birth_process(struct map_session_data *sd, struct s_pet *pet);
-int pet_recv_petdata(uint32 account_id, struct s_pet *p, int flag);
-int pet_select_egg(struct map_session_data *sd, short egg_index);
-int pet_catch_process1(struct map_session_data *sd, int target_class);
-int pet_catch_process2(struct map_session_data *sd, int target_id);
+int pet_hungry_timer_delete(struct pet_data* pd);
+int pet_data_init(struct map_session_data* sd, struct s_pet* pet);
+int pet_birth_process(struct map_session_data* sd, struct s_pet* pet);
+int pet_recv_petdata(uint32 account_id, struct s_pet* p, int flag);
+int pet_select_egg(struct map_session_data* sd, short egg_index);
+int pet_catch_process1(struct map_session_data* sd, int target_class);
+int pet_catch_process2(struct map_session_data* sd, int target_id);
 bool pet_get_egg(uint32 account_id, short pet_class, int pet_id);
-int pet_menu(struct map_session_data *sd, int menunum);
-int pet_change_name(struct map_session_data *sd, char *name);
-int pet_change_name_ack(struct map_session_data *sd, char *name, int flag);
-int pet_equipitem(struct map_session_data *sd, int index);
-int pet_lootitem_drop(struct pet_data *pd, struct map_session_data *sd);
-int pet_attackskill(struct pet_data *pd, int target_id);
+int pet_menu(struct map_session_data* sd, int menunum);
+int pet_change_name(struct map_session_data* sd, char* name);
+int pet_change_name_ack(struct map_session_data* sd, char* name, int flag);
+int pet_equipitem(struct map_session_data* sd, int index);
+int pet_lootitem_drop(struct pet_data* pd, struct map_session_data* sd);
+int pet_attackskill(struct pet_data* pd, int target_id);
 int pet_skill_support_timer(int tid, unsigned int tick, int id, intptr_t data); // [Skotlex]
 int pet_skill_bonus_timer(int tid, unsigned int tick, int id, intptr_t data);   // [Valaris]
 int pet_recovery_timer(int tid, unsigned int tick, int id, intptr_t data);      // [Valaris]

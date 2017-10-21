@@ -18,7 +18,7 @@ int inter_pet_sql_init(void);
 
 //extern char pet_txt[256];
 
-int inter_pet_tosql(int pet_id, struct s_pet *p);
+int inter_pet_tosql(int pet_id, struct s_pet* p);
 
 #ifdef __cplusplus
 }

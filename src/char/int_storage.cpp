@@ -44,7 +44,7 @@ int inter_premiumStorage_getMax(uint8 id)
  * @param id Storage ID
  * @return Table name
  **/
-const char *inter_premiumStorage_getTableName(uint8 id)
+const char* inter_premiumStorage_getTableName(uint8 id)
 {
 	if (inter_premiumStorage_exists(id))
 		return interserv_config.storages[id]->table;
@@ -57,7 +57,7 @@ const char *inter_premiumStorage_getTableName(uint8 id)
  * @param id Storage ID
  * @return printable name
  **/
-const char *inter_premiumStorage_getPrintableName(uint8 id)
+const char* inter_premiumStorage_getPrintableName(uint8 id)
 {
 	if (inter_premiumStorage_exists(id))
 		return interserv_config.storages[id]->name;
@@ -71,7 +71,7 @@ const char *inter_premiumStorage_getPrintableName(uint8 id)
  * @param p: Inventory entries
  * @return 0 if success, or error count
  */
-static int inventory_tosql(uint32 char_id, struct s_storage *p)
+static int inventory_tosql(uint32 char_id, struct s_storage* p)
 {
 	return char_memitemdata_to_sql(p->u.items_inventory, MAX_INVENTORY, char_id, TABLE_INVENTORY, p->stor_id);
 }
@@ -82,7 +82,7 @@ static int inventory_tosql(uint32 char_id, struct s_storage *p)
  * @param p: Storage entries
  * @return 0 if success, or error count
  */
-static int storage_tosql(uint32 account_id, struct s_storage *p)
+static int storage_tosql(uint32 account_id, struct s_storage* p)
 {
 	return char_memitemdata_to_sql(p->u.items_storage, MAX_STORAGE, account_id, TABLE_STORAGE, p->stor_id);
 }
@@ -93,7 +93,7 @@ static int storage_tosql(uint32 account_id, struct s_storage *p)
  * @param p: Cart entries
  * @return 0 if success, or error count
  */
-static int cart_tosql(uint32 char_id, struct s_storage *p)
+static int cart_tosql(uint32 char_id, struct s_storage* p)
 {
 	return char_memitemdata_to_sql(p->u.items_cart, MAX_CART, char_id, TABLE_CART, p->stor_id);
 }
@@ -104,7 +104,7 @@ static int cart_tosql(uint32 char_id, struct s_storage *p)
  * @param p: Inventory list to save the entries
  * @return True if success, False if failed
  */
-static bool inventory_fromsql(uint32 char_id, struct s_storage *p)
+static bool inventory_fromsql(uint32 char_id, struct s_storage* p)
 {
 	return char_memitemdata_from_sql(p, MAX_INVENTORY, char_id, TABLE_INVENTORY, p->stor_id);
 }
@@ -115,7 +115,7 @@ static bool inventory_fromsql(uint32 char_id, struct s_storage *p)
  * @param p: Cart list to save the entries
  * @return True if success, False if failed
  */
-static bool cart_fromsql(uint32 char_id, struct s_storage *p)
+static bool cart_fromsql(uint32 char_id, struct s_storage* p)
 {
 	return char_memitemdata_from_sql(p, MAX_CART, char_id, TABLE_CART, p->stor_id);
 }
@@ -127,7 +127,7 @@ static bool cart_fromsql(uint32 char_id, struct s_storage *p)
  * @param stor_id: Storage ID
  * @return True if success, False if failed
  */
-static bool storage_fromsql(uint32 account_id, struct s_storage *p)
+static bool storage_fromsql(uint32 account_id, struct s_storage* p)
 {
 	return char_memitemdata_from_sql(p, MAX_STORAGE, account_id, TABLE_STORAGE, p->stor_id);
 }
@@ -138,7 +138,7 @@ static bool storage_fromsql(uint32 account_id, struct s_storage *p)
  * @param p: Guild Storage list to save the entries
  * @return 0 if success, or error count
  */
-bool guild_storage_tosql(int guild_id, struct s_storage *p)
+bool guild_storage_tosql(int guild_id, struct s_storage* p)
 {
 	//ShowInfo("Guild Storage has been saved (GID: %d)\n", guild_id);
 	return char_memitemdata_to_sql(p->u.items_guild, MAX_GUILD_STORAGE, guild_id, TABLE_GUILD_STORAGE, p->stor_id);
@@ -150,7 +150,7 @@ bool guild_storage_tosql(int guild_id, struct s_storage *p)
  * @param p: Storage list to save the entries
  * @return True if success, False if failed
  */
-bool guild_storage_fromsql(int guild_id, struct s_storage *p)
+bool guild_storage_fromsql(int guild_id, struct s_storage* p)
 {
 	return char_memitemdata_from_sql(p, MAX_GUILD_STORAGE, guild_id, TABLE_GUILD_STORAGE, p->stor_id);
 }
@@ -198,7 +198,7 @@ bool mapif_load_guild_storage(int fd, uint32 account_id, int guild_id, char flag
 		WFIFOL(fd, 4)  = account_id;
 		WFIFOL(fd, 8)  = guild_id;
 		WFIFOB(fd, 12) = flag; //1 open storage, 0 don't open
-		guild_storage_fromsql(guild_id, (struct s_storage *)WFIFOP(fd, 13));
+		guild_storage_fromsql(guild_id, (struct s_storage*)WFIFOP(fd, 13));
 		WFIFOSET(fd, WFIFOW(fd, 2));
 		return false;
 	}
@@ -248,7 +248,7 @@ bool mapif_parse_SaveGuildStorage(int fd)
 			Sql_ShowDebug(sql_handle);
 		else if (Sql_NumRows(sql_handle) > 0) { // guild exists
 			Sql_FreeResult(sql_handle);
-			guild_storage_tosql(guild_id, (struct s_storage *)RFIFOP(fd, 12));
+			guild_storage_tosql(guild_id, (struct s_storage*)RFIFOP(fd, 12));
 			mapif_save_guild_storage_ack(fd, RFIFOL(fd, 4), guild_id, 0);
 			return false;
 		}
@@ -311,7 +311,7 @@ static void mapif_itembound_store2gstorage(int fd, int guild_id, struct item ite
 bool mapif_parse_itembound_retrieve(int fd)
 {
 	StringBuf      buf;
-	SqlStmt        *stmt;
+	SqlStmt*       stmt;
 	unsigned short i = 0, count = 0;
 	struct item    item, items[MAX_INVENTORY];
 	int            j, guild_id = RFIFOW(fd, 10);

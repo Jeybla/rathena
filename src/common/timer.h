@@ -45,20 +45,20 @@ unsigned int gettick_nocache(void);
 
 int add_timer(unsigned int tick, TimerFunc func, int id, intptr_t data);
 int add_timer_interval(unsigned int tick, TimerFunc func, int id, intptr_t data, int interval);
-const struct TimerData *get_timer(int tid);
+const struct TimerData* get_timer(int tid);
 int delete_timer(int tid, TimerFunc func);
 
 int addtick_timer(int tid, unsigned int tick);
 int settick_timer(int tid, unsigned int tick);
 
-int add_timer_func_list(TimerFunc func, const char *name);
+int add_timer_func_list(TimerFunc func, const char* name);
 
 unsigned long get_uptime(void);
 
 //transform a timestamp to string
-const char *timestamp2string(char *str, size_t size, time_t timestamp, const char *format);
-void split_time(int time, int *year, int *month, int *day, int *hour, int *minute, int *second);
-double solve_time(char *modif_p);
+const char* timestamp2string(char* str, size_t size, time_t timestamp, const char* format);
+void split_time(int time, int* year, int* month, int* day, int* hour, int* minute, int* second);
+double solve_time(char* modif_p);
 
 int do_timer(unsigned int tick);
 void timer_init(void);

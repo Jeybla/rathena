@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 void display_helpscreen(bool do_exit);
-int cnslif_parse(const char *buf);
+int cnslif_parse(const char* buf);
 void do_init_chcnslif(void);
 
 

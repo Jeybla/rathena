@@ -86,45 +86,45 @@ struct block_list;
 
 // Damage Calculation
 
-struct Damage battle_calc_attack(int attack_type, struct block_list *bl, struct block_list *target, uint16 skill_id, uint16 skill_lv, int flag);
-struct Damage battle_calc_attack_plant(struct Damage wd, struct block_list *src, struct block_list *target, uint16 skill_id, uint16 skill_lv);
+struct Damage battle_calc_attack(int attack_type, struct block_list* bl, struct block_list* target, uint16 skill_id, uint16 skill_lv, int flag);
+struct Damage battle_calc_attack_plant(struct Damage wd, struct block_list* src, struct block_list* target, uint16 skill_id, uint16 skill_lv);
 
-int64 battle_calc_return_damage(struct block_list *bl, struct block_list *src, int64 *, int flag, uint16 skill_id, bool status_reflect);
+int64 battle_calc_return_damage(struct block_list* bl, struct block_list* src, int64*, int flag, uint16 skill_id, bool status_reflect);
 
-void battle_drain(struct map_session_data *sd, struct block_list *tbl, int64 rdamage, int64 ldamage, int race, int class_);
-bool battle_vanish(struct map_session_data *sd, struct block_list *target, struct Damage *wd);
+void battle_drain(struct map_session_data* sd, struct block_list* tbl, int64 rdamage, int64 ldamage, int race, int class_);
+bool battle_vanish(struct map_session_data* sd, struct block_list* target, struct Damage* wd);
 
 int battle_attr_ratio(int atk_elem, int def_type, int def_lv);
-int64 battle_attr_fix(struct block_list *src, struct block_list *target, int64 damage, int atk_elem, int def_type, int def_lv);
-int battle_calc_cardfix(int attack_type, struct block_list *src, struct block_list *target, int nk, int s_ele, int s_ele_, int64 damage, int left, int flag);
+int64 battle_attr_fix(struct block_list* src, struct block_list* target, int64 damage, int atk_elem, int def_type, int def_lv);
+int battle_calc_cardfix(int attack_type, struct block_list* src, struct block_list* target, int nk, int s_ele, int s_ele_, int64 damage, int left, int flag);
 
 // Final calculation Damage
-int64 battle_calc_damage(struct block_list *src, struct block_list *bl, struct Damage *d, int64 damage, uint16 skill_id, uint16 skill_lv);
-int64 battle_calc_gvg_damage(struct block_list *src, struct block_list *bl, int64 damage, uint16 skill_id, int flag);
-int64 battle_calc_bg_damage(struct block_list *src, struct block_list *bl, int64 damage, uint16 skill_id, int flag);
+int64 battle_calc_damage(struct block_list* src, struct block_list* bl, struct Damage* d, int64 damage, uint16 skill_id, uint16 skill_lv);
+int64 battle_calc_gvg_damage(struct block_list* src, struct block_list* bl, int64 damage, uint16 skill_id, int flag);
+int64 battle_calc_bg_damage(struct block_list* src, struct block_list* bl, int64 damage, uint16 skill_id, int flag);
 
-void battle_damage(struct block_list *src, struct block_list *target, int64 damage, int delay, uint16 skill_lv, uint16 skill_id, enum damage_lv dmg_lv, unsigned short attack_type, bool additional_effects, unsigned int tick, bool spdamage);
-int battle_delay_damage(unsigned int tick, int amotion, struct block_list *src, struct block_list *target, int attack_type, uint16 skill_id, uint16 skill_lv, int64 damage, enum damage_lv dmg_lv, int ddelay, bool additional_effects, bool spdamage);
+void battle_damage(struct block_list* src, struct block_list* target, int64 damage, int delay, uint16 skill_lv, uint16 skill_id, enum damage_lv dmg_lv, unsigned short attack_type, bool additional_effects, unsigned int tick, bool spdamage);
+int battle_delay_damage(unsigned int tick, int amotion, struct block_list* src, struct block_list* target, int attack_type, uint16 skill_id, uint16 skill_lv, int64 damage, enum damage_lv dmg_lv, int ddelay, bool additional_effects, bool spdamage);
 
-int battle_calc_chorusbonus(struct map_session_data *sd);
+int battle_calc_chorusbonus(struct map_session_data* sd);
 
 // Summary normal attack treatment (basic attack)
-enum damage_lv battle_weapon_attack(struct block_list *bl, struct block_list *target, unsigned int tick, int flag);
+enum damage_lv battle_weapon_attack(struct block_list* bl, struct block_list* target, unsigned int tick, int flag);
 
 // Accessors
-struct block_list *battle_get_master(struct block_list *src);
-struct block_list *battle_gettargeted(struct block_list *target);
-struct block_list *battle_getenemy(struct block_list *target, int type, int range);
-int battle_gettarget(struct block_list *bl);
-uint16 battle_getcurrentskill(struct block_list *bl);
+struct block_list* battle_get_master(struct block_list* src);
+struct block_list* battle_gettargeted(struct block_list* target);
+struct block_list* battle_getenemy(struct block_list* target, int type, int range);
+int battle_gettarget(struct block_list* bl);
+uint16 battle_getcurrentskill(struct block_list* bl);
 
 int battle_check_undead(int race, int element);
-int battle_check_target(struct block_list *src, struct block_list *target, int flag);
-bool battle_check_range(struct block_list *src, struct block_list *bl, int range);
+int battle_check_target(struct block_list* src, struct block_list* target, int flag);
+bool battle_check_range(struct block_list* src, struct block_list* bl, int range);
 
-void battle_consume_ammo(struct map_session_data *sd, int skill, int lv);
+void battle_consume_ammo(struct map_session_data* sd, int skill, int lv);
 
-bool is_infinite_defense(struct block_list *target, int flag);
+bool is_infinite_defense(struct block_list* target, int flag);
 
 // Settings
 
@@ -640,18 +640,18 @@ battle_config;
 
 void do_init_battle(void);
 void do_final_battle(void);
-extern int battle_config_read(const char *cfgName);
+extern int battle_config_read(const char* cfgName);
 extern void battle_set_defaults(void);
-int battle_set_value(const char *w1, const char *w2);
-int battle_get_value(const char *w1);
+int battle_set_value(const char* w1, const char* w2);
+int battle_get_value(const char* w1);
 
 //
-struct block_list *battle_getenemyarea(struct block_list *src, int x, int y, int range, int type, int ignore_id);
+struct block_list* battle_getenemyarea(struct block_list* src, int x, int y, int range, int type, int ignore_id);
 
 /**
  * Royal Guard
  **/
-int battle_damage_area(struct block_list *bl, va_list ap);
+int battle_damage_area(struct block_list* bl, va_list ap);
 
 #ifdef __cplusplus
 }

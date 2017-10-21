@@ -50,7 +50,7 @@ struct fame_list       chemist_fame_list[MAX_FAME_LIST];
 struct fame_list       taekwon_fame_list[MAX_FAME_LIST];
 
 #define CHAR_MAX_MSG    300           //max number of msg_conf
-static char *msg_table[CHAR_MAX_MSG]; // Login Server messages_conf
+static char* msg_table[CHAR_MAX_MSG]; // Login Server messages_conf
 
 // check for exit signal
 // 0 is saving complete
@@ -68,18 +68,18 @@ int subnet_count = 0;
 
 int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t data);
 
-DBMap *auth_db;        // uint32 account_id -> struct auth_node*
-DBMap *online_char_db; // uint32 account_id -> struct online_char_data*
-DBMap *char_db_;       // uint32 char_id -> struct mmo_charstatus*
-DBMap *char_get_authdb()
+DBMap* auth_db;        // uint32 account_id -> struct auth_node*
+DBMap* online_char_db; // uint32 account_id -> struct online_char_data*
+DBMap* char_db_;       // uint32 char_id -> struct mmo_charstatus*
+DBMap* char_get_authdb()
 {
 	return auth_db;
 }
-DBMap *char_get_onlinedb()
+DBMap* char_get_onlinedb()
 {
 	return online_char_db;
 }
-DBMap *char_get_chardb()
+DBMap* char_get_chardb()
 {
 	return char_db_;
 }
@@ -89,7 +89,7 @@ DBMap *char_get_chardb()
  */
 DBData char_create_online_data(DBKey key, va_list args)
 {
-	struct online_char_data *character;
+	struct online_char_data* character;
 
 	CREATE(character, struct online_char_data, 1);
 	character->account_id         = key.i;
@@ -102,9 +102,9 @@ DBData char_create_online_data(DBKey key, va_list args)
 
 void char_set_charselect(uint32 account_id)
 {
-	struct online_char_data *character;
+	struct online_char_data* character;
 
-	character = (struct online_char_data *)idb_ensure(online_char_db, account_id, char_create_online_data);
+	character = (struct online_char_data*)idb_ensure(online_char_db, account_id, char_create_online_data);
 
 	if (character->server > -1)
 		if (map_server[character->server].users > 0)  // Prevent this value from going negative.
@@ -123,15 +123,15 @@ void char_set_charselect(uint32 account_id)
 
 void char_set_char_online(int map_id, uint32 char_id, uint32 account_id)
 {
-	struct online_char_data *character;
-	struct mmo_charstatus   *cp;
+	struct online_char_data* character;
+	struct mmo_charstatus*   cp;
 
 	//Update DB
 	if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `online`='1', `last_login`=NOW() WHERE `char_id`='%d' LIMIT 1", schema_config.char_db, char_id))
 		Sql_ShowDebug(sql_handle);
 
 	//Check to see for online conflicts
-	character = (struct online_char_data *)idb_ensure(online_char_db, account_id, char_create_online_data);
+	character = (struct online_char_data*)idb_ensure(online_char_db, account_id, char_create_online_data);
 	if (character->char_id != -1 && character->server > -1 && character->server != map_id) {
 		ShowNotice("set_char_online: Character %d:%d marked in map server %d, but map server %d claims to have (%d:%d) online!\n",
 		           character->account_id, character->char_id, character->server, map_id, account_id, char_id);
@@ -152,7 +152,7 @@ void char_set_char_online(int map_id, uint32 char_id, uint32 account_id)
 	}
 
 	//Set char online in guild cache. If char is in memory, use the guild id on it, otherwise seek it.
-	cp = (struct mmo_charstatus *)idb_get(char_db_, char_id);
+	cp = (struct mmo_charstatus*)idb_get(char_db_, char_id);
 	inter_guild_CharOnline(char_id, cp ? cp->guild_id : -1);
 
 	//Notify login server
@@ -161,13 +161,13 @@ void char_set_char_online(int map_id, uint32 char_id, uint32 account_id)
 
 void char_set_char_offline(uint32 char_id, uint32 account_id)
 {
-	struct online_char_data *character;
+	struct online_char_data* character;
 
 	if (char_id == -1) {
 		if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `online`='0' WHERE `account_id`='%d'", schema_config.char_db, account_id))
 			Sql_ShowDebug(sql_handle);
 	} else {
-		struct mmo_charstatus *cp = (struct mmo_charstatus *)idb_get(char_db_, char_id);
+		struct mmo_charstatus* cp = (struct mmo_charstatus*)idb_get(char_db_, char_id);
 		inter_guild_CharOffline(char_id, cp ? cp->guild_id : -1);
 		if (cp)
 			idb_remove(char_db_, char_id);
@@ -176,9 +176,9 @@ void char_set_char_offline(uint32 char_id, uint32 account_id)
 			Sql_ShowDebug(sql_handle);
 	}
 
-	if ((character = (struct online_char_data *)idb_get(online_char_db, account_id)) != NULL) { //We don't free yet to avoid aCalloc/aFree spamming during char change. [Skotlex]
+	if ((character = (struct online_char_data*)idb_get(online_char_db, account_id)) != NULL) { //We don't free yet to avoid aCalloc/aFree spamming during char change. [Skotlex]
 		if (character->server > -1)
-			if (map_server[character->server].users > 0)  // Prevent this value from going negative.
+			if (map_server[character->server].users > 0)                               // Prevent this value from going negative.
 				map_server[character->server].users--;
 
 		if (character->waiting_disconnect != INVALID_TIMER) {
@@ -205,10 +205,10 @@ void char_set_char_offline(uint32 char_id, uint32 account_id)
 /**
  * @see DBApply
  */
-int char_db_setoffline(DBKey key, DBData *data, va_list ap)
+int char_db_setoffline(DBKey key, DBData* data, va_list ap)
 {
-	struct online_char_data *character = (struct online_char_data *)db_data2ptr(data);
-	int                     server     = va_arg(ap, int);
+	struct online_char_data* character = (struct online_char_data*)db_data2ptr(data);
+	int                      server    = va_arg(ap, int);
 
 	if (server == -1) {
 		character->char_id = -1;
@@ -225,10 +225,10 @@ int char_db_setoffline(DBKey key, DBData *data, va_list ap)
 /**
  * @see DBApply
  */
-static int char_db_kickoffline(DBKey key, DBData *data, va_list ap)
+static int char_db_kickoffline(DBKey key, DBData* data, va_list ap)
 {
-	struct online_char_data *character = (struct online_char_data *)db_data2ptr(data);
-	int                     server_id  = va_arg(ap, int);
+	struct online_char_data* character = (struct online_char_data*)db_data2ptr(data);
+	int                      server_id = va_arg(ap, int);
 
 	if (server_id > -1 && character->server != server_id)
 		return 0;
@@ -275,27 +275,27 @@ void char_set_all_offline_sql(void)
  */
 static DBData char_create_charstatus(DBKey key, va_list args)
 {
-	struct mmo_charstatus *cp;
+	struct mmo_charstatus* cp;
 
-	cp          = (struct mmo_charstatus *)aCalloc(1, sizeof(struct mmo_charstatus));
+	cp          = (struct mmo_charstatus*)aCalloc(1, sizeof(struct mmo_charstatus));
 	cp->char_id = key.i;
 	return db_ptr2data(cp);
 }
 
-int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus *p)
+int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p)
 {
-	int                   i     = 0;
-	int                   count = 0;
-	int                   diff  = 0;
-	char                  save_status[128]; //For displaying save information. [Skotlex]
-	struct mmo_charstatus *cp;
-	int                   errors = 0;       //If there are any errors while saving, "cp" will not be updated at the end.
-	StringBuf             buf;
+	int                    i     = 0;
+	int                    count = 0;
+	int                    diff  = 0;
+	char                   save_status[128]; //For displaying save information. [Skotlex]
+	struct mmo_charstatus* cp;
+	int                    errors = 0;       //If there are any errors while saving, "cp" will not be updated at the end.
+	StringBuf              buf;
 
 	if (char_id != p->char_id)
 		return 0;
 
-	cp = (struct mmo_charstatus *)idb_ensure(char_db_, char_id, char_create_charstatus);
+	cp = (struct mmo_charstatus*)idb_ensure(char_db_, char_id, char_create_charstatus);
 
 	StringBuf_Init(&buf);
 	memset(save_status, 0, sizeof(save_status));
@@ -523,11 +523,11 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus *p)
 int char_memitemdata_to_sql(const struct item items[], int max, int id, enum storage_type tableswitch, uint8 stor_id)
 {
 	StringBuf   buf;
-	SqlStmt     *stmt;
+	SqlStmt*    stmt;
 	int         i, j, offset = 0, errors = 0;
-	const char  *tablename, *selectoption, *printname;
+	const char* tablename, * selectoption, * printname;
 	struct item item;  // temp storage variable
-	bool        *flag; // bit array for inventory matching
+	bool*       flag;  // bit array for inventory matching
 	bool        found;
 
 	switch (tableswitch)
@@ -613,7 +613,7 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 		SqlStmt_BindColumn(stmt, 12 + offset + MAX_SLOTS + i * 3, SQLDT_CHAR, &item.option[i].param, 0, NULL, NULL);
 	}
 	// bit array indicating which inventory items have already been matched
-	flag = (bool *)aCalloc(max, sizeof(bool));
+	flag = (bool*)aCalloc(max, sizeof(bool));
 
 	while (SQL_SUCCESS == SqlStmt_NextRow(stmt))
 	{
@@ -737,13 +737,13 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 	return errors;
 } // char_memitemdata_to_sql
 
-bool char_memitemdata_from_sql(struct s_storage *p, int max, int id, enum storage_type tableswitch, uint8 stor_id)
+bool char_memitemdata_from_sql(struct s_storage* p, int max, int id, enum storage_type tableswitch, uint8 stor_id)
 {
 	StringBuf   buf;
-	SqlStmt     *stmt;
+	SqlStmt*    stmt;
 	int         i, j, offset = 0;
-	struct item item, *storage;
-	const char  *tablename, *selectoption, *printname;
+	struct item item, * storage;
+	const char* tablename, * selectoption, * printname;
 
 	switch (tableswitch)
 	{
@@ -864,7 +864,7 @@ bool char_memitemdata_from_sql(struct s_storage *p, int max, int id, enum storag
  * @retval SEX_FEMALE if the per-character sex is female
  * @retval SEX_ACCOUNT if the per-character sex is not defined or the current PACKETVER doesn't support it.
  */
-int char_mmo_gender(const struct char_session_data *sd, const struct mmo_charstatus *p, char sex)
+int char_mmo_gender(const struct char_session_data* sd, const struct mmo_charstatus* p, char sex)
 {
 #if PACKETVER >= 20141016
 	(void)sd;
@@ -904,13 +904,13 @@ int char_mmo_gender(const struct char_session_data *sd, const struct mmo_charsta
 #endif
 }
 
-int char_mmo_char_tobuf(uint8 *buf, struct mmo_charstatus *p);
+int char_mmo_char_tobuf(uint8* buf, struct mmo_charstatus* p);
 
 //=====================================================================================================
 // Loads the basic character rooster for the given account. Returns total buffer used.
-int char_mmo_chars_fromsql(struct char_session_data *sd, uint8 *buf)
+int char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf)
 {
-	SqlStmt               *stmt;
+	SqlStmt*              stmt;
 	struct mmo_charstatus p;
 	int                   j = 0, i;
 	char                  last_map[MAP_NAME_LENGTH_EXT];
@@ -1009,18 +1009,18 @@ int char_mmo_chars_fromsql(struct char_session_data *sd, uint8 *buf)
 } // char_mmo_chars_fromsql
 
 //=====================================================================================================
-int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus *p, bool load_everything)
+int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_everything)
 {
-	int                   i;
-	struct mmo_charstatus *cp;
-	SqlStmt               *stmt;
-	char                  last_map[MAP_NAME_LENGTH_EXT];
-	char                  save_map[MAP_NAME_LENGTH_EXT];
-	char                  point_map[MAP_NAME_LENGTH_EXT];
-	struct point          tmp_point;
-	struct s_skill        tmp_skill;
-	uint16                skill_count = 0;
-	struct s_friend       tmp_friend;
+	int                    i;
+	struct mmo_charstatus* cp;
+	SqlStmt*               stmt;
+	char                   last_map[MAP_NAME_LENGTH_EXT];
+	char                   save_map[MAP_NAME_LENGTH_EXT];
+	char                   point_map[MAP_NAME_LENGTH_EXT];
+	struct point           tmp_point;
+	struct s_skill         tmp_skill;
+	uint16                 skill_count = 0;
+	struct s_friend        tmp_friend;
 
 #ifdef HOTKEY_SAVING
 	struct hotkey tmp_hotkey;
@@ -1233,7 +1233,7 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus *p, bool load_ev
 		ShowInfo("Loaded char (%d - %s): %s\n", char_id, p->name, StringBuf_Value(&msg_buf));  //ok. all data load successfully!
 	SqlStmt_Free(stmt);
 
-	cp = (struct mmo_charstatus *)idb_ensure(char_db_, char_id, char_create_charstatus);
+	cp = (struct mmo_charstatus*)idb_ensure(char_db_, char_id, char_create_charstatus);
 	memcpy(cp, p, sizeof(struct mmo_charstatus));
 	StringBuf_Destroy(&msg_buf);
 	return 1;
@@ -1261,7 +1261,7 @@ int char_mmo_sql_init(void)
 //-----------------------------------
 // Function to change chararcter's names
 //-----------------------------------
-int char_rename_char_sql(struct char_session_data *sd, uint32 char_id)
+int char_rename_char_sql(struct char_session_data* sd, uint32 char_id)
 {
 	struct mmo_charstatus char_dat;
 	char                  esc_name[NAME_LENGTH * 2 + 1];
@@ -1329,7 +1329,7 @@ int char_rename_char_sql(struct char_session_data *sd, uint32 char_id)
 	return 0;
 } // char_rename_char_sql
 
-int char_check_char_name(char *name, char *esc_name)
+int char_check_char_name(char* name, char* esc_name)
 {
 	int i;
 
@@ -1388,15 +1388,15 @@ int char_check_char_name(char *name, char *esc_name)
 //-----------------------------------
 #if PACKETVER >= 20120307
 #if PACKETVER >= 20151001
-int char_make_new_char_sql(struct char_session_data *sd, char *name_, int slot, int hair_color, int hair_style, short start_job, short unknown, int sex)   // TODO: Unknown byte
+int char_make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style, short start_job, short unknown, int sex)   // TODO: Unknown byte
 {
 #else
-int char_make_new_char_sql(struct char_session_data *sd, char *name_, int slot, int hair_color, int hair_style)
+int char_make_new_char_sql(struct char_session_data* sd, char* name_, int slot, int hair_color, int hair_style)
 {
 #endif
 	int str = 1, agi = 1, vit = 1, int_ = 1, dex = 1, luk = 1;
 #else
-int char_make_new_char_sql(struct char_session_data *sd, char *name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style)
+int char_make_new_char_sql(struct char_session_data* sd, char* name_, int str, int agi, int vit, int int_, int dex, int luk, int slot, int hair_color, int hair_style)
 {
 #endif
 	char             name[NAME_LENGTH];
@@ -1551,14 +1551,14 @@ int char_divorce_char_sql(int partner_id1, int partner_id2)
 /* Returns 0 if successful
  * Returns < 0 for error
  */
-enum e_char_del_response char_delete(struct char_session_data *sd, uint32 char_id)
+enum e_char_del_response char_delete(struct char_session_data* sd, uint32 char_id)
 {
 	char   name[NAME_LENGTH];
 	char   esc_name[NAME_LENGTH * 2 + 1]; //Name needs be escaped.
 	uint32 account_id;
 	int    party_id, guild_id, hom_id, base_level, partner_id, father_id, mother_id, elemental_id;
 	time_t delete_date;
-	char   *data;
+	char*  data;
 	size_t len;
 	int    i;
 
@@ -1785,10 +1785,10 @@ int char_count_users(void)
 // Writes char data to the buffer in the format used by the client.
 // Used in packets 0x6b (chars info) and 0x6d (new char info)
 // Returns the size
-int char_mmo_char_tobuf(uint8 *buffer, struct mmo_charstatus *p)
+int char_mmo_char_tobuf(uint8* buffer, struct mmo_charstatus* p)
 {
 	unsigned short offset = 0;
-	uint8          *buf;
+	uint8*         buf;
 
 	if (buffer == NULL || p == NULL)
 		return 0;
@@ -1900,7 +1900,7 @@ int char_married(int pl1, int pl2)
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `partner_id` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, pl1))
 		Sql_ShowDebug(sql_handle);
 	else if (SQL_SUCCESS == Sql_NextRow(sql_handle)) {
-		char *data;
+		char* data;
 
 		Sql_GetData(sql_handle, 0, &data, NULL);
 		if (pl2 == atoi(data)) {
@@ -1917,7 +1917,7 @@ int char_child(int parent_id, int child_id)
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `child` FROM `%s` WHERE `char_id` = '%d'", schema_config.char_db, parent_id))
 		Sql_ShowDebug(sql_handle);
 	else if (SQL_SUCCESS == Sql_NextRow(sql_handle)) {
-		char *data;
+		char* data;
 
 		Sql_GetData(sql_handle, 0, &data, NULL);
 		if (child_id == atoi(data)) {
@@ -1936,10 +1936,10 @@ int char_family(int cid1, int cid2, int cid3)
 	else
 		while (SQL_SUCCESS == Sql_NextRow(sql_handle))
 		{
-			int  charid;
-			int  partnerid;
-			int  childid;
-			char *data;
+			int   charid;
+			int   partnerid;
+			int   childid;
+			char* data;
 
 			Sql_GetData(sql_handle, 0, &data, NULL);
 			charid = atoi(data);
@@ -1956,6 +1956,7 @@ int char_family(int cid1, int cid2, int cid3)
 			}
 		}
 
+
 	Sql_FreeResult(sql_handle);
 	return 0;
 }
@@ -1965,11 +1966,11 @@ int char_family(int cid1, int cid2, int cid3)
 //----------------------------------------------------------------------
 void char_disconnect_player(uint32 account_id)
 {
-	int                      i;
-	struct char_session_data *sd;
+	int                       i;
+	struct char_session_data* sd;
 
 	// disconnect player if online on char-server
-	ARR_FIND(0, fd_max, i, session[i] && (sd = (struct char_session_data *)session[i]->session_data) && sd->account_id == account_id);
+	ARR_FIND(0, fd_max, i, session[i] && (sd = (struct char_session_data*)session[i]->session_data) && sd->account_id == account_id);
 	if (i < fd_max)
 		set_eof(i);
 }
@@ -1982,10 +1983,10 @@ void char_disconnect_player(uint32 account_id)
  **/
 void char_set_session_flag_(int account_id, int val, bool set)
 {
-	int                      i;
-	struct char_session_data *sd;
+	int                       i;
+	struct char_session_data* sd;
 
-	ARR_FIND(0, fd_max, i, session[i] && (sd = (struct char_session_data *)session[i]->session_data) && sd->account_id == account_id);
+	ARR_FIND(0, fd_max, i, session[i] && (sd = (struct char_session_data*)session[i]->session_data) && sd->account_id == account_id);
 	if (i < fd_max) {
 		if (set)
 			sd->flag |= val;
@@ -1994,12 +1995,12 @@ void char_set_session_flag_(int account_id, int val, bool set)
 	}
 }
 
-void char_auth_ok(int fd, struct char_session_data *sd)
+void char_auth_ok(int fd, struct char_session_data* sd)
 {
-	struct online_char_data *character;
+	struct online_char_data* character;
 
-	if ((character = (struct online_char_data *)idb_get(online_char_db, sd->account_id)) != NULL) { // check if character is not online already. [Skotlex]
-		if (character->server > -1) { //Character already online. KICK KICK KICK
+	if ((character = (struct online_char_data*)idb_get(online_char_db, sd->account_id)) != NULL) { // check if character is not online already. [Skotlex]
+		if (character->server > -1) {                                                          //Character already online. KICK KICK KICK
 			mapif_disconnectplayer(map_server[character->server].fd, character->account_id, character->char_id, 2);
 			if (character->waiting_disconnect == INVALID_TIMER)
 				character->waiting_disconnect = add_timer(gettick() + 20000, char_chardb_waiting_disconnect, character->account_id, 0);
@@ -2027,7 +2028,7 @@ void char_auth_ok(int fd, struct char_session_data *sd)
 void char_read_fame_list(void)
 {
 	int    i;
-	char   *data;
+	char*  data;
 	size_t len;
 
 	// Empty ranking lists
@@ -2084,9 +2085,9 @@ void char_read_fame_list(void)
 
 //Loads a character's name and stores it in the buffer given (must be NAME_LENGTH in size)
 //Returns 1 on found, 0 on not found (buffer is filled with Unknown char name)
-int char_loadName(uint32 char_id, char *name)
+int char_loadName(uint32 char_id, char* name)
 {
-	char   *data;
+	char*  data;
 	size_t len;
 
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `name` FROM `%s` WHERE `char_id`='%d'", schema_config.char_db, char_id))
@@ -2142,7 +2143,7 @@ int char_lan_subnetcheck(uint32 ip)
 
 // Console Command Parser [Wizputer]
 //FIXME to be remove (moved to cnslif / will be done once map/char/login, all have their cnslif interface ready)
-int parse_console(const char *buf)
+int parse_console(const char* buf)
 {
 	return cnslif_parse(buf);
 }
@@ -2151,7 +2152,7 @@ int parse_console(const char *buf)
 //------------------------------------------------
 //Pincode system
 //------------------------------------------------
-int char_pincode_compare(int fd, struct char_session_data *sd, char *pin)
+int char_pincode_compare(int fd, struct char_session_data* sd, char* pin)
 {
 	if (strcmp(sd->pincode, pin) == 0) {
 		sd->pincode_try = 0;
@@ -2168,11 +2169,11 @@ int char_pincode_compare(int fd, struct char_session_data *sd, char *pin)
 }
 
 
-void char_pincode_decrypt(uint32 userSeed, char *pin)
+void char_pincode_decrypt(uint32 userSeed, char* pin)
 {
-	int  i;
-	char tab[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	char *buf;
+	int   i;
+	char  tab[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	char* buf;
 
 	for (i = 1; i < 10; i++)
 	{
@@ -2188,7 +2189,7 @@ void char_pincode_decrypt(uint32 userSeed, char *pin)
 		}
 	}
 
-	buf = (char *)aMalloc(sizeof(char) * (PINCODE_LENGTH + 1));
+	buf = (char*)aMalloc(sizeof(char) * (PINCODE_LENGTH + 1));
 	memset(buf, 0, PINCODE_LENGTH + 1);
 	for (i = 0; i < PINCODE_LENGTH; i++)
 	{
@@ -2205,9 +2206,9 @@ void char_pincode_decrypt(uint32 userSeed, char *pin)
 //------------------------------------------------
 int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct online_char_data *character;
+	struct online_char_data* character;
 
-	if ((character = (struct online_char_data *)idb_get(online_char_db, id)) != NULL && character->waiting_disconnect == tid) { //Mark it offline due to timeout.
+	if ((character = (struct online_char_data*)idb_get(online_char_db, id)) != NULL && character->waiting_disconnect == tid) {  //Mark it offline due to timeout.
 		character->waiting_disconnect = INVALID_TIMER;
 		char_set_char_offline(character->char_id, character->account_id);
 	}
@@ -2217,9 +2218,9 @@ int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t 
 /**
  * @see DBApply
  */
-static int char_online_data_cleanup_sub(DBKey key, DBData *data, va_list ap)
+static int char_online_data_cleanup_sub(DBKey key, DBData* data, va_list ap)
 {
-	struct online_char_data *character = (struct online_char_data *)db_data2ptr(data);
+	struct online_char_data* character = (struct online_char_data*)db_data2ptr(data);
 
 	if (character->fd != -1)
 		return 0;            //Character still connected
@@ -2256,11 +2257,11 @@ static int char_clan_member_cleanup(int tid, unsigned int tick, int id, intptr_t
 // Reading Lan Support configuration
 // Rewrote: Anvanced subnet check [LuzZza]
 //----------------------------------
-int char_lan_config_read(const char *lancfgName)
+int char_lan_config_read(const char* lancfgName)
 {
-	FILE *fp;
-	int  line_num = 0, s_subnet = ARRAYLENGTH(subnet);
-	char line[1024], w1[64], w2[64], w3[64], w4[64];
+	FILE* fp;
+	int   line_num = 0, s_subnet = ARRAYLENGTH(subnet);
+	char  line[1024], w1[64], w2[64], w3[64], w4[64];
 
 	if ((fp = fopen(lancfgName, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
@@ -2313,8 +2314,8 @@ int char_lan_config_read(const char *lancfgName)
  */
 bool char_checkdb(void)
 {
-	int        i;
-	const char *sqltable[] =
+	int         i;
+	const char* sqltable[] =
 	{
 		schema_config.char_db,            schema_config.hotkey_db,           schema_config.scdata_db,          schema_config.cart_db,
 		schema_config.inventory_db,       schema_config.charlog_db,
@@ -2582,10 +2583,10 @@ bool char_checkdb(void)
 	return true;
 } // char_checkdb
 
-void char_sql_config_read(const char *cfgName)
+void char_sql_config_read(const char* cfgName)
 {
-	char line[1024], w1[1024], w2[1024];
-	FILE *fp;
+	char  line[1024], w1[1024], w2[1024];
+	FILE* fp;
 
 	if ((fp = fopen(cfgName, "r")) == NULL) {
 		ShowError("File not found: %s\n", cfgName);
@@ -2833,14 +2834,14 @@ void char_set_defaults()
  * @param start: Start point reference
  * @param count: Start point count reference
  */
-static void char_config_split_startpoint(char *w1_value, char *w2_value, struct point start_point[MAX_STARTPOINT], short *count)
+static void char_config_split_startpoint(char* w1_value, char* w2_value, struct point start_point[MAX_STARTPOINT], short* count)
 {
-	char *lineitem, **fields;
-	int  i = 0, fields_length = 3 + 1;
+	char* lineitem, ** fields;
+	int   i = 0, fields_length = 3 + 1;
 
 	(*count) = 0; // Reset to begin reading
 
-	fields = (char **)aMalloc(fields_length * sizeof(char *));
+	fields = (char**)aMalloc(fields_length * sizeof(char*));
 	if (fields == NULL)
 		return;  // Failed to allocate memory.
 
@@ -2880,12 +2881,12 @@ static void char_config_split_startpoint(char *w1_value, char *w2_value, struct 
  * @param w2_value: Value from w2
  * @param start: Start item reference
  */
-static void char_config_split_startitem(char *w1_value, char *w2_value, struct startitem start_items[MAX_STARTITEM])
+static void char_config_split_startitem(char* w1_value, char* w2_value, struct startitem start_items[MAX_STARTITEM])
 {
-	char *lineitem, **fields;
-	int  i = 0, fields_length = 3 + 1;
+	char* lineitem, ** fields;
+	int   i = 0, fields_length = 3 + 1;
 
-	fields = (char **)aMalloc(fields_length * sizeof(char *));
+	fields = (char**)aMalloc(fields_length * sizeof(char*));
 	if (fields == NULL)
 		return;  // Failed to allocate memory.
 
@@ -2912,10 +2913,10 @@ static void char_config_split_startitem(char *w1_value, char *w2_value, struct s
 	aFree(fields);
 }
 
-bool char_config_read(const char *cfgName, bool normal)
+bool char_config_read(const char* cfgName, bool normal)
 {
-	char line[1024], w1[1024], w2[1024];
-	FILE *fp = fopen(cfgName, "r");
+	char  line[1024], w1[1024], w2[1024];
+	FILE* fp = fopen(cfgName, "r");
 
 	if (fp == NULL) {
 		ShowError("Configuration file not found: %s.\n", cfgName);
@@ -3134,11 +3135,11 @@ static void char_config_adjust()
 /*
  * Message conf function
  */
-int char_msg_config_read(const char *cfgName)
+int char_msg_config_read(const char* cfgName)
 {
 	return _msg_config_read(cfgName, CHAR_MAX_MSG, msg_table);
 }
-const char *char_msg_txt(int msg_number)
+const char* char_msg_txt(int msg_number)
 {
 	return _msg_txt(msg_number, CHAR_MAX_MSG, msg_table);
 }
@@ -3212,7 +3213,7 @@ void do_shutdown(void)
 }
 
 
-int do_init(int argc, char **argv)
+int do_init(int argc, char** argv)
 {
 	//Read map indexes
 	runflag = CHARSERVER_ST_STARTING;

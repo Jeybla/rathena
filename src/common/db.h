@@ -154,7 +154,7 @@ typedef enum DBOptions {
 typedef union DBKey {
 	int          i;
 	unsigned int ui;
-	const char   *str;
+	const char*  str;
 	int64        i64;
 	uint64       ui64;
 } DBKey;
@@ -187,7 +187,7 @@ typedef struct DBData {
 	union {
 		int          i;
 		unsigned int ui;
-		void         *ptr;
+		void*        ptr;
 	} u;
 } DBData;
 
@@ -218,7 +218,7 @@ typedef DBData (*DBCreateData)(DBKey key, va_list args);
  * @see DBMap#vdestroy
  * @see DBMap#destroy
  */
-typedef int (*DBApply)(DBKey key, DBData *data, va_list args);
+typedef int (*DBApply)(DBKey key, DBData* data, va_list args);
 
 /**
  * Format of functions that match database entries.
@@ -297,7 +297,7 @@ struct DBIterator {
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData * (*first)(DBIterator * self, DBKey * out_key);
+	DBData* (*first)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Fetches the last entry in the database.
@@ -308,7 +308,7 @@ struct DBIterator {
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData * (*last)(DBIterator * self, DBKey * out_key);
+	DBData* (*last)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Fetches the next entry in the database.
@@ -319,7 +319,7 @@ struct DBIterator {
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData * (*next)(DBIterator * self, DBKey * out_key);
+	DBData* (*next)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Fetches the previous entry in the database.
@@ -330,7 +330,7 @@ struct DBIterator {
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData * (*prev)(DBIterator * self, DBKey * out_key);
+	DBData* (*prev)(DBIterator * self, DBKey * out_key);
 
 	/**
 	 * Returns true if the fetched entry exists.
@@ -340,7 +340,7 @@ struct DBIterator {
 	 * @return true is the entry exists
 	 * @protected
 	 */
-	bool (*exists)(DBIterator *self);
+	bool (* exists)(DBIterator* self);
 
 	/**
 	 * Removes the current entry from the database.
@@ -353,14 +353,14 @@ struct DBIterator {
 	 * @protected
 	 * @see DBMap#remove
 	 */
-	int (*remove)(DBIterator *self, DBData *out_data);
+	int (* remove)(DBIterator* self, DBData* out_data);
 
 	/**
 	 * Destroys this iterator and unlocks the database.
 	 * @param self Iterator
 	 * @protected
 	 */
-	void (*destroy)(DBIterator *self);
+	void (* destroy)(DBIterator* self);
 };
 
 /**
@@ -379,7 +379,7 @@ struct DBMap {
 	 * @return New iterator
 	 * @protected
 	 */
-	DBIterator * (*iterator)(DBMap * self);
+	DBIterator* (*iterator)(DBMap * self);
 
 	/**
 	 * Returns true if the entry exists.
@@ -388,7 +388,7 @@ struct DBMap {
 	 * @return true is the entry exists
 	 * @protected
 	 */
-	bool (*exists)(DBMap *self, DBKey key);
+	bool (* exists)(DBMap* self, DBKey key);
 
 	/**
 	 * Get the data of the entry identified by the key.
@@ -397,7 +397,7 @@ struct DBMap {
 	 * @return Data of the entry or NULL if not found
 	 * @protected
 	 */
-	DBData * (*get)(DBMap * self, DBKey key);
+	DBData* (*get)(DBMap * self, DBKey key);
 
 	/**
 	 * Just calls {@link DBMap#vgetall}.
@@ -416,7 +416,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vgetall(DBMap*,void **,unsigned int,DBMatcher,va_list)
 	 */
-	unsigned int (*getall)(DBMap *self, DBData **buf, unsigned int max, DBMatcher match, ...);
+	unsigned int (* getall)(DBMap* self, DBData** buf, unsigned int max, DBMatcher match, ...);
 
 	/**
 	 * Get the data of the entries matched by <code>match</code>.
@@ -434,7 +434,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#getall(DBMap*,void **,unsigned int,DBMatcher,...)
 	 */
-	unsigned int (*vgetall)(DBMap *self, DBData **buf, unsigned int max, DBMatcher match, va_list args);
+	unsigned int (* vgetall)(DBMap* self, DBData** buf, unsigned int max, DBMatcher match, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vensure}.
@@ -449,7 +449,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vensure(DBMap*,DBKey,DBCreateData,va_list)
 	 */
-	DBData * (*ensure)(DBMap * self, DBKey key, DBCreateData create, ...);
+	DBData* (*ensure)(DBMap * self, DBKey key, DBCreateData create, ...);
 
 	/**
 	 * Get the data of the entry identified by the key.
@@ -463,7 +463,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#ensure(DBMap*,DBKey,DBCreateData,...)
 	 */
-	DBData * (*vensure)(DBMap * self, DBKey key, DBCreateData create, va_list args);
+	DBData* (*vensure)(DBMap * self, DBKey key, DBCreateData create, va_list args);
 
 	/**
 	 * Put the data identified by the key in the database.
@@ -476,7 +476,7 @@ struct DBMap {
 	 * @return 1 if if the entry already exists, 0 otherwise
 	 * @protected
 	 */
-	int (*put)(DBMap *self, DBKey key, DBData data, DBData *out_data);
+	int (* put)(DBMap* self, DBKey key, DBData data, DBData* out_data);
 
 	/**
 	 * Remove an entry from the database.
@@ -488,7 +488,7 @@ struct DBMap {
 	 * @return 1 if if the entry already exists, 0 otherwise
 	 * @protected
 	 */
-	int (*remove)(DBMap *self, DBKey key, DBData *out_data);
+	int (* remove)(DBMap* self, DBKey key, DBData* out_data);
 
 	/**
 	 * Just calls {@link DBMap#vforeach}.
@@ -501,7 +501,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vforeach(DBMap*,DBApply,va_list)
 	 */
-	int (*foreach)(DBMap *self, DBApply func, ...);
+	int (* foreach)(DBMap* self, DBApply func, ...);
 
 	/**
 	 * Apply <code>func</code> to every entry in the database.
@@ -513,7 +513,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#foreach(DBMap*,DBApply,...)
 	 */
-	int (*vforeach)(DBMap *self, DBApply func, va_list args);
+	int (* vforeach)(DBMap* self, DBApply func, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vclear}.
@@ -528,7 +528,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vclear(DBMap*,DBApply,va_list)
 	 */
-	int (*clear)(DBMap *self, DBApply func, ...);
+	int (* clear)(DBMap* self, DBApply func, ...);
 
 	/**
 	 * Removes all entries from the database.
@@ -542,7 +542,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#clear(DBMap*,DBApply,...)
 	 */
-	int (*vclear)(DBMap *self, DBApply func, va_list args);
+	int (* vclear)(DBMap* self, DBApply func, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vdestroy}.
@@ -559,7 +559,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vdestroy(DBMap*,DBApply,va_list)
 	 */
-	int (*destroy)(DBMap *self, DBApply func, ...);
+	int (* destroy)(DBMap* self, DBApply func, ...);
 
 	/**
 	 * Finalize the database, feeing all the memory it uses.
@@ -574,7 +574,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#destroy(DBMap*,DBApply,...)
 	 */
-	int (*vdestroy)(DBMap *self, DBApply func, va_list args);
+	int (* vdestroy)(DBMap* self, DBApply func, va_list args);
 
 	/**
 	 * Return the size of the database (number of items in the database).
@@ -582,7 +582,7 @@ struct DBMap {
 	 * @return Size of the database
 	 * @protected
 	 */
-	unsigned int (*size)(DBMap *self);
+	unsigned int (* size)(DBMap* self);
 
 	/**
 	 * Return the type of the database.
@@ -590,7 +590,7 @@ struct DBMap {
 	 * @return Type of the database
 	 * @protected
 	 */
-	DBType (*type)(DBMap *self);
+	DBType (* type)(DBMap* self);
 
 	/**
 	 * Return the options of the database.
@@ -598,7 +598,7 @@ struct DBMap {
 	 * @return Options of the database
 	 * @protected
 	 */
-	DBOptions (*options)(DBMap *self);
+	DBOptions (* options)(DBMap* self);
 };
 
 // For easy access to the common functions.
@@ -803,7 +803,7 @@ DBReleaser db_custom_release(DBRelease which);
  * @see #db_default_release(DBType,DBOptions)
  * @see #db_fix_options(DBType,DBOptions)
  */
-DBMap *db_alloc(const char *file, const char *func, int line, DBType type, DBOptions options, unsigned short maxlen);
+DBMap* db_alloc(const char* file, const char* func, int line, DBType type, DBOptions options, unsigned short maxlen);
 
 /**
  * Manual cast from 'int' to the union DBKey.
@@ -827,7 +827,7 @@ DBKey db_ui2key(unsigned int key);
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_str2key(const char *key);
+DBKey db_str2key(const char* key);
 
 /**
  * Manual cast from 'int64' to the union DBKey.
@@ -867,7 +867,7 @@ DBData db_ui2data(unsigned int data);
  * @return The data as a DBData struct
  * @public
  */
-DBData db_ptr2data(void *data);
+DBData db_ptr2data(void* data);
 
 /**
  * Gets int type data from struct DBData.
@@ -876,7 +876,7 @@ DBData db_ptr2data(void *data);
  * @return Integer value of the data.
  * @public
  */
-int db_data2i(DBData *data);
+int db_data2i(DBData* data);
 
 /**
  * Gets unsigned int type data from struct DBData.
@@ -885,7 +885,7 @@ int db_data2i(DBData *data);
  * @return Unsigned int value of the data.
  * @public
  */
-unsigned int db_data2ui(DBData *data);
+unsigned int db_data2ui(DBData* data);
 
 /**
  * Gets void* type data from struct DBData.
@@ -894,7 +894,7 @@ unsigned int db_data2ui(DBData *data);
  * @return Void* value of the data.
  * @public
  */
-void *db_data2ptr(DBData *data);
+void* db_data2ptr(DBData* data);
 
 /**
  * Initialize the database system.
@@ -913,21 +913,21 @@ void db_final(void);
 
 // Link DB System - From jAthena
 struct linkdb_node {
-	struct linkdb_node *next;
-	struct linkdb_node *prev;
-	void               *key;
-	void               *data;
+	struct linkdb_node* next;
+	struct linkdb_node* prev;
+	void*               key;
+	void*               data;
 };
 
-typedef void (*LinkDBFunc)(void *key, void *data, va_list args);
+typedef void (*LinkDBFunc)(void* key, void* data, va_list args);
 
-void  linkdb_insert(struct linkdb_node **head, void *key, void *data);   // Doesn't take into account duplicate keys
-void  linkdb_replace(struct linkdb_node **head, void *key, void *data);  // Takes into account duplicate keys
-void *linkdb_search(struct linkdb_node **head, void *key);
-void *linkdb_erase(struct linkdb_node **head, void *key);
-void  linkdb_final(struct linkdb_node **head);
-void  linkdb_vforeach(struct linkdb_node **head, LinkDBFunc func, va_list ap);
-void  linkdb_foreach(struct linkdb_node **head, LinkDBFunc func, ...);
+void  linkdb_insert(struct linkdb_node** head, void* key, void* data);   // Doesn't take into account duplicate keys
+void  linkdb_replace(struct linkdb_node** head, void* key, void* data);  // Takes into account duplicate keys
+void* linkdb_search(struct linkdb_node** head, void* key);
+void* linkdb_erase(struct linkdb_node** head, void* key);
+void  linkdb_final(struct linkdb_node** head);
+void  linkdb_vforeach(struct linkdb_node** head, LinkDBFunc func, va_list ap);
+void  linkdb_foreach(struct linkdb_node** head, LinkDBFunc func, ...);
 
 
 /// Finds an entry in an array.
@@ -1015,9 +1015,9 @@ void  linkdb_foreach(struct linkdb_node **head, LinkDBFunc func, ...);
 /// @param __type Type of data
 #define VECTOR_DECL(__type)     \
         struct {                \
-		size_t _max_;   \
-		size_t _len_;   \
-		__type *_data_; \
+		size_t  _max_;  \
+		size_t  _len_;  \
+		__type* _data_; \
 	}
 
 
@@ -1027,9 +1027,9 @@ void  linkdb_foreach(struct linkdb_node **head, LinkDBFunc func, ...);
 /// @param __type Type of data
 #define VECTOR_STRUCT_DECL(__name, __type) \
         struct __name {                    \
-		size_t _max_;              \
-		size_t _len_;              \
-		__type *_data_;            \
+		size_t  _max_;             \
+		size_t  _len_;             \
+		__type* _data_;            \
 	}
 
 

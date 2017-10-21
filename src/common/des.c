@@ -18,7 +18,7 @@ static const uint8_t mask[8] =
 
 
 /// Initial permutation (IP).
-static void IP(BIT64 *src)
+static void IP(BIT64* src)
 {
 	BIT64                tmp = { { 0 } };
 
@@ -48,7 +48,7 @@ static void IP(BIT64 *src)
 
 
 /// Final permutation (IP^-1).
-static void FP(BIT64 *src)
+static void FP(BIT64* src)
 {
 	BIT64                tmp = { { 0 } };
 
@@ -79,7 +79,7 @@ static void FP(BIT64 *src)
 
 /// Expansion (E).
 /// Expands upper four 8-bits (32b) into eight 6-bits (48b).
-static void E(BIT64 *src)
+static void E(BIT64* src)
 {
 	BIT64 tmp = { { 0 } };
 
@@ -103,7 +103,7 @@ static void E(BIT64 *src)
 			if (src->b[j / 8 + 4] & mask[j % 8])
 				tmp.b[i / 6 + 0] |= mask[i % 6];
 		}
-	} else { // optimized
+	} else {                                                         // optimized
 		tmp.b[0] = ((src->b[7] << 5) | (src->b[4] >> 3)) & 0x3f; // ..0 vutsr
 		tmp.b[1] = ((src->b[4] << 1) | (src->b[5] >> 7)) & 0x3f; // ..srqpo n
 		tmp.b[2] = ((src->b[4] << 5) | (src->b[5] >> 3)) & 0x3f; // ..o nmlkj
@@ -119,7 +119,7 @@ static void E(BIT64 *src)
 
 
 /// Transposition (P-BOX).
-static void TP(BIT64 *src)
+static void TP(BIT64* src)
 {
 	BIT64                tmp = { { 0 } };
 
@@ -150,7 +150,7 @@ static void TP(BIT64 *src)
 
 /// Substitution boxes (S-boxes).
 /// NOTE: This implementation was optimized to process two nibbles in one step (twice as fast).
-static void SBOX(BIT64 *src)
+static void SBOX(BIT64* src)
 {
 	BIT64                tmp = { { 0 } };
 
@@ -193,7 +193,7 @@ static void SBOX(BIT64 *src)
 
 /// DES round function.
 /// XORs src[0..3] with TP(SBOX(E(src[4..7]))).
-static void RoundFunction(BIT64 *src)
+static void RoundFunction(BIT64* src)
 {
 	BIT64 tmp = *src;
 
@@ -208,7 +208,7 @@ static void RoundFunction(BIT64 *src)
 }
 
 
-void des_decrypt_block(BIT64 *block)
+void des_decrypt_block(BIT64* block)
 {
 	IP(block);
 	RoundFunction(block);
@@ -216,11 +216,11 @@ void des_decrypt_block(BIT64 *block)
 }
 
 
-void des_decrypt(unsigned char *data, size_t size)
+void des_decrypt(unsigned char* data, size_t size)
 {
-	BIT64  *p = (BIT64 *)data;
+	BIT64* p = (BIT64*)data;
 	size_t i;
 
-	for (i = 0; i *8 < size; i += 8)
+	for (i = 0; i*8 < size; i += 8)
 		des_decrypt_block(p);
 }

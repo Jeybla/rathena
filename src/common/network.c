@@ -42,8 +42,8 @@ static int _network_async_free_netbuf_proc(int tid, unsigned int tick, int id, i
 
 void network_init()
 {
-	SESSION *s;
-	int32   i;
+	SESSION* s;
+	int32    i;
 
 	memset(g_Session, 0x00, (sizeof(SESSION) * MAXCONN));
 
@@ -74,10 +74,10 @@ void network_final()
 
 void network_do()
 {
-	struct EVDP_EVENT          l_events[EVENTS_PER_CYCLE];
-	register struct EVDP_EVENT *ev;
-	register int               n, nfds;
-	register SESSION           *s;
+	struct EVDP_EVENT           l_events[EVENTS_PER_CYCLE];
+	register struct EVDP_EVENT* ev;
+	register int                n, nfds;
+	register SESSION*           s;
 
 	nfds = evdp_wait(l_events, EVENTS_PER_CYCLE, 1000);      // @TODO: timer_getnext()
 
@@ -135,8 +135,8 @@ static bool _setnonblock(int32 fd)
 
 static bool _network_accept(int32 fd)
 {
-	SESSION *listener = &g_Session[fd];
-	SESSION *s;
+	SESSION* listener = &g_Session[fd];
+	SESSION* s;
 
 	union {
 		struct sockaddr_in  v4;
@@ -144,10 +144,10 @@ static bool _network_accept(int32 fd)
 		struct sockaddr_in6 v6;
 #endif
 	}
-	                _addr;
-	int             newfd;
-	socklen_t       addrlen;
-	struct sockaddr *addr;
+	                 _addr;
+	int              newfd;
+	socklen_t        addrlen;
+	struct sockaddr* addr;
 
 	// Accept until OS returns - nothing to accept anymore
 	// - this is required due to our EVDP abstraction. (which handles on listening sockets similar to epoll's EPOLLET flag.)
@@ -156,11 +156,11 @@ static bool _network_accept(int32 fd)
 #ifdef ENABLE_IPV6
 		if (listener->v6 == true) {
 			addrlen = sizeof(_addr.v6);
-			addr    = (struct sockaddr *)&_addr.v6;
+			addr    = (struct sockaddr*)&_addr.v6;
 		} else {
 #endif
 		addrlen = sizeof(_addr.v4);
-		addr    = (struct sockaddr *)&_addr.v4;
+		addr    = (struct sockaddr*)&_addr.v4;
 #ifdef ENABLE_IPV6
 	}
 #endif
@@ -233,7 +233,7 @@ static bool _network_accept(int32 fd)
 
 void network_disconnect(int32 fd)
 {
-	SESSION *s = &g_Session[fd];
+	SESSION* s = &g_Session[fd];
 	netbuf b, bn;
 
 	// Prevent recursive calls
@@ -297,9 +297,9 @@ void network_disconnect(int32 fd)
 } //end: network_disconnect()
 
 
-int32 network_addlistener(bool v6, const char *addr, uint16 port)
+int32 network_addlistener(bool v6, const char* addr, uint16 port)
 {
-	SESSION *s;
+	SESSION* s;
 	int fd;
 
 #ifdef SO_REUSEADDR
@@ -371,14 +371,14 @@ int32 network_addlistener(bool v6, const char *addr, uint16 port)
 	// Bind
 #ifdef ENABLE_IPV6
 	if (v6 == true) {
-		if (bind(fd, (struct sockaddr *)&s->addr.v6, sizeof(s->addr.v6)) == -1) {
+		if (bind(fd, (struct sockaddr*)&s->addr.v6, sizeof(s->addr.v6)) == -1) {
 			ShowError("network_addlistener(t, '%s', %u): bind failed (errno: %u / %s)\n", addr, port, errno, strerror(errno));
 			close(fd);
 			return -1;
 		}
 	} else {
 #endif
-	if (bind(fd, (struct sockaddr *)&s->addr.v4, sizeof(s->addr.v4)) == -1) {
+	if (bind(fd, (struct sockaddr*)&s->addr.v4, sizeof(s->addr.v4)) == -1) {
 		ShowError("network_addlistener(f, '%s', %u): bind failed (errno: %u / %s)\n", addr, port, errno, strerror(errno));
 		close(fd);
 		return -1;
@@ -425,7 +425,7 @@ int32 network_addlistener(bool v6, const char *addr, uint16 port)
 
 static bool _network_connect_establishedHandler(int32 fd)
 {
-	register SESSION *s = &g_Session[fd];
+	register SESSION* s = &g_Session[fd];
 	int val;
 	socklen_t val_len;
 
@@ -482,15 +482,15 @@ static bool _network_connect_establishedHandler(int32 fd)
 } //end: _network_connect_establishedHandler()
 
 
-int32 network_connect(bool       v6,
-                      const char *addr,
-                      uint16     port,
-                      const char *from_addr,
-                      uint16     from_port,
-                      bool       (*onConnectionEstablishedHandler)(int32 fd),
-                      void       (*onConnectionLooseHandler)(int32 fd))
+int32 network_connect(bool        v6,
+                      const char* addr,
+                      uint16      port,
+                      const char* from_addr,
+                      uint16      from_port,
+                      bool        (* onConnectionEstablishedHandler)(int32 fd),
+                      void        (* onConnectionLooseHandler)(int32 fd))
 {
-	register SESSION *s;
+	register SESSION* s;
 	int32 fd, ret;
 	struct sockaddr_in ip4;
 
@@ -543,7 +543,7 @@ int32 network_connect(bool       v6,
 				return -1;
 			}
 
-			ret = bind(fd, (struct sockaddr *)&ip6, sizeof(ip6));
+			ret = bind(fd, (struct sockaddr*)&ip6, sizeof(ip6));
 		} else {
 		#endif
 		memset(&ip4, 0x00, sizeof(ip4));
@@ -551,7 +551,7 @@ int32 network_connect(bool       v6,
 		ip4.sin_family      = AF_INET;
 		ip4.sin_port        = htons(from_port);
 		ip4.sin_addr.s_addr = inet_addr(from_addr);
-		ret                 = bind(fd, (struct sockaddr *)&ip4, sizeof(ip4));
+		ret                 = bind(fd, (struct sockaddr*)&ip4, sizeof(ip4));
 		#ifdef ENABLE_IPV6
 	}
 		#endif
@@ -620,10 +620,10 @@ int32 network_connect(bool       v6,
 
 #ifdef ENABLE_IPV6
 	if (v6 == true)
-		ret = connect(fd, (struct sockaddr *)&ip6, sizeof(ip6));
+		ret = connect(fd, (struct sockaddr*)&ip6, sizeof(ip6));
 	else
 #endif
-	ret = connect(fd, (struct sockaddr *)&ip4, sizeof(ip4));
+	ret = connect(fd, (struct sockaddr*)&ip4, sizeof(ip4));
 
 
 	//
@@ -651,7 +651,7 @@ int32 network_connect(bool       v6,
 
 static bool _onSend(int32 fd)
 {
-	register SESSION *s = &g_Session[fd];
+	register SESSION* s = &g_Session[fd];
 	register netbuf buf, buf_next;
 	register uint32 szNeeded;
 	register int wLen;
@@ -725,9 +725,9 @@ static bool _onSend(int32 fd)
 
 static bool _onRORecv(int32 fd)
 {
-	register SESSION *s = &g_Session[fd];
+	register SESSION* s = &g_Session[fd];
 	register uint32 szNeeded;
-	register char *p;
+	register char* p;
 	register int rLen;
 
 	if (s->type == NST_FREE)
@@ -741,12 +741,12 @@ static bool _onRORecv(int32 fd)
 	{
 	case NRS_WAITOP:
 		szNeeded = s->read.head_left;
-		p        = ((char *)&s->read.head[0]) + (2 - szNeeded);
+		p        = ((char*)&s->read.head[0]) + (2 - szNeeded);
 		break;
 
 	case NRS_WAITLEN:
 		szNeeded = s->read.head_left;
-		p        = ((char *)&s->read.head[1]) + (2 - szNeeded);
+		p        = ((char*)&s->read.head[1]) + (2 - szNeeded);
 		break;
 
 	case NRS_WAITDATA:
@@ -754,7 +754,7 @@ static bool _onRORecv(int32 fd)
 		register netbuf buf = s->read.buf;
 
 		szNeeded = (buf->dataLen - buf->dataPos);
-		p        = (char *)&buf->buf[buf->dataPos];
+		p        = (char*)&buf->buf[buf->dataPos];
 	}
 	break;
 
@@ -806,7 +806,7 @@ static bool _onRORecv(int32 fd)
 			// complete ..
 			//  next state depends on packet type.
 
-			s->read.head[1] = ((uint16 *)s->netparser_data)[s->read.head[0]];           // store lenght of packet by opcode head[0] to head[1]
+			s->read.head[1] = ((uint16*)s->netparser_data)[s->read.head[0]];            // store lenght of packet by opcode head[0] to head[1]
 
 			if (s->read.head[1] == ROPACKET_UNKNOWN) {
 				// unknown packet - disconnect
@@ -869,7 +869,7 @@ static bool _onRORecv(int32 fd)
 				// packet has no data (only opcode + length)
 				register netbuf buf = netbuffer_get(4);
 
-				NBUFL(buf, 0) = *((uint32 *)&s->read.head[0]);        // copy  Opcode + length to netbuffer using MOVL
+				NBUFL(buf, 0) = *((uint32*)&s->read.head[0]);         // copy  Opcode + length to netbuffer using MOVL
 				buf->dataPos  = 4;
 				buf->dataLen  = 4;
 				buf->next     = NULL;
@@ -892,7 +892,7 @@ static bool _onRORecv(int32 fd)
 				// next state -> waitdata!
 				register netbuf buf = netbuffer_get(s->read.head[1]);
 
-				NBUFL(buf, 0) = *((uint32 *)&s->read.head[0]);        // copy  Opcode + length to netbuffer using MOVL
+				NBUFL(buf, 0) = *((uint32*)&s->read.head[0]);         // copy  Opcode + length to netbuffer using MOVL
 				buf->dataPos  = 4;
 				buf->dataLen  = s->read.head[1];
 				buf->next     = NULL;
@@ -948,7 +948,7 @@ static bool _onRORecv(int32 fd)
 
 void network_send(int32 fd, netbuf buf)
 {
-	register SESSION *s = &g_Session[fd];
+	register SESSION* s = &g_Session[fd];
 
 #ifdef PARANOID_CHECKS
 	if (fd >= MAXCONN) {
@@ -993,10 +993,10 @@ void network_send(int32 fd, netbuf buf)
 
 
 void network_parser_set_ro(int32 fd,
-                           int16 *packetlentable,
-                           void (*onPacketCompleteProc)(int32 fd, uint16 op, uint16 len, netbuf buf))
+                           int16* packetlentable,
+                           void (* onPacketCompleteProc)(int32 fd, uint16 op, uint16 len, netbuf buf))
 {
-	register SESSION *s = &g_Session[fd];
+	register SESSION* s = &g_Session[fd];
 	register netbuf b, nb; // used for potential free attached buffers.
 
 	if (s->type == NST_FREE)

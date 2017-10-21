@@ -11,8 +11,8 @@ extern "C" {
 
 #include "cbasetypes.h"
 
-typedef struct rAthread   *prAthread;
-typedef void * (*rAthreadProc)(void *);
+typedef struct rAthread   * prAthread;
+typedef void* (*rAthreadProc)(void*);
 
 typedef enum RATHREAD_PRIO {
 	RAT_PRIO_LOW = 0,
@@ -29,7 +29,7 @@ typedef enum RATHREAD_PRIO {
  *
  * @return not NULL if success
  */
-prAthread rathread_create(rAthreadProc entryPoint, void *param);
+prAthread rathread_create(rAthreadProc entryPoint, void* param);
 
 
 /**
@@ -42,7 +42,7 @@ prAthread rathread_create(rAthreadProc entryPoint, void *param);
  *
  * @return not NULL if success
  */
-prAthread rathread_createEx(rAthreadProc entryPoint, void *param, size_t szStack, RATHREAD_PRIO prio);
+prAthread rathread_createEx(rAthreadProc entryPoint, void* param, size_t szStack, RATHREAD_PRIO prio);
 
 
 /**
@@ -85,7 +85,7 @@ int rathread_get_tid();
  *
  * @return true - if the given thread has been terminated.
  */
-bool rathread_wait(prAthread handle, void **out_exitCode);
+bool rathread_wait(prAthread handle, void** out_exitCode);
 
 
 /**

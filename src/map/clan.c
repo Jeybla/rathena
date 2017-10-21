@@ -14,7 +14,7 @@
 #include "script.h"
 #include "status.h"
 
-static DBMap *clan_db; // int clan_id -> struct clan*
+static DBMap* clan_db; // int clan_id -> struct clan*
 
 void do_init_clan()
 {
@@ -26,7 +26,7 @@ void do_final_clan()
 	db_destroy(clan_db);
 }
 
-void clan_load_clandata(int count, struct clan *clans)
+void clan_load_clandata(int count, struct clan* clans)
 {
 	int i, j;
 
@@ -34,10 +34,10 @@ void clan_load_clandata(int count, struct clan *clans)
 
 	for (i = 0, j = 0; i < count; i++, clans++)
 	{
-		struct clan *clan = clans;
-		struct clan *clanCopy;
+		struct clan* clan = clans;
+		struct clan* clanCopy;
 
-		clanCopy = (struct clan *)aMalloc(sizeof(struct clan));
+		clanCopy = (struct clan*)aMalloc(sizeof(struct clan));
 
 		if (clanCopy == NULL) {
 			ShowError("Memory could not be allocated for a clan.\n");
@@ -54,18 +54,18 @@ void clan_load_clandata(int count, struct clan *clans)
 	ShowStatus("Received '"CL_WHITE "%d"CL_RESET "' clans from char-server.\n", j);
 }
 
-struct clan *clan_search(int id)
+struct clan* clan_search(int id)
 {
-	return (struct clan *)idb_get(clan_db, id);
+	return (struct clan*)idb_get(clan_db, id);
 }
 
-struct clan *clan_searchname(const char *name)
+struct clan* clan_searchname(const char* name)
 {
-	struct clan *c;
+	struct clan* c;
 
-	DBIterator  *iter = db_iterator(clan_db);
+	DBIterator*  iter = db_iterator(clan_db);
 
-	for (c = (struct clan *)dbi_first(iter); dbi_exists(iter); c = (struct clan *)dbi_next(iter))
+	for (c = (struct clan*)dbi_first(iter); dbi_exists(iter); c = (struct clan*)dbi_next(iter))
 	{
 		if (strncmpi(c->name, name, NAME_LENGTH) == 0) {
 			break;
@@ -76,7 +76,7 @@ struct clan *clan_searchname(const char *name)
 	return c;
 }
 
-struct map_session_data *clan_getavailablesd(struct clan *clan)
+struct map_session_data* clan_getavailablesd(struct clan* clan)
 {
 	int i;
 
@@ -86,7 +86,7 @@ struct map_session_data *clan_getavailablesd(struct clan *clan)
 	return (i < clan->max_member) ? clan->members[i] : NULL;
 }
 
-int clan_getMemberIndex(struct clan *clan, uint32 account_id)
+int clan_getMemberIndex(struct clan* clan, uint32 account_id)
 {
 	int i;
 
@@ -101,7 +101,7 @@ int clan_getMemberIndex(struct clan *clan, uint32 account_id)
 	}
 }
 
-int clan_getNextFreeMemberIndex(struct clan *clan)
+int clan_getNextFreeMemberIndex(struct clan* clan)
 {
 	int i;
 
@@ -116,10 +116,10 @@ int clan_getNextFreeMemberIndex(struct clan *clan)
 	}
 }
 
-void clan_member_joined(struct map_session_data *sd)
+void clan_member_joined(struct map_session_data* sd)
 {
-	struct clan *clan;
-	int         index;
+	struct clan* clan;
+	int          index;
 
 	nullpo_retv(sd);
 
@@ -139,10 +139,10 @@ void clan_member_joined(struct map_session_data *sd)
 	}
 }
 
-void clan_member_left(struct map_session_data *sd)
+void clan_member_left(struct map_session_data* sd)
 {
-	int         index;
-	struct clan *clan;
+	int          index;
+	struct clan* clan;
 
 	nullpo_retv(sd);
 	nullpo_retv(clan = sd->clan);
@@ -156,9 +156,9 @@ void clan_member_left(struct map_session_data *sd)
 	}
 }
 
-bool clan_member_join(struct map_session_data *sd, int clan_id, uint32 account_id, uint32 char_id)
+bool clan_member_join(struct map_session_data* sd, int clan_id, uint32 account_id, uint32 char_id)
 {
-	struct clan *clan;
+	struct clan* clan;
 
 	nullpo_ret(sd);
 
@@ -177,9 +177,9 @@ bool clan_member_join(struct map_session_data *sd, int clan_id, uint32 account_i
 	return true;
 }
 
-bool clan_member_leave(struct map_session_data *sd, int clan_id, uint32 account_id, uint32 char_id)
+bool clan_member_leave(struct map_session_data* sd, int clan_id, uint32 account_id, uint32 char_id)
 {
-	struct clan *clan;
+	struct clan* clan;
 
 	nullpo_ret(sd);
 
@@ -197,16 +197,16 @@ bool clan_member_leave(struct map_session_data *sd, int clan_id, uint32 account_
 	return true;
 }
 
-void clan_recv_message(int clan_id, uint32 account_id, const char *mes, int len)
+void clan_recv_message(int clan_id, uint32 account_id, const char* mes, int len)
 {
-	struct clan *clan;
+	struct clan* clan;
 
 	nullpo_retv(clan = clan_search(clan_id));
 
 	clif_clan_message(clan, mes, len);
 }
 
-void clan_send_message(struct map_session_data *sd, const char *mes, int len)
+void clan_send_message(struct map_session_data* sd, const char* mes, int len)
 {
 	nullpo_retv(sd);
 	nullpo_retv(sd->clan);
@@ -216,7 +216,7 @@ void clan_send_message(struct map_session_data *sd, const char *mes, int len)
 	log_chat(LOG_CHAT_CLAN, sd->status.clan_id, sd->status.char_id, sd->status.account_id, mapindex_id2name(sd->mapindex), sd->bl.x, sd->bl.y, NULL, mes);
 }
 
-int clan_get_alliance_count(struct clan *clan, int flag)
+int clan_get_alliance_count(struct clan* clan, int flag)
 {
 	int i, count;
 
