@@ -94,7 +94,6 @@ static char* checkpath(char* path, const char* srcpath) // just make sure the ch
 				*p++ = *srcpath++;
 		}
 
-
 	*p = *srcpath; //EOS
 	return path;
 }
@@ -204,7 +203,6 @@ static char* checkpath(char* path, const char* srcpath) // just make sure the ch
 			} else
 				*p++ = *srcpath++;
 		}
-
 
 	*p = *srcpath; //EOS
 	return path;

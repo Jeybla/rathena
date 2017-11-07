@@ -97,7 +97,7 @@ int sock2newfd(SOCKET s)
 	// find an empty position
 	for (fd = 1; fd < sock_arr_len; ++fd)
 		if (sock_arr[fd] == INVALID_SOCKET)
-			break;             // empty position
+			break;  // empty position
 	if (fd == ARRAYLENGTH(sock_arr)) { // too many sockets
 		closesocket(s);
 		WSASetLastError(WSAEMFILE);
@@ -720,7 +720,7 @@ int realloc_writefifo(int fd, size_t addition)
 	if (session[fd]->max_wdata >= (size_t)2 * (session[fd]->flag.server ? FIFOSIZE_SERVERLINK : WFIFO_SIZE)
 	    && (session[fd]->wdata_size + addition) * 4 < session[fd]->max_wdata) { // shrink rule, shrink by 2 when only a quarter of the fifo is used, don't shrink below nominal size.
 		newsize = session[fd]->max_wdata / 2;
-	} else                                                                      // no change
+	} else  // no change
 		return 0;
 
 	RECREATE(session[fd]->wdata, unsigned char, newsize);
@@ -885,7 +885,7 @@ int do_sockets(int next)
 		if (session[i]->wdata_size)
 			session[i]->func_send(i);
 
-		if (session[i]->flag.eof) {        //func_send can't free a session, this is safe.
+		if (session[i]->flag.eof) { //func_send can't free a session, this is safe.
 			//Finally, even if there is no data to parse, connections signalled eof should be closed, so we call parse_func [Skotlex]
 			session[i]->func_parse(i); //This should close the session immediately.
 		}
@@ -1066,12 +1066,12 @@ static int connect_check_(uint32 ip)
 	// Inspect connection history
 	while (hist)
 	{
-		if (ip == hist->ip) {                                                  // IP found
-			if (hist->ddos) {                                              // flagged as DDoS
+		if (ip == hist->ip) { // IP found
+			if (hist->ddos) { // flagged as DDoS
 				return(connect_ok == 2 ? 1 : 0);
 			} else if (DIFF_TICK(gettick(), hist->tick) < ddos_interval) { // connection within ddos_interval
 				hist->tick = gettick();
-				if (hist->count++ >= ddos_count) {                     // DDoS attack detected
+				if (hist->count++ >= ddos_count) { // DDoS attack detected
 					hist->ddos = 1;
 					ShowWarning("connect_check: DDoS Attack detected from %d.%d.%d.%d!\n", CONVIP(ip));
 					return(connect_ok == 2 ? 1 : 0);
@@ -1155,7 +1155,7 @@ int access_ipmask(const char* str, AccessControl* acc)
 			return 0;
 		}
 		ip = MAKEIP(a[0], a[1], a[2], a[3]);
-		if (n == 8) {        // standard mask
+		if (n == 8) { // standard mask
 			mask = MAKEIP(m[0], m[1], m[2], m[3]);
 		} else if (n == 5) { // bit mask
 			mask = 0;
@@ -1406,7 +1406,7 @@ void socket_init(void)
 		struct rlimit rlp;
 		if (0 == getrlimit(RLIMIT_NOFILE, &rlp)) {
 			rlp.rlim_cur = FD_SETSIZE;
-			if (0 != setrlimit(RLIMIT_NOFILE, &rlp)) {         // failed, try setting the maximum too (permission to change system limits is required)
+			if (0 != setrlimit(RLIMIT_NOFILE, &rlp)) { // failed, try setting the maximum too (permission to change system limits is required)
 				rlp.rlim_max = FD_SETSIZE;
 				if (0 != setrlimit(RLIMIT_NOFILE, &rlp)) { // failed
 					const char* errmsg = error_msg();

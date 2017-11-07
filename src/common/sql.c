@@ -800,7 +800,7 @@ int SqlStmt_BindColumn(SqlStmt* self, size_t idx, enum SqlDataType buffer_type, 
 			ShowDebug("SqlStmt_BindColumn: buffer_len(%d) is too small, no room for the nul-terminator\n", buffer_len);
 			return SQL_ERROR;
 		}
-		--buffer_len;      // nul-terminator
+		--buffer_len; // nul-terminator
 	}
 	if (!self->bind_columns) { // initialize the bindings
 		size_t i;
@@ -898,7 +898,7 @@ int SqlStmt_NextRow(SqlStmt* self)
 		MYSQL_BIND*   column = &self->columns[i];
 #if !defined (MYSQL_DATA_TRUNCATED)
 		// MySQL 4.1/(below?) returns success even if data is truncated, so we test truncation manually [FlavioJS]
-		if (column->buffer_length < length) {                                                             // report truncated column
+		if (column->buffer_length < length) { // report truncated column
 			if (column->buffer_type == MYSQL_TYPE_STRING || column->buffer_type == MYSQL_TYPE_BLOB) { // string/enum/blob column
 				SqlStmt_P_ShowDebugTruncatedColumn(self, i);
 				return SQL_ERROR;
@@ -908,7 +908,7 @@ int SqlStmt_NextRow(SqlStmt* self)
 #endif
 		if (self->column_lengths[i].out_length)
 			*self->column_lengths[i].out_length = (uint32)length;
-		if (column->buffer_type == MYSQL_TYPE_STRING) {                                        // clear unused part of the string/enum buffer (and nul-terminate)
+		if (column->buffer_type == MYSQL_TYPE_STRING) { // clear unused part of the string/enum buffer (and nul-terminate)
 			memset((char*)column->buffer + length, 0, column->buffer_length - length + 1);
 		} else if (column->buffer_type == MYSQL_TYPE_BLOB && length < column->buffer_length) { // clear unused part of the blob buffer
 			memset((char*)column->buffer + length, 0, column->buffer_length - length);

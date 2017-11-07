@@ -326,8 +326,8 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer)
 
 	// Account creation with _M/_F
 	if (login_config.new_account_flag) {
-		if (len > 2 && strnlen(sd->passwd, NAME_LENGTH) > 0                            // valid user and password lengths
-		    && sd->passwdenc == 0                                                      // unencoded password
+		if (len > 2 && strnlen(sd->passwd, NAME_LENGTH) > 0 // valid user and password lengths
+		    && sd->passwdenc == 0                           // unencoded password
 		    && sd->userid[len - 2] == '_' && memchr("FfMm", sd->userid[len - 1], 4)) { // _M/_F suffix
 			int result;
 			// remove the _M/_F suffix

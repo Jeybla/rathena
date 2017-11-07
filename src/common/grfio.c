@@ -16,15 +16,15 @@
 //	file entry table struct
 //----------------------------
 typedef struct _FILELIST {
-	int   srclen;                    // compressed size
+	int   srclen;                   // compressed size
 	int   srclen_aligned;
-	int   declen;                    // original size
-	int   srcpos;                    // position of entry in grf
-	int   next;                      // index of next filelist entry with same hash (-1: end of entry chain)
+	int   declen;                   // original size
+	int   srcpos;                   // position of entry in grf
+	int   next;                     // index of next filelist entry with same hash (-1: end of entry chain)
 	char  type;
-	char  fn[128 - 4 * 5];           // file name
-	char* fnd;                       // if the file was cloned, contains name of original file
-	char  gentry;                    // read grf file select
+	char  fn[128 - 4 * 5];          // file name
+	char* fnd;                      // if the file was cloned, contains name of original file
+	char  gentry;                   // read grf file select
 } FILELIST;
 
 #define FILELIST_TYPE_FILE              0x01 // entry is a file
@@ -259,7 +259,7 @@ static void grf_decode(unsigned char* buf, size_t len, char entry_type, int entr
 	} else
 	if (entry_type & FILELIST_TYPE_ENCRYPT_HEADER) { // header encrypted
 		grf_decode_header(buf, len);
-	} else {                                         // plaintext
+	} else { // plaintext
 	}
 }
 
@@ -440,7 +440,7 @@ void* grfio_reads(const char* fname, int* size)
 			fseek(in, 0, SEEK_END);
 			declen = ftell(in);
 			fseek(in, 0, SEEK_SET);
-			buf2 = (unsigned char*)aMalloc(declen + 1);   // +1 for resnametable zero-termination
+			buf2 = (unsigned char*)aMalloc(declen + 1);  // +1 for resnametable zero-termination
 			if (fread(buf2, 1, declen, in) != declen)
 				ShowError("An error occured in fread grfio_reads, fname=%s \n", fname);
 			fclose(in);
@@ -468,8 +468,8 @@ void* grfio_reads(const char* fname, int* size)
 				ShowError("An error occured in fread in grfio_reads, grfname=%s\n", grfname);
 			fclose(in);
 
-			buf2 = (unsigned char*)aMalloc(entry->declen + 1); // +1 for resnametable zero-termination
-			if (entry->type & FILELIST_TYPE_FILE) {            // file
+			buf2 = (unsigned char*)aMalloc(entry->declen + 1);  // +1 for resnametable zero-termination
+			if (entry->type & FILELIST_TYPE_FILE) { // file
 				uLongf len;
 				grf_decode(buf, fsize, entry->type, entry->srclen);
 				len = entry->declen;
@@ -627,8 +627,8 @@ static int grfio_entryread(const char* grfname, int gentry)
 			return 4;
 		}
 
-		rBuf         = (unsigned char*)aMalloc(rSize);  // Get a Read Size
-		grf_filelist = (unsigned char*)aMalloc(eSize);  // Get a Extend Size
+		rBuf         = (unsigned char*)aMalloc(rSize); // Get a Read Size
+		grf_filelist = (unsigned char*)aMalloc(eSize); // Get a Extend Size
 		if (fread(rBuf, 1, rSize, fp) != rSize)
 			ShowError("An error occured in fread \n");
 		fclose(fp);

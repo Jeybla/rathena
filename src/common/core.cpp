@@ -240,7 +240,7 @@ const char* get_svn_revision(void)
 				}                                                                                // Get the name
 				if (fgets(line, sizeof(line), fp) == NULL) {
 					printf("Can't get entries kind\n");
-				}                                    // Get the entries kind
+				}                                                                                    // Get the entries kind
 				if (fgets(line, sizeof(line), fp)) { // Get the rev numver
 					snprintf(svn_version_buffer, sizeof(svn_version_buffer), "%d", atoi(line));
 				}

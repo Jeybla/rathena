@@ -2,6 +2,7 @@
 // For more information, see LICENCE in the main folder
 
 #pragma warning(disable:4800)
+#include "char.hpp"
 
 #include <time.h>
 #include <stdarg.h>
@@ -21,18 +22,19 @@
 #include "../common/strlib.h"
 #include "../common/timer.h"
 #include "../common/cli.h"
-#include "int_guild.h"
-#include "int_homun.h"
-#include "int_mail.h"
-#include "int_mercenary.h"
-#include "int_elemental.h"
-#include "int_party.h"
-#include "int_storage.h"
-#include "inter.h"
-#include "char_logif.h"
-#include "char_mapif.h"
-#include "char_cnslif.h"
-#include "char_clif.h"
+
+#include "int_guild.hpp"
+#include "int_homun.hpp"
+#include "int_mail.hpp"
+#include "int_mercenary.hpp"
+#include "int_elemental.hpp"
+#include "int_party.hpp"
+#include "int_storage.hpp"
+#include "inter.hpp"
+#include "char_logif.hpp"
+#include "char_mapif.hpp"
+#include "char_cnslif.hpp"
+#include "char_clif.hpp"
 
 //definition of exported var declared in .h
 int                    login_fd = -1; //login file descriptor
@@ -178,7 +180,7 @@ void char_set_char_offline(uint32 char_id, uint32 account_id)
 
 	if ((character = (struct online_char_data*)idb_get(online_char_db, account_id)) != NULL) { //We don't free yet to avoid aCalloc/aFree spamming during char change. [Skotlex]
 		if (character->server > -1)
-			if (map_server[character->server].users > 0)                               // Prevent this value from going negative.
+			if (map_server[character->server].users > 0)  // Prevent this value from going negative.
 				map_server[character->server].users--;
 
 		if (character->waiting_disconnect != INVALID_TIMER) {
@@ -225,7 +227,7 @@ int char_db_setoffline(DBKey key, DBData* data, va_list ap)
 /**
  * @see DBApply
  */
-static int char_db_kickoffline(DBKey key, DBData* data, va_list ap)
+int char_db_kickoffline(DBKey key, DBData* data, va_list ap)
 {
 	struct online_char_data* character = (struct online_char_data*)db_data2ptr(data);
 	int                      server_id = va_arg(ap, int);
@@ -273,7 +275,7 @@ void char_set_all_offline_sql(void)
 /**
  * @see DBCreateData
  */
-static DBData char_create_charstatus(DBKey key, va_list args)
+DBData char_create_charstatus(DBKey key, va_list args)
 {
 	struct mmo_charstatus* cp;
 
@@ -526,8 +528,8 @@ int char_memitemdata_to_sql(const struct item items[], int max, int id, enum sto
 	SqlStmt*    stmt;
 	int         i, j, offset = 0, errors = 0;
 	const char* tablename, * selectoption, * printname;
-	struct item item;  // temp storage variable
-	bool*       flag;  // bit array for inventory matching
+	struct item item; // temp storage variable
+	bool*       flag; // bit array for inventory matching
 	bool        found;
 
 	switch (tableswitch)
@@ -1956,7 +1958,6 @@ int char_family(int cid1, int cid2, int cid3)
 			}
 		}
 
-
 	Sql_FreeResult(sql_handle);
 	return 0;
 }
@@ -2000,7 +2001,7 @@ void char_auth_ok(int fd, struct char_session_data* sd)
 	struct online_char_data* character;
 
 	if ((character = (struct online_char_data*)idb_get(online_char_db, sd->account_id)) != NULL) { // check if character is not online already. [Skotlex]
-		if (character->server > -1) {                                                          //Character already online. KICK KICK KICK
+		if (character->server > -1) { //Character already online. KICK KICK KICK
 			mapif_disconnectplayer(map_server[character->server].fd, character->account_id, character->char_id, 2);
 			if (character->waiting_disconnect == INVALID_TIMER)
 				character->waiting_disconnect = add_timer(gettick() + 20000, char_chardb_waiting_disconnect, character->account_id, 0);
@@ -2208,7 +2209,7 @@ int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t 
 {
 	struct online_char_data* character;
 
-	if ((character = (struct online_char_data*)idb_get(online_char_db, id)) != NULL && character->waiting_disconnect == tid) {  //Mark it offline due to timeout.
+	if ((character = (struct online_char_data*)idb_get(online_char_db, id)) != NULL && character->waiting_disconnect == tid) { //Mark it offline due to timeout.
 		character->waiting_disconnect = INVALID_TIMER;
 		char_set_char_offline(character->char_id, character->account_id);
 	}
@@ -2218,7 +2219,7 @@ int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t 
 /**
  * @see DBApply
  */
-static int char_online_data_cleanup_sub(DBKey key, DBData* data, va_list ap)
+int char_online_data_cleanup_sub(DBKey key, DBData* data, va_list ap)
 {
 	struct online_char_data* character = (struct online_char_data*)db_data2ptr(data);
 
@@ -2233,13 +2234,13 @@ static int char_online_data_cleanup_sub(DBKey key, DBData* data, va_list ap)
 	return 0;
 }
 
-static int char_online_data_cleanup(int tid, unsigned int tick, int id, intptr_t data)
+int char_online_data_cleanup(int tid, unsigned int tick, int id, intptr_t data)
 {
 	online_char_db->foreach(online_char_db, char_online_data_cleanup_sub);
 	return 0;
 }
 
-static int char_clan_member_cleanup(int tid, unsigned int tick, int id, intptr_t data)
+int char_clan_member_cleanup(int tid, unsigned int tick, int id, intptr_t data)
 {
 	// Auto removal is disabled
 	if (charserv_config.clan_remove_inactive_days <= 0) {
@@ -2834,7 +2835,7 @@ void char_set_defaults()
  * @param start: Start point reference
  * @param count: Start point count reference
  */
-static void char_config_split_startpoint(char* w1_value, char* w2_value, struct point start_point[MAX_STARTPOINT], short* count)
+void char_config_split_startpoint(char* w1_value, char* w2_value, struct point start_point[MAX_STARTPOINT], short* count)
 {
 	char* lineitem, ** fields;
 	int   i = 0, fields_length = 3 + 1;
@@ -2881,7 +2882,7 @@ static void char_config_split_startpoint(char* w1_value, char* w2_value, struct 
  * @param w2_value: Value from w2
  * @param start: Start item reference
  */
-static void char_config_split_startitem(char* w1_value, char* w2_value, struct startitem start_items[MAX_STARTITEM])
+void char_config_split_startitem(char* w1_value, char* w2_value, struct startitem start_items[MAX_STARTITEM])
 {
 	char* lineitem, ** fields;
 	int   i = 0, fields_length = 3 + 1;
@@ -3122,7 +3123,7 @@ bool char_config_read(const char* cfgName, bool normal)
 /**
  * Checks for values out of range.
  */
-static void char_config_adjust()
+void char_config_adjust()
 {
 #if PACKETVER < 20100803
 	if (charserv_config.char_config.char_del_option & CHAR_DEL_BIRTHDATE) {

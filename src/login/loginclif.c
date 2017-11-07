@@ -86,7 +86,7 @@ static void logclif_auth_ok(struct login_session_data* sd)
 		if (session_isActive(ch_server[i].fd))
 			server_num++;
 
-	if (server_num == 0) {                   // if no char-server, don't send void list of servers, just disconnect the player with proper message
+	if (server_num == 0) { // if no char-server, don't send void list of servers, just disconnect the player with proper message
 		ShowStatus("Connection refused: there is no char-server online (account: %s).\n", sd->userid);
 		logclif_sent_auth_result(fd, 1); // server closed
 		return;
@@ -94,7 +94,7 @@ static void logclif_auth_ok(struct login_session_data* sd)
 
 	{
 		struct online_login_data* data = (struct online_login_data*)idb_get(online_db, sd->account_id);
-		if (data) {                           // account is already marked as online!
+		if (data) { // account is already marked as online!
 			if (data->char_server > -1) { // Request char servers to kick this account out. [Skotlex]
 				uint8 buf[6];
 				ShowNotice("User '%s' is already online - Rejected.\n", sd->userid);

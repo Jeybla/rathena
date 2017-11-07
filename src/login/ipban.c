@@ -197,7 +197,7 @@ void ipban_init(void)
 	ipban_inited = true;
 
 	if (!login_config.ipban)
-		return;                     // ipban disabled
+		return;  // ipban disabled
 
 	if (ipban_db_hostname[0] != '\0') { // local settings
 		username = ipban_db_username;

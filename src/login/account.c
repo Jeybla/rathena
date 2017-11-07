@@ -295,7 +295,7 @@ static bool account_db_sql_create(AccountDB* self, struct mmo_account* acc)
 
 	if (acc->account_id != -1) { // caller specifies it manually
 		account_id = acc->account_id;
-	} else {                     // ask the database
+	} else { // ask the database
 		char*  data;
 		size_t len;
 

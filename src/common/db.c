@@ -1334,12 +1334,12 @@ DBData* dbit_obj_next(DBIterator* self, DBKey* out_key)
 		}
 
 		while (node)
-		{                          // next node
+		{       // next node
 			if (node->right) { // continue in the right subtree
 				node = node->right;
 				while (node->left)
 					node = node->left;  // get leftmost node
-			} else {                            // continue to the next parent (recursive)
+			} else { // continue to the next parent (recursive)
 				parent = node->parent;
 				while (parent)
 				{
@@ -1403,12 +1403,12 @@ DBData* dbit_obj_prev(DBIterator* self, DBKey* out_key)
 		}
 
 		while (node)
-		{                         // next node
+		{       // next node
 			if (node->left) { // continue in the left subtree
 				node = node->left;
 				while (node->right)
 					node = node->right;  // get rightmost node
-			} else {                             // continue to the next parent (recursive)
+			} else { // continue to the next parent (recursive)
 				parent = node->parent;
 				while (parent)
 				{
@@ -3075,8 +3075,7 @@ void* linkdb_search(struct linkdb_node** head, void* key)
 		if (node->key == key) {
 			if (node->prev && n > 5) {
 				//Moving the head in order to improve processing efficiency
-				if (node->prev)
-					node->prev->next = node->next;
+				node->prev->next = node->next;
 				if (node->next)
 					node->next->prev = node->prev;
 				node->next    = *head;

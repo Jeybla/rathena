@@ -917,7 +917,7 @@ int logchrif_parse(int fd)
 			return 0;
 	} // while
 	return 1; //or 0
-}         /* logchrif_parse */
+} /* logchrif_parse */
 
 
 /// Constructor destructor and signal handlers

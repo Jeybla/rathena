@@ -111,7 +111,7 @@ int cli_get_options(int argc, char** argv)
 			} else if (strcmp(arg, "msg-config") == 0) {
 				if (opt_has_next_value(arg, i, argc))
 					MSG_CONF_NAME_EN = argv[++i];
-			} else if (strcmp(arg, "run-once") == 0) {                             // close the map-server as soon as its done.. for testing [Celest]
+			} else if (strcmp(arg, "run-once") == 0) { // close the map-server as soon as its done.. for testing [Celest]
 				runflag = CORE_ST_STOP;
 			} else if (SERVER_TYPE & (ATHENA_SERVER_LOGIN | ATHENA_SERVER_CHAR)) { //login or char
 				if (strcmp(arg, "lan-config") == 0) {

@@ -1,6 +1,11 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
+#include "map.hpp"
+
+#include <stdlib.h>
+#include <math.h>
+
 #include "../common/cbasetypes.h"
 #include "../common/core.h"
 #include "../common/timer.h"
@@ -15,39 +20,34 @@
 #include "../common/cli.h"
 #include "../common/ers.h"
 
-#include "map.h"
-#include "path.h"
-#include "chrif.h"
-#include "clan.h"
-#include "clif.h"
-#include "duel.h"
-#include "intif.h"
-#include "npc.h"
-#include "pc.h"
-#include "chat.h"
-#include "storage.h"
-#include "trade.h"
-#include "party.h"
-#include "battleground.h"
-#include "quest.h"
-#include "mapreg.h"
-#include "pet.h"
-#include "homunculus.h"
-#include "instance.h"
-#include "mercenary.h"
-#include "elemental.h"
-#include "cashshop.h"
-#include "channel.h"
-#include "achievement.h"
-
-#include <stdlib.h>
-#include <math.h>
-#ifndef _WIN32
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "path.hpp"
+#include "chrif.hpp"
+#include "clan.hpp"
+#include "clif.hpp"
+#include "duel.hpp"
+#include "intif.hpp"
+#include "npc.hpp"
+#include "pc.hpp"
+#include "chat.hpp"
+#include "storage.hpp"
+#include "trade.hpp"
+#include "party.hpp"
+#include "battleground.hpp"
+#include "quest.hpp"
+#include "mapreg.hpp"
+#include "pet.hpp"
+#include "homunculus.hpp"
+#include "instance.hpp"
+#include "mercenary.hpp"
+#include "elemental.hpp"
+#include "cashshop.hpp"
+#include "channel.hpp"
+#include "achievement.hpp"
+#include "guild.hpp"
+#include "atcommand.hpp"
+#include "battle.hpp"
+#include "log.hpp"
+#include "mob.hpp"
 
 char default_codepage[32] = "";
 
@@ -57,7 +57,7 @@ char map_server_id[32] = "ragnarok";
 char map_server_pw[32] = "";
 char map_server_db[32] = "ragnarok";
 Sql* mmysql_handle;
-Sql* qsmysql_handle;  /// For query_sql
+Sql* qsmysql_handle; /// For query_sql
 
 int  db_use_sqldbs               = 0;
 char buyingstores_table[32]      = "buyingstores";
@@ -115,7 +115,9 @@ static int         block_free_count = 0, block_free_lock = 0;
 static struct block_list* bl_list[BL_LIST_MAX];
 static int                bl_list_count = 0;
 
-#define MAP_MAX_MSG    1550
+#ifndef MAP_MAX_MSG
+	#define MAP_MAX_MSG    1550
+#endif
 
 struct map_data map[MAX_MAP_PER_SERVER];
 int             map_num  = 0;
@@ -447,7 +449,7 @@ int map_moveblock(struct block_list* bl, int x1, int y1, unsigned int tick)
 	if (bl->type & BL_CHAR) {
 		skill_unit_move(bl, tick, 3);
 
-		if (bl->type == BL_PC && ((TBL_PC*)bl)->shadowform_id) {  //Shadow Form Target Moving
+		if (bl->type == BL_PC && ((TBL_PC*)bl)->shadowform_id) { //Shadow Form Target Moving
 			struct block_list* d_bl;
 			if ((d_bl = map_id2bl(((TBL_PC*)bl)->shadowform_id)) == NULL || !check_distance_bl(bl, d_bl, 10)) {
 				if (d_bl)
@@ -535,7 +537,6 @@ int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
 			}
 
 
-
 	if (type & BL_MOB)
 		for (bl = map[m].block_mob[bx + by * map[m].bxs]; bl != NULL; bl = bl->next)
 			if (bl->x == x && bl->y == y) {
@@ -549,9 +550,8 @@ int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
 			}
 
 
-
 	return count;
-} // map_count_oncell
+}
 
 /*
  * Looks for a skill unit on a given cell
@@ -859,7 +859,6 @@ int map_forcountinrange(int (* func)(struct block_list*, va_list), struct block_
 			}
 		}
 
-
 	if (type & BL_MOB)
 		for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
 		{
@@ -878,7 +877,6 @@ int map_forcountinrange(int (* func)(struct block_list*, va_list), struct block_
 		}
 
 
-
 	if (bl_list_count >= BL_LIST_MAX)
 		ShowWarning("map_forcountinrange: block count too many!\n");
 
@@ -892,7 +890,6 @@ int map_forcountinrange(int (* func)(struct block_list*, va_list), struct block_
 			if (count && returnCount >= count)
 				break;
 		}
-
 
 
 	map_freeblock_unlock();
@@ -948,7 +945,6 @@ int map_forcountinarea(int (* func)(struct block_list*, va_list), int16 m, int16
 			if (count && returnCount >= count)
 				break;
 		}
-
 
 
 	map_freeblock_unlock();
@@ -1086,7 +1082,6 @@ int map_foreachinmovearea(int (* func)(struct block_list*, va_list), struct bloc
 		}
 
 
-
 	map_freeblock_unlock(); // Allow Free
 
 	bl_list_count = blockcount;
@@ -1133,12 +1128,11 @@ int map_foreachincell(int (* func)(struct block_list*, va_list), int16 m, int16 
 		}
 
 
-
 	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
 	return returnCount;
-} // map_foreachincell
+}
 
 /*============================================================
  * For checking a path between two points (x0, y0) and (x1, y1)
@@ -1273,7 +1267,6 @@ int map_foreachinpath(int (* func)(struct block_list*, va_list), int16 m, int16 
 			}
 		}
 
-
 	if (type & BL_MOB)
 		for (by = my0 / BLOCK_SIZE; by <= my1 / BLOCK_SIZE; by++)
 		{
@@ -1310,7 +1303,6 @@ int map_foreachinpath(int (* func)(struct block_list*, va_list), int16 m, int16 
 		}
 
 
-
 	if (bl_list_count >= BL_LIST_MAX)
 		ShowWarning("map_foreachinpath: block count too many!\n");
 
@@ -1322,7 +1314,6 @@ int map_foreachinpath(int (* func)(struct block_list*, va_list), int16 m, int16 
 			returnCount += func(bl_list[i], ap);
 			va_end(ap);
 		}
-
 
 
 	map_freeblock_unlock();
@@ -1494,7 +1485,6 @@ int map_foreachindir(int (* func)(struct block_list*, va_list), int16 m, int16 x
 		}
 
 
-
 	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
@@ -1535,7 +1525,6 @@ int map_foreachinmap(int (* func)(struct block_list*, va_list), int16 m, int typ
 			returnCount += func(bl_list[i], ap);
 			va_end(ap);
 		}
-
 
 
 	map_freeblock_unlock();
@@ -2842,7 +2831,6 @@ void map_spawnmobs(int16 m)
 		}
 
 
-
 	if (battle_config.etc_log && k > 0) {
 		ShowStatus("Map %s: Spawned '" CL_WHITE "%d" CL_RESET "' mobs.\n", map[m].name, k);
 	}
@@ -3047,7 +3035,7 @@ int map_check_dir(int s_dir, int t_dir)
 		break;
 	} // switch
 	return 1;
-}         // map_check_dir
+} // map_check_dir
 
 /*==========================================
  * Returns the direction of the given cell, relative to 'src'
@@ -3074,38 +3062,38 @@ uint8 map_calc_dir_xy(int16 srcx, int16 srcy, int16 x, int16 y, uint8 srcdir)
 
 	dx = x - srcx;
 	dy = y - srcy;
-	if (dx == 0 && dy == 0) {        // both are standing on the same spot
-		                         // aegis-style, makes knockback default to the left
-		                         // athena-style, makes knockback default to behind 'src'
+	if (dx == 0 && dy == 0) { // both are standing on the same spot
+		                 // aegis-style, makes knockback default to the left
+		                 // athena-style, makes knockback default to behind 'src'
 		dir = (battle_config.knockback_left ? 6 : srcdir);
 	} else if (dx >= 0 && dy >= 0) { // upper-right
 		if (dx >= dy * 3)
-			dir = 6;         // right
+			dir = 6;                // right
 		else if (dx * 3 < dy)
-			dir = 0;         // up
+			dir = 0;                // up
 		else
-			dir = 7;         // up-right
+			dir = 7;                // up-right
 	} else if (dx >= 0 && dy <= 0) { // lower-right
 		if (dx >= -dy * 3)
-			dir = 6;         // right
+			dir = 6;                // right
 		else if (dx * 3 < -dy)
-			dir = 4;         // down
+			dir = 4;                // down
 		else
-			dir = 5;         // down-right
+			dir = 5;                // down-right
 	} else if (dx <= 0 && dy <= 0) { // lower-left
 		if (dx * 3 >= dy)
-			dir = 4;         // down
+			dir = 4;  // down
 		else if (dx < dy * 3)
-			dir = 2;         // left
+			dir = 2;  // left
 		else
-			dir = 3;         // down-left
-	} else {                         // upper-left
+			dir = 3;  // down-left
+	} else {                  // upper-left
 		if (-dx * 3 <= dy)
-			dir = 0;         // up
+			dir = 0;  // up
 		else if (-dx > dy * 3)
-			dir = 2;         // left
+			dir = 2;  // left
 		else
-			dir = 1;         // up-left
+			dir = 1;  // up-left
 	}
 	return dir;
 } // map_calc_dir_xy
@@ -3308,7 +3296,7 @@ int map_getcellp(struct map_data* m, int16 x, int16 y, cell_chk cellchk)
 	default:
 		return 0;
 	} // switch
-}         // map_getcellp
+} // map_getcellp
 
 /*==========================================
  * Change the type/flags of a map cell
@@ -3370,7 +3358,7 @@ void map_setcell(int16 m, int16 x, int16 y, cell_t cell, bool flag)
 		ShowWarning("map_setcell: invalid cell type '%d'\n", (int)cell);
 		break;
 	} // switch
-}         // map_setcell
+} // map_setcell
 
 void map_setgatcell(int16 m, int16 x, int16 y, int gat)
 {
@@ -3761,7 +3749,7 @@ int map_waterheight(char* mapname)
 
 	// read & convert fn
 	rsw = (char*)grfio_read(fn);
-	if (rsw) {                                  //Load water height from file
+	if (rsw) { //Load water height from file
 		int wh = (int)*(float*)(rsw + 166); //FIXME Casting between integer* and float* which have an incompatible binary data representation.
 		aFree(rsw);
 		return wh;
@@ -5066,6 +5054,3 @@ int do_init(int argc, char* argv[])
 	return 0;
 } // do_init
 
-#ifdef __cplusplus
-}
-#endif

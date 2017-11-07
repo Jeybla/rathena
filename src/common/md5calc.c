@@ -226,10 +226,10 @@ static void MD5_String2binary(const char* string, unsigned char* output)
 		MD5_Round_Calculate(pstring, A, B, C, D);
 
 	//1-3
-	copy_len = string_byte_len % 64;                             //The number of bytes which remained is computed.
-	strncpy((char*)padding_message, (char*)pstring, copy_len);   //A message is copied to an extended bit sequence.
-	memset(padding_message + copy_len, 0, 64 - copy_len);        //It buries by 0 until it becomes extended bit length.
-	padding_message[copy_len] |= 0x80;                           //The next of a message is 1.
+	copy_len = string_byte_len % 64;                           //The number of bytes which remained is computed.
+	strncpy((char*)padding_message, (char*)pstring, copy_len); //A message is copied to an extended bit sequence.
+	memset(padding_message + copy_len, 0, 64 - copy_len);      //It buries by 0 until it becomes extended bit length.
+	padding_message[copy_len] |= 0x80;                         //The next of a message is 1.
 
 	//1-4
 	//If 56 bytes or more (less than 64 bytes) of remainder becomes, it will calculate by extending to 64 bytes.

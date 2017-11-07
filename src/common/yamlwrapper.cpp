@@ -106,16 +106,15 @@ T yaml_get_value(yamlwrapper* wrapper, const char* key)
 	if (wrapper == nullptr || key == nullptr)
 		return {}
 
-		       try
-		       {
-			       return yaml_get_node(wrapper->root, std::string(key)).as<T>();
-		       }
-		       catch (const std::exception& e)
-		       {
-			       ShowError("Error during YAML node value resolving in node %s.\n", e.what());
-			       return {}
-		       }
-
+	try
+	{
+		return yaml_get_node(wrapper->root, std::string(key)).as<T>();
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("Error during YAML node value resolving in node %s.\n", e.what());
+		return {}
+	}
 }
 }
 
@@ -182,16 +181,15 @@ T yaml_as_value(yamlwrapper* wrapper)
 	if (wrapper == nullptr)
 		return {}
 
-		       try
-		       {
-			       return wrapper->root.as<T>();
-		       }
-		       catch (const std::exception& e)
-		       {
-			       ShowError("Error during YAML node value resolving in node %s.\n", e.what());
-			       return {}
-		       }
-
+	try
+	{
+		return wrapper->root.as<T>();
+	}
+	catch (const std::exception& e)
+	{
+		ShowError("Error during YAML node value resolving in node %s.\n", e.what());
+		return {}
+	}
 }
 }
 

@@ -103,7 +103,7 @@ struct socket_data {
 	SendFunc  func_send;
 	ParseFunc func_parse;
 
-	void*     session_data;  // stores application-specific data related to the session
+	void*     session_data; // stores application-specific data related to the session
 };
 
 

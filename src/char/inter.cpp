@@ -1,44 +1,48 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include "../common/mmo.h"
-#include "../common/cbasetypes.h"
-#include "../common/malloc.h"
-#include "../common/strlib.h"
-#include "../common/showmsg.h"
-#include "../common/socket.h"
-#include "../common/timer.h"
-#include "char.h"
-#include "char_logif.h"
-#include "char_mapif.h"
-#include "inter.h"
-#include "int_party.h"
-#include "int_guild.h"
-#include "int_storage.h"
-#include "int_pet.h"
-#include "int_homun.h"
-#include "int_mercenary.h"
-#include "int_mail.h"
-#include "int_auction.h"
-#include "int_quest.h"
-#include "int_elemental.h"
-#include "int_clan.h"
-#include "int_achievement.h"
+#include "inter.hpp"
 
+#include <string.h>
+#include <stdlib.h>
+
+#include <sys/stat.h> // for stat/lstat/fstat - [Dekamaster/Ultimate GM Tool]
 #include <yaml-cpp/yaml.h>
 
 #include <string>
 #include <vector>
 #include <stdlib.h>
 
-#include <sys/stat.h> // for stat/lstat/fstat - [Dekamaster/Ultimate GM Tool]
+#include "../common/cbasetypes.h"
+#include "../common/malloc.h"
+#include "../common/strlib.h"
+#include "../common/showmsg.h"
+#include "../common/socket.h"
+#include "../common/timer.h"
+
+#include "char.hpp"
+#include "char_logif.hpp"
+#include "char_mapif.hpp"
+#include "inter.hpp"
+#include "int_party.hpp"
+#include "int_guild.hpp"
+#include "int_storage.hpp"
+#include "int_pet.hpp"
+#include "int_homun.hpp"
+#include "int_mercenary.hpp"
+#include "int_mail.hpp"
+#include "int_auction.hpp"
+#include "int_quest.hpp"
+#include "int_elemental.hpp"
+#include "int_clan.hpp"
+#include "int_achievement.hpp"
 
 
 #define WISDATA_TTL       (60 * 1000) //Wis data Time To Live (60 seconds)
 #define WISDELLIST_MAX    256         // Number of elements in the list Delete data Wis
 
 
-Sql*                sql_handle = NULL;  ///Link to mysql db, connection FD
+Sql*                sql_handle = NULL; ///Link to mysql db, connection FD
 
 int                 char_server_port     = 3306;
 char                char_server_ip[32]   = "127.0.0.1";
@@ -316,7 +320,7 @@ const char* job_name(int class_)
 	default:
 		return msg_txt(118);
 	} // switch
-}         // job_name
+} // job_name
 
 /**
  * [Dekamaster/Nightroad]
@@ -425,7 +429,7 @@ void inter_to_fd(int fd, int u_fd, int aid, char* msg, ...)
  * @param acc_id : id of player found
  * @param acc_name : name of player found
  */
-static void mapif_acc_info_ack(int fd, int u_fd, int acc_id, const char* acc_name)
+void mapif_acc_info_ack(int fd, int u_fd, int acc_id, const char* acc_name)
 {
 	WFIFOHEAD(fd, 10 + NAME_LENGTH);
 	WFIFOW(fd, 0) = 0x3808;
@@ -809,7 +813,7 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 /*==========================================
  * read config file
  *------------------------------------------*/
-static int inter_config_read(const char* cfgName)
+int inter_config_read(const char* cfgName)
 {
 	char  line[1024];
 	FILE* fp;
@@ -876,7 +880,7 @@ int inter_log(char* fmt, ...)
 	return 0;
 }
 
-static void yaml_invalid_warning(const char* fmt, YAML::Node& node, std::string& file)
+void yaml_invalid_warning(const char* fmt, YAML::Node& node, std::string& file)
 {
 	YAML::Emitter out;
 
@@ -888,7 +892,7 @@ static void yaml_invalid_warning(const char* fmt, YAML::Node& node, std::string&
 /**
  * Read inter config file
  **/
-static void inter_config_readConf(void)
+void inter_config_readConf(void)
 {
 	std::vector<std::string> directories = { "conf/", "conf/import/" };
 	static const std::string file_name(interserv_config.cfgFile);
@@ -975,7 +979,7 @@ void inter_config_finalConf(void)
 {
 }
 
-static void inter_config_defaults(void)
+void inter_config_defaults(void)
 {
 	interserv_config.cfgFile = "inter_server.yml";
 }
@@ -1246,8 +1250,8 @@ int mapif_parse_WisRequest(int fd)
 		memcpy(WBUFP(buf, 2), RFIFOP(fd, 4), NAME_LENGTH);
 		WBUFB(buf, 26) = 1; // flag: 0: success to send wisper, 1: target character is not loged in?, 2: ignored by target
 		chmapif_send(fd, buf, 27);
-	} else {                    // Character exists. So, ask all map-servers
-		 // to be sure of the correct name, rewrite it
+	} else { // Character exists. So, ask all map-servers
+		// to be sure of the correct name, rewrite it
 		Sql_GetData(sql_handle, 0, &data, &len);
 		memset(name, 0, NAME_LENGTH);
 		memcpy(name, data, zmin(len, NAME_LENGTH));
@@ -1387,7 +1391,7 @@ int mapif_parse_RegistryRequest(int fd)
 	return 1;
 }
 
-static void mapif_namechange_ack(int fd, uint32 account_id, uint32 char_id, int type, int flag, char* name)
+void mapif_namechange_ack(int fd, uint32 account_id, uint32 char_id, int type, int flag, char* name)
 {
 	WFIFOHEAD(fd, NAME_LENGTH + 13);
 	WFIFOW(fd, 0)  = 0x3806;

@@ -7,6 +7,13 @@
 //#define DEBUG_HASH
 //#define DEBUG_DUMP_STACK
 
+#include "script.hpp"
+
+#include <math.h>
+#include <stdlib.h> // atoi, strtol, strtoll, exit
+#include <setjmp.h>
+#include <errno.h>
+
 #ifdef PCRE_SUPPORT
 #include "../../3rdparty/pcre/include/pcre.h" // preg_match
 #endif
@@ -21,6 +28,7 @@
 #include "../common/strlib.h"
 #include "../common/timer.h"
 #include "../common/utils.h"
+#include "../common/ers.h"  // ers_destroy
 #ifdef BETA_THREAD_TEST
 	#include "../common/atomic.h"
 	#include "../common/spinlock.h"
@@ -28,38 +36,36 @@
 	#include "../common/mutex.h"
 #endif
 
-#include "map.h"
-#include "path.h"
-#include "clan.h"
-#include "clif.h"
-#include "chrif.h"
-#include "date.h" // date type enum, date_get()
-#include "itemdb.h"
-#include "pc.h"
-#include "storage.h"
-#include "pet.h"
-#include "mapreg.h"
-#include "homunculus.h"
-#include "instance.h"
-#include "mercenary.h"
-#include "intif.h"
-#include "chat.h"
-#include "battleground.h"
-#include "party.h"
-#include "mail.h"
-#include "quest.h"
-#include "elemental.h"
-#include "channel.h"
-#include "achievement.h"
-
-#include <math.h>
-#include <stdlib.h> // atoi, strtol, strtoll, exit
-#include <setjmp.h>
-#include <errno.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "map.hpp"
+#include "path.hpp"
+#include "clan.hpp"
+#include "clif.hpp"
+#include "chrif.hpp"
+#include "date.hpp" // date type enum, date_get()
+#include "itemdb.hpp"
+#include "pc.hpp"
+#include "pc_groups.hpp"
+#include "storage.hpp"
+#include "pet.hpp"
+#include "mapreg.hpp"
+#include "homunculus.hpp"
+#include "instance.hpp"
+#include "mercenary.hpp"
+#include "intif.hpp"
+#include "chat.hpp"
+#include "battleground.hpp"
+#include "party.hpp"
+#include "mail.hpp"
+#include "quest.hpp"
+#include "elemental.hpp"
+#include "npc.hpp"
+#include "guild.hpp"
+#include "atcommand.hpp"
+#include "battle.hpp"
+#include "log.hpp"
+#include "mob.hpp"
+#include "channel.hpp"
+#include "achievement.hpp"
 
 struct eri*  array_ers;
 DBMap*       st_db;
@@ -251,7 +257,7 @@ static int buildin_getelementofarray_ref = 0;
 
 // Caches compiled autoscript item code.
 // Note: This is not cleared when reloading itemdb.
-static DBMap*        autobonus_db = NULL;  // char* script -> char* bytecode
+static DBMap*        autobonus_db = NULL; // char* script -> char* bytecode
 
 struct Script_Config script_config = {
 	1,              // warn_func_mismatch_argtypes
@@ -541,7 +547,7 @@ const char* script_op2name(int op)
 		return "???";
 	} // switch
 #undef RETURN_OP_NAME
-}         // script_op2name
+} // script_op2name
 
 #ifdef DEBUG_DUMP_STACK
 static void script_dump_stack(struct script_state* st)
@@ -795,7 +801,7 @@ int add_str(const char* p)
 
 	if (str_hash[h] == 0) { // empty bucket, add new node here
 		str_hash[h] = str_num;
-	} else {                // scan for end of list, or occurence of identical string
+	} else { // scan for end of list, or occurence of identical string
 		int i;
 		for (i = str_hash[h]; ; i = str_data[i].next)
 		{
@@ -1099,7 +1105,7 @@ const char* parse_callfunc(const char* p, int require_paren, int is_custom)
 	p                                      = skip_space(p);
 	syntax.curly[syntax.curly_count].type  = TYPE_ARGLIST;
 	syntax.curly[syntax.curly_count].count = 0;
-	if (*p == ';') {                                            // <func name> ';'
+	if (*p == ';') { // <func name> ';'
 		syntax.curly[syntax.curly_count].flag = ARGLIST_NO_PAREN;
 	} else if (*p == '(' && *(p2 = skip_space(p + 1)) == ')') { // <func name> '(' ')'
 		syntax.curly[syntax.curly_count].flag = ARGLIST_PAREN;
@@ -1245,7 +1251,7 @@ const char* parse_variable(const char* p)
 	         || (p[0] == '-' && p[1] == '-' && (type = C_SUB_POST))               // post --
 	         || (p[0] == '<' && p[1] == '<' && p[2] == '=' && (type = C_L_SHIFT)) // <<=
 	         || (p[0] == '>' && p[1] == '>' && p[2] == '=' && (type = C_R_SHIFT)) // >>=
-	         )) {                                                                 // failed to find a matching operator combination so invalid
+	         )) { // failed to find a matching operator combination so invalid
 		return NULL;
 	}
 
@@ -2106,7 +2112,7 @@ const char* parse_syntax(const char* p)
 		break;
 	} // switch
 	return NULL;
-}         // parse_syntax
+} // parse_syntax
 
 const char* parse_syntax_close(const char* p)
 {
@@ -2391,7 +2397,7 @@ void script_set_constant(const char* name, int value, bool isparameter, bool dep
 		str_data[n].deprecated = deprecated;
 	} else if (str_data[n].type == C_PARAM || str_data[n].type == C_INT) { // existing parameter or constant
 		ShowError("script_set_constant: Attempted to overwrite existing %s '%s' (old value=%d, new value=%d).\n", (str_data[n].type == C_PARAM) ? "parameter" : "constant", name, str_data[n].val, value);
-	} else {                                                               // existing name
+	} else { // existing name
 		ShowError("script_set_constant: Invalid name for %s '%s' (already defined as %s).\n", isparameter ? "parameter" : "constant", name, script_op2name(str_data[n].type));
 	}
 }
@@ -2443,7 +2449,7 @@ static void read_constdb(void)
  **/
 void script_hardcoded_constants(void)
 {
-	#include "script_constants.h"
+	#include "script_constants.hpp"
 }
 
 /*==========================================
@@ -2589,7 +2595,7 @@ struct script_code* parse_script(const char* src, const char* file, int line, in
 	parse_syntax_for_flag = 0;
 	p                     = src;
 	p                     = skip_space(p);
-	if (options & SCRIPT_IGNORE_EXTERNAL_BRACKETS) {                     // does not require brackets around the script
+	if (options & SCRIPT_IGNORE_EXTERNAL_BRACKETS) { // does not require brackets around the script
 		if (*p == '\0' && !(options & SCRIPT_RETURN_EMPTY_SCRIPT)) { // empty script and can return NULL
 			aFree(script_buf);
 			script_pos  = 0;
@@ -2892,7 +2898,7 @@ void get_val_(struct script_state* st, struct script_data* data, struct map_sess
 				data->u.num = pc_readglobalreg(sd, data->u.num);
 				break;
 			} // switch
-		// switch
+
 	}
 	data->ref = NULL;
 } // get_val_
@@ -3181,7 +3187,7 @@ void script_array_update(struct reg_db* src, int64 num, bool empty)
  *
  * TODO: return values are screwed up, have been for some time (reaad: years), e.g. some functions return 1 failure and success.
  *------------------------------------------*/
-int set_reg(struct script_state* st, TBL_PC* sd, int64 num, const char* name, const void* value, struct reg_db* ref)
+int set_reg(struct script_state* st, struct map_session_data* sd, int64 num, const char* name, const void* value, struct reg_db* ref)
 {
 	char prefix = name[0];
 
@@ -3312,14 +3318,14 @@ int set_reg(struct script_state* st, TBL_PC* sd, int64 num, const char* name, co
 			return pc_setglobalreg(sd, num, val);
 		} // switch
 	}
-}                 // set_reg
+} // set_reg
 
 int set_var(struct map_session_data* sd, char* name, void* val)
 {
 	return set_reg(NULL, sd, reference_uid(add_str(name), 0), name, val, NULL);
 }
 
-void setd_sub(struct script_state* st, TBL_PC* sd, const char* varname, int elem, void* value, struct reg_db* ref)
+void setd_sub(struct script_state* st, struct map_session_data* sd, const char* varname, int elem, void* value, struct reg_db* ref)
 {
 	set_reg(st, sd, reference_uid(add_str(varname), elem), varname, value, ref);
 }
@@ -3335,7 +3341,7 @@ const char* conv_str_(struct script_state* st, struct script_data* data, struct 
 	char* p;
 
 	get_val_(st, data, sd);
-	if (data_isstring(data)) {     // nothing to convert
+	if (data_isstring(data)) { // nothing to convert
 	} else if (data_isint(data)) { // int -> string
 		CREATE(p, char, ITEM_NAME_LENGTH);
 		snprintf(p, ITEM_NAME_LENGTH, "%" PRId64 "", data->u.num);
@@ -3370,7 +3376,7 @@ const char* conv_str(struct script_state* st, struct script_data* data)
 int conv_num_(struct script_state* st, struct script_data* data, struct map_session_data* sd)
 {
 	get_val_(st, data, sd);
-	if (data_isint(data)) {           // nothing to convert
+	if (data_isint(data)) { // nothing to convert
 	} else if (data_isstring(data)) { // string -> int
 		// the result does not overflow or underflow, it is capped instead
 		// ex: 999999999999 is capped to INT_MAX (2147483647)
@@ -3402,7 +3408,7 @@ int conv_num_(struct script_state* st, struct script_data* data, struct map_sess
 #if 0
 	// FIXME this function is being used to retrieve the position of labels and
 	// probably other stuff [FlavioJS]
-	else {  // unsupported data type
+	else { // unsupported data type
 		ShowError("script:conv_num: cannot convert to number, defaulting to 0\n");
 		script_reportdata(data);
 		script_reportsrc(st);
@@ -3928,7 +3934,7 @@ void op_2num(struct script_state* st, int op, int i1, int i2)
 		}
 	} // switch
 	script_pushint(st, ret);
-}         // op_2num
+} // op_2num
 
 /// Binary operators
 void op_2(struct script_state* st, int op)
@@ -3956,7 +3962,7 @@ void op_2(struct script_state* st, int op)
 	switch (op)
 	{
 	case C_ADD:
-		if (data_isint(left) && data_isstring(right)) {        // convert int-string to string-string
+		if (data_isint(left) && data_isstring(right)) { // convert int-string to string-string
 			conv_str(st, left);
 		} else if (data_isstring(left) && data_isint(right)) { // convert string-int to string-string
 			conv_str(st, right);
@@ -3964,7 +3970,7 @@ void op_2(struct script_state* st, int op)
 		break;
 	}
 
-	if (data_isstring(left) && data_isstring(right)) {                 // ss => op_2str
+	if (data_isstring(left) && data_isstring(right)) { // ss => op_2str
 		op_2str(st, op, left->u.str, right->u.str);
 		script_removetop(st, leftref.type == C_NOP ? -3 : -2, -1); // pop the two values before the top one
 
@@ -4057,7 +4063,7 @@ static void script_check_buildin_argtype(struct script_state* st, int func)
 
 		if (type == '?' || type == '*') { // optional argument or unknown number of optional parameters ( no types are after this )
 			break;
-		} else if (type == 0) {           // more arguments than necessary ( should not happen, as it is checked before )
+		} else if (type == 0) { // more arguments than necessary ( should not happen, as it is checked before )
 			ShowWarning("Found more arguments than necessary. unexpected arg type %s\n", script_op2name(data->type));
 			invalid++;
 			break;
@@ -5175,7 +5181,7 @@ BUILDIN_FUNC(mes)
 
 	if (!script_hasdata(st, 3)) { // only a single line detected in the script
 		clif_scriptmes(sd, st->oid, script_getstr(st, 2));
-	} else {                      // parse multiple lines as they exist
+	} else { // parse multiple lines as they exist
 		int i;
 
 		for (i = 2; script_hasdata(st, i); i++)
@@ -6348,7 +6354,7 @@ BUILDIN_FUNC(setr)
 	if (data_isreference(datavalue)) { // the value being referenced is a variable
 		const char* namevalue = reference_getname(datavalue);
 
-		if (!not_array_variable(*namevalue)) {                                                    // array variable being copied into another array variable
+		if (!not_array_variable(*namevalue)) { // array variable being copied into another array variable
 			if (sd == NULL && not_server_variable(*namevalue) && !(sd = script_rid2sd(st))) { // player must be attached in order to copy a player variable
 				ShowError("script:set: no player attached for player variable '%s'\n", namevalue);
 				return SCRIPT_CMD_SUCCESS;
@@ -6533,7 +6539,7 @@ BUILDIN_FUNC(copyarray)
 	if (count <= 0 || (id1 == id2 && idx1 == idx2))
 		return SCRIPT_CMD_SUCCESS;  // nothing to copy
 
-	if (id1 == id2 && idx1 > idx2) {    // destination might be overlapping the source - copy in reverse order
+	if (id1 == id2 && idx1 > idx2) { // destination might be overlapping the source - copy in reverse order
 		for (i = count - 1; i >= 0; --i)
 		{
 			v = get_val2(st, reference_uid(id2, idx2 + i), reference_getref(data2));
@@ -6632,8 +6638,8 @@ BUILDIN_FUNC(deletearray)
 
 	script_array_ensure_zero(st, NULL, data->u.num, reference_getref(data));
 
-	if (!(sa = static_cast<script_array*>(idb_get(src->arrays, id)))) {  // non-existent array, nothing to empty
-		return SCRIPT_CMD_SUCCESS;                                   // not a variable
+	if (!(sa = static_cast<script_array*>(idb_get(src->arrays, id)))) { // non-existent array, nothing to empty
+		return SCRIPT_CMD_SUCCESS;                                  // not a variable
 	}
 
 	end = script_array_highest_key(st, sd, name, reference_getref(data));
@@ -7092,7 +7098,7 @@ BUILDIN_FUNC(checkweight)
 			return SCRIPT_CMD_FAILURE;
 		}
 
-		weight += itemdb_weight(nameid) * amount;   //total weight for all chk
+		weight += itemdb_weight(nameid) * amount; //total weight for all chk
 		if (weight + sd->weight > sd->max_weight) { // too heavy
 			script_pushint(st, 0);
 			return SCRIPT_CMD_SUCCESS;
@@ -8032,12 +8038,11 @@ static bool buildin_delitem_search(struct map_session_data* sd, struct item* it,
 			}
 
 
-
-		if (amount) {              // not enough items
+		if (amount) { // not enough items
 			return false;
 		} else if (delete_items) { // we are done with the work
 			return true;
-		} else {                   // get rid of the items now
+		} else { // get rid of the items now
 			delete_items = true;
 		}
 	}
@@ -8113,7 +8118,7 @@ BUILDIN_FUNC(delitem)
 	it.amount = script_getnum(st, 3);
 
 	if (it.amount <= 0)
-		return SCRIPT_CMD_SUCCESS;             // nothing to do
+		return SCRIPT_CMD_SUCCESS;  // nothing to do
 
 	if (buildin_delitem_search(sd, &it, 0, loc)) { // success
 		return SCRIPT_CMD_SUCCESS;
@@ -8218,7 +8223,7 @@ BUILDIN_FUNC(delitem2)
 	}
 
 	if (it.amount <= 0)
-		return SCRIPT_CMD_SUCCESS;                // nothing to do
+		return SCRIPT_CMD_SUCCESS;  // nothing to do
 
 	if (buildin_delitem_search(sd, &it, flag, loc)) { // success
 		return SCRIPT_CMD_SUCCESS;
@@ -9802,7 +9807,7 @@ BUILDIN_FUNC(setoption)
 		option |= OPTION_CART;
 #endif
 	}
-	if (flag) {                                 // Add option
+	if (flag) { // Add option
 		if (option & OPTION_WEDDING && !battle_config.wedding_modifydisplay)
 			option &= ~OPTION_WEDDING;  // Do not show the wedding sprites
 		pc_setoption(sd, sd->sc.option | option);
@@ -10775,7 +10780,7 @@ BUILDIN_FUNC(initnpctimer)
 		struct script_data* data;
 		data = script_getdata(st, 2);
 		get_val(st, data);
-		if (data_isstring(data))     //NPC name
+		if (data_isstring(data))  //NPC name
 			nd = npc_name2id(conv_str(st, data));
 		else if (data_isint(data)) { //Flag
 			nd   = (struct npc_data*)map_id2bl(st->oid);
@@ -10818,7 +10823,7 @@ BUILDIN_FUNC(startnpctimer)
 		struct script_data* data;
 		data = script_getdata(st, 2);
 		get_val(st, data);
-		if (data_isstring(data))     //NPC name
+		if (data_isstring(data))  //NPC name
 			nd = npc_name2id(conv_str(st, data));
 		else if (data_isint(data)) { //Flag
 			nd   = (struct npc_data*)map_id2bl(st->oid);
@@ -10858,7 +10863,7 @@ BUILDIN_FUNC(stopnpctimer)
 		struct script_data* data;
 		data = script_getdata(st, 2);
 		get_val(st, data);
-		if (data_isstring(data))     //NPC name
+		if (data_isstring(data))  //NPC name
 			nd = npc_name2id(conv_str(st, data));
 		else if (data_isint(data)) { //Flag
 			nd   = (struct npc_data*)map_id2bl(st->oid);
@@ -11025,7 +11030,7 @@ BUILDIN_FUNC(announce)
 	int         fontAlign = script_hasdata(st, 7) ? script_getnum(st, 7) : 0;         // default fontAlign
 	int         fontY     = script_hasdata(st, 8) ? script_getnum(st, 8) : 0;         // default fontY
 
-	if (flag & (BC_TARGET_MASK | BC_SOURCE_MASK)) {                                   // Broadcast source or broadcast region defined
+	if (flag & (BC_TARGET_MASK | BC_SOURCE_MASK)) { // Broadcast source or broadcast region defined
 		send_target        target;
 		struct block_list* bl;
 
@@ -11155,7 +11160,7 @@ BUILDIN_FUNC(getusers)
 	switch (flag & 0x07)
 	{
 	case 0:
-		if (flag & 0x8) {               // npc
+		if (flag & 0x8) { // npc
 			bl = map_id2bl(st->oid);
 		} else if (script_rid2sd(sd)) { // pc
 			bl = &sd->bl;
@@ -12268,7 +12273,7 @@ BUILDIN_FUNC(warpwaitingpc)
 			break;
 		}
 
-		if (cd->zeny) {                                   // fee set
+		if (cd->zeny) { // fee set
 			if ((uint32)sd->status.zeny < cd->zeny) { // no zeny to cover set fee
 				break;
 			}
@@ -14009,9 +14014,9 @@ BUILDIN_FUNC(failedremovecards)
 	}
 
 	if (cardflag == 1) {
-		if (typefail == 0 || typefail == 2) { // destroy the item
+		if (typefail == 0 || typefail == 2) {    // destroy the item
 			pc_delitem(sd, i, 1, 0, 2, LOG_TYPE_SCRIPT);
-		} else if (typefail == 1) {           // destroy the card
+		} else if (typefail == 1) { // destroy the card
 			unsigned char flag = 0, j;
 			struct item   item_tmp;
 
@@ -14374,7 +14379,7 @@ BUILDIN_FUNC(guardian)
 	} else if (script_hasdata(st, 7)) {
 		struct script_data* data = script_getdata(st, 7);
 		get_val(st, data);
-		if (data_isstring(data)) {     // "<event label>"
+		if (data_isstring(data)) { // "<event label>"
 			evt = script_getstr(st, 7);
 		} else if (data_isint(data)) { // <guardian index>
 			guardian  = script_getnum(st, 7);
@@ -22693,9 +22698,9 @@ BUILDIN_FUNC(pushpc)
 		dir %= DIR_MAX;  // trim spin-over
 	}
 
-	if (!cells) {                                  // zero distance
+	if (!cells) { // zero distance
 		return SCRIPT_CMD_SUCCESS;
-	} else if (cells < 0) {                        // pushing backwards
+	} else if (cells < 0) { // pushing backwards
 		dir   = (dir + DIR_MAX / 2) % DIR_MAX; // turn around
 		cells = -cells;
 	}
@@ -26650,7 +26655,3 @@ struct script_function buildin_func[] = {
 
 	{ NULL,                               NULL,                    NULL },
 };
-
-#ifdef __cplusplus
-}
-#endif

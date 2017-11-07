@@ -159,7 +159,7 @@ char* trim(char* str)
 	// trim
 	if (start == end)
 		*str = '\0';  // empty string
-	else {                // move string with nul terminator
+	else { // move string with nul terminator
 		str[end] = '\0';
 		memmove(str, str + start, end - start + 1);
 	}
@@ -247,7 +247,7 @@ const char* stristr(const char* haystack, const char* needle)
 					break;
 				}
 			}
-			if (!*n) {               // matched all of 'needle' to null termination
+			if (!*n) { // matched all of 'needle' to null termination
 				return haystack; // return the start of the match
 			}
 		}
@@ -423,7 +423,7 @@ int safesnprintf(char* buf, size_t sz, const char* fmt, ...)
 	ret = vsnprintf(buf, sz, fmt, ap);
 	va_end(ap);
 	if (ret < 0 || (size_t)ret >= sz) { // overflow
-		buf[sz - 1] = '\0';         // always nul-terminate
+		buf[sz - 1] = '\0'; // always nul-terminate
 		return -1;
 	}
 	return ret;
@@ -557,22 +557,22 @@ int sv_parse_next(struct s_svstate* sv)
 				return -1;
 			}
 			if (str[i] == 'x') { // hex escape
-				++i;         // 'x'
+				++i;        // 'x'
 				if (IS_END() || !ISXDIGIT(str[i])) {
 					ShowError("sv_parse_next: \\x with no following hex digits\n");
 					return -1;
 				}
 				do
 				{
-					++i;                                          // hex digit
+					++i;        // hex digit
 				} while (!IS_END() && ISXDIGIT(str[i]));
 			} else if (str[i] == '0' || str[i] == '1' || str[i] == '2') { // octal escape
-				++i;                                                  // octal digit
+				++i;          // octal digit
 				if (!IS_END() && str[i] >= '0' && str[i] <= '7')
-					++i;                                          // octal digit
+					++i;  // octal digit
 				if (!IS_END() && str[i] >= '0' && str[i] <= '7')
-					++i;                                          // octal digit
-			} else if (strchr(SV_ESCAPE_C_SUPPORTED, str[i])) {           // supported escape character
+					++i;  // octal digit
+			} else if (strchr(SV_ESCAPE_C_SUPPORTED, str[i])) { // supported escape character
 				++i;
 			} else {
 				ShowError("sv_parse_next: unknown escape sequence \\%c\n", str[i]);
@@ -909,7 +909,7 @@ size_t sv_unescape_c(char* out_dest, const char* src, size_t len)
 				out_dest[j++] = (char)c;
 			} else if (src[i] == '0' || src[i] == '1' || src[i] == '2' || src[i] == '3') { // octal escape sequence (255=0377)
 				unsigned char c = src[i] - '0';
-				++i;                                                                   // '0', '1', '2' or '3'
+				++i; // '0', '1', '2' or '3'
 				if (i < len && src[i] >= '0' && src[i] <= '7') {
 					c = (c << 3) | (src[i] - '0');
 					++i; // octal digit
@@ -1021,7 +1021,7 @@ bool sv_readdb(const char* directory, const char* filename, char delim, int minc
 	FILE*       fp;
 	int         lines   = 0;
 	int         entries = 0;
-	char**      fields;   // buffer for fields ([0] is reserved)
+	char**      fields; // buffer for fields ([0] is reserved)
 	int         columns, nb_cols;
 	char        path[1024], * line;
 	const short colsize = 512;
